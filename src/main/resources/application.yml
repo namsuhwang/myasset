@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    platform: mysql
+    jdbc-url: jdbc:mysql://c24host.cafe24.com:3306/c24host?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul
+    username: c24host
+    password: dba3048!01
+    driver-class-name: com.mysql.jdbc.Driver

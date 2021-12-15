@@ -1,70 +1,55 @@
 package com.idlelife.myasset.config.profile;
 
-import lombok.Data;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.sql.DataSource;
 
+@Slf4j
 @Configuration
-@MapperScan(basePackages = "com.idlelife.myasset")
-@EnableTransactionManagement
+@PropertySource("classpath:/application.yml")
 public class DataSourceConfig {
 
-    @Value("${spring.datasource.driver.class}")
-    private String dbDriverClassName;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Value("${spring.datasource.url}")
-    private String dbJdbcUrl;
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public HikariConfig hikariConfig() {
+        // application.yml 에 있는 spring.datasource 를 읽어 HikariConfig에 관련된 설정을 해준다.
 
-    @Value("${spring.datasource.username}")
-    private String dbUsername;
+        return new HikariConfig();
+    }
 
-    @Value("${spring.datasource.password}")
-    private String dbPassword;
-
-    @SuppressWarnings("rawtypes")
-    @Bean(name = "dataSource")
+    @Bean
     public DataSource dataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-
-        dataSourceBuilder.driverClassName(dbDriverClassName);
-        dataSourceBuilder.url(dbJdbcUrl);
-        dataSourceBuilder.username(dbUsername);
-        dataSourceBuilder.password(dbPassword);
-        return dataSourceBuilder.build();
+        // hikariConfig를 기반으로 datasource 를 만들어 준다.
+        DataSource dataSource = new HikariDataSource(hikariConfig());
+        return dataSource;
     }
 
     @Bean
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
-        final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource());
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sessionFactory.setMapperLocations(resolver.getResources("mapper/*.xml"));
-        return sessionFactory.getObject();
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource);
+        sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath:/mapper/*.xml"));
+        return sqlSessionFactoryBean.getObject();
     }
 
     @Bean
-    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) throws Exception {
-        final SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory);
-        return sqlSessionTemplate;
+    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
     }
 
-    @Bean
-    public DataSourceTransactionManager transactionManager(){
-        DataSourceTransactionManager manager = new DataSourceTransactionManager(dataSource());
-        return manager;
-    }
 
 }
