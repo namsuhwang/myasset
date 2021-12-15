@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.idlelife.mysset.MyassetRepository">
+<mapper namespace="com.idlelife.myasset.MyassetRepository">
         <select id="selectAssetTest" resultType="String">
                 SELECT ASSET_NAME
                 FROM ID_ASSET ia

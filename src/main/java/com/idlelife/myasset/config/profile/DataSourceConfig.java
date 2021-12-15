@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages = "com.idlelife.mysset")
+@MapperScan(basePackages = "com.idlelife.myasset")
 @EnableTransactionManagement
 public class DataSourceConfig {
 
