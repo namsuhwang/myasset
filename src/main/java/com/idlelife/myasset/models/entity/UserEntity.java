@@ -8,5 +8,5 @@ import lombok.ToString;
 @Data
 @ToString
 @AllArgsConstructor
-public class FamilyEntity {
+public class UserEntity {
 }
