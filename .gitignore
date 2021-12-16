@@ -19,6 +19,8 @@ bin/
 
 ### IntelliJ IDEA ###
 .idea
+build
+logs
 *.iws
 *.iml
 *.ipr
