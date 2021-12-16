@@ -27,4 +27,11 @@ public class MyassetController {
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
+
+    @PostMapping("")
+    public ResponseEntity getAssetPostTest(){
+        String result = myassetService.getAssetTest();
+
+        return new ResponseEntity(result, HttpStatus.OK);
+    }
 }

@@ -10,6 +10,6 @@ public class MyassetService {
     MyassetMapper myassetMapper;
 
     public String getAssetTest(){
-        return myassetMapper.selectAssetTest();
+        return (String)myassetMapper.selectAssetTest();
     }
 }

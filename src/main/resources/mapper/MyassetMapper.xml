@@ -3,8 +3,8 @@
 
 <mapper namespace="com.idlelife.myasset.repository.MyassetMapper">
         <select id="selectAssetTest" resultType="string">
-                SELECT ASSET_NAME
-                FROM ID_ASSET ia
+                SELECT asset_name
+                FROM id_asset ia
                 LIMIT 1
         </select>
 
