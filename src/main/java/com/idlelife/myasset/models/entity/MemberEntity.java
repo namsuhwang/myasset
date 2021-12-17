@@ -9,4 +9,10 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class MemberEntity {
+    private Long memberId;
+    private String memberName;
+    private String birthYear;
+    private String birthMonth;
+    private String birthDay;
+    private String sex;
 }

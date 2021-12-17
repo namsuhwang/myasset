@@ -9,4 +9,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class FamilyEntity {
+    private Long familyId;
+    private String memberId;
+    private String householderYn;
+    private String householderRelation;
 }

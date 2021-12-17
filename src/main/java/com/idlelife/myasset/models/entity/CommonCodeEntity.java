@@ -9,4 +9,10 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class CommonCodeEntity {
+    private String divCode;
+    private String code;
+    private String codeName;
+    private String codeDesc;
+    private Integer order;
+    private String useYn;
 }

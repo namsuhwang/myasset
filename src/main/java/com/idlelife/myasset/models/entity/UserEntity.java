@@ -9,4 +9,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class UserEntity {
+    private String userId;
+    private String userName;
+    private String userPwd;
+    private Long memberId;
 }

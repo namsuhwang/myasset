@@ -41,3 +41,4 @@ out/
 .vscode/
 /logs/app.log
 .idea/misc.xml
+/.gradle/buildOutputCleanup/
