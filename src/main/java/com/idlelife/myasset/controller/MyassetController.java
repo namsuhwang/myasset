@@ -21,14 +21,14 @@ public class MyassetController {
     @Autowired
     MyassetService myassetService;
 
-    @GetMapping("")
+    @GetMapping("/test/get")
     public ResponseEntity getAssetTest(){
         String result = myassetService.getAssetTest();
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
-    @PostMapping("")
+    @PostMapping("/test/post")
     public ResponseEntity getAssetPostTest(){
         String result = myassetService.getAssetTest();
 
