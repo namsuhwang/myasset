@@ -7,7 +7,7 @@ build/
 
 ### STS ###
 .apt_generated
-.classpath
+.classpath정
 .factorypath
 .project
 .settings
@@ -42,3 +42,4 @@ out/
 /logs/app.log
 .idea/misc.xml
 /.gradle/buildOutputCleanup/
+/.gradle/
