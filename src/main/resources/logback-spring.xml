@@ -38,36 +38,36 @@
 
 
     <springProfile name="default, local">
-        <logger name="com.skplanet" level="DEBUG"/>
-        <logger name="jdbc.audit" level="OFF"/>
-        <logger name="jdbc.resultset" level="OFF"/>
+        <logger name="com.idlelife" level="DEBUG"/>
+        <logger name="jdbc.audit" level="ON"/>
+        <logger name="jdbc.resultset" level="ON"/>
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
 
     <springProfile name="dev">
-        <logger name="com.skplanet" level="DEBUG"/>
-        <logger name="jdbc.audit" level="OFF"/>
-        <logger name="jdbc.resultset" level="OFF"/>
+        <logger name="com.idlelife" level="DEBUG"/>
+        <logger name="jdbc.audit" level="ON"/>
+        <logger name="jdbc.resultset" level="ON"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
     <springProfile name="alp">
-        <logger name="com.skplanet" level="DEBUG"/>
-        <logger name="jdbc.audit" level="OFF"/>
-        <logger name="jdbc.resultset" level="OFF"/>
+        <logger name="com.idlelife" level="DEBUG"/>
+        <logger name="jdbc.audit" level="ON"/>
+        <logger name="jdbc.resultset" level="ON"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
     <springProfile name="opr">
-        <logger name="com.skplanet" level="DEBUG"/>
-        <logger name="jdbc.audit" level="OFF"/>
-        <logger name="jdbc.resultset" level="OFF"/>
+        <logger name="com.idlelife" level="DEBUG"/>
+        <logger name="jdbc.audit" level="ON"/>
+        <logger name="jdbc.resultset" level="ON"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>

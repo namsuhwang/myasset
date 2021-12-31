@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idlelife.myasset.repository.AssetMapper">
+    <select id="selectAssetTest" resultType="String">
+            SELECT asset_name
+            FROM id_asset ia
+            LIMIT 1
+    </select>
+
+    <select id="createAssetId" resultType="Long">
+        SELECT IFNULL(MAX(asset_id), 0) + 1 AS asset_id
+        FROM id_asset
+    </select>
+
+    <insert id="insertAsset" parameterType="AssetEntity">
+            INSERT id_asset (
+                    asset_id
+                    ,member_id
+                    ,asset_type
+                    ,asset_name
+                    ,eval_amt
+                    ,delete_yn
+                    ,reg_datetime
+                    ,last_update_datetime
+            ) VALUES
+            (
+                ${assetId}
+                ,${memberId}
+                ,#{assetType}
+                ,#{assetName}
+                ,${evalAmt}
+                ,#{deleteYn}
+                ,NOW()
+                ,NOW()
+            )
+    </insert>
+
+    <update id="updateAsset" parameterType="AssetEntity">
+            UPDATE id_asset
+               SET
+                    member_id = ${memberId}
+                    ,asset_type = #{assetType}
+                    ,asset_name = #{assetName}
+                    ,eval_amt = ${evalAmt}
+                    ,delete_yn = #{deleteYn}
+                    ,last_update_datetime = NOW()
+            WHERE asset_id = ${assetId}
+    </update>
+
+    <delete id="deleteAsset" parameterType="Long">
+            UPDATE id_asset
+            SET
+               delete_yn = 'Y'
+              ,last_update_datetime = NOW()
+            WHERE asset_id = ${assetId}
+    </delete>
+
+    <select id="selectAsset" parameterType="Long" resultType="AssetEntity">
+            SELECT
+                asset_id
+                 ,member_id
+                 ,asset_type
+                 ,asset_name
+                 ,eval_amt
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset ia
+            WHERE ia.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetDto" parameterType="Long" resultType="AssetDto">
+            SELECT
+                asset_id
+                 ,member_id
+                 ,asset_type
+                 ,cc.code_name AS asset_type_name
+                 ,asset_name
+                 ,eval_amt
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset ia
+                 LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
+            WHERE ia.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetDtoList" parameterType="AssetSearch" resultType="AssetDto">
+            SELECT
+                asset_id
+                 ,member_id
+                 ,asset_type
+                 ,cc.code_name AS asset_type_name
+                 ,asset_name
+                 ,eval_amt
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset ia
+                LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
+            WHERE 1 = 1
+              <if test = 'assetId != null and assetId !=""'>
+                    AND ia.asset_id = ${assetId}
+              </if>
+              <if test = 'assetType != null and assetType !=""'>
+                    AND ia.asset_type = #{assetType}
+              </if>
+              <if test = 'memberId != null and memberId !=""'>
+                    AND ia.member_id = ${memberId}
+              </if>
+    </select>
+
+</mapper>
