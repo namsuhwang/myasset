@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idlelife.myasset.repository.AssetReMapper">
+    <insert id="insertAssetRe" parameterType="AssetReEntity">
+            INSERT id_asset_re (
+                asset_id
+                ,re_type
+                ,re_name
+                ,buy_date
+                ,buy_amt
+                ,buy_extra_amt
+                ,loan_amt
+                ,loan_bal_amt
+                ,loan_rate
+                ,sale_date
+                ,sale_amt
+                ,sale_income_tax_amt
+                ,sale_extra_amt
+                ,pal_amt
+                ,pal_percentage
+                ,re_rent_id
+                ,delete_yn
+                ,reg_datetime
+                ,last_update_datetime
+            ) VALUES
+            (
+                ${assetId}
+                ,#{reType}
+                ,#{reName}
+                ,#{buyDate}
+                ,v{buyAmt}
+                ,v{buyExtraAmt}
+                ,v{loanAmt}
+                ,${loanBalAmt}
+                ,#{loanRate}
+                ,#{seleDate}
+                ,${seleAmt}
+                ,${seleIncomeTaxAmt}
+                ,${seleExtraAmt}
+                ,${palAmt}
+                ,${palPercentage}
+                ,${reRentId
+                ,NOW()
+                ,NOW()
+            )
+    </insert>
+
+    <update id="updateAssetRe" parameterType="AssetReEntity">
+            UPDATE id_asset_re
+               SET
+                   re_type = ${reType}
+                   ,re_name              = #{reName}
+                   ,buy_date             = #{buyDate}
+                   ,buy_amt              = ${buyAmt}
+                   ,buy_extra_amt        = ${buyExtraAmt}
+                   ,loan_amt             = ${loanAmt}
+                   ,loan_bal_amt         = ${loanBalAmt}
+                   ,loan_rate            = ${loanRate}
+                   ,sale_date            = #{seleDate}
+                   ,sale_amt             = ${seleAmt}
+                   ,sale_income_tax_amt  = ${seleIncomeTaxAmt}
+                   ,sale_extra_amt       = ${seleExtraAmt}
+                   ,pal_amt              = ${palAmt}
+                   ,pal_percentage       = ${palPercentage}
+                   ,re_rent_id           = ${reRentId}
+                   ,delete_yn            = #{deleteYn} 
+                   ,last_update_datetime = NOW() 
+            WHERE asset_id = ${assetId}
+    </update>
+
+    <delete id="deleteAssetRe" parameterType="Long">
+            UPDATE id_asset_re
+            SET
+               delete_yn = 'Y'
+              ,last_update_datetime = NOW()
+            WHERE asset_id = ${assetId}
+    </delete>
+
+    <select id="selectAssetRe" parameterType="Long" resultType="AssetReEntity">
+            SELECT
+                asset_id
+                 ,re_type
+                 ,re_name
+                 ,buy_date
+                 ,buy_amt
+                 ,buy_extra_amt
+                 ,loan_amt
+                 ,loan_bal_amt
+                 ,loan_rate
+                 ,sale_date
+                 ,sale_amt
+                 ,sale_income_tax_amt
+                 ,sale_extra_amt
+                 ,pal_amt
+                 ,pal_percentage
+                 ,re_rent_id
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset_re ar
+            WHERE ab.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetReDto" parameterType="Long" resultType="AssetReDto">
+            SELECT
+                asset_id
+                 ,re_type
+                 ,cc.cd_name AS re_type_name
+                 ,re_name
+                 ,buy_date
+                 ,buy_amt
+                 ,buy_extra_amt
+                 ,loan_amt
+                 ,loan_bal_amt
+                 ,loan_rate
+                 ,sale_date
+                 ,sale_amt
+                 ,sale_income_tax_amt
+                 ,sale_extra_amt
+                 ,pal_amt
+                 ,pal_percentage
+                 ,re_rent_id
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset_re ar
+                 LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
+            WHERE ab.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetReDtoList" parameterType="AssetSearch" resultType="AssetReDto">
+            SELECT
+                asset_id
+                ,re_type
+                ,cc.cd_name AS re_type_name
+                ,re_name
+                ,buy_date
+                ,buy_amt
+                ,buy_extra_amt
+                ,loan_amt
+                ,loan_bal_amt
+                ,loan_rate
+                ,sale_date
+                ,sale_amt
+                ,sale_income_tax_amt
+                ,sale_extra_amt
+                ,pal_amt
+                ,pal_percentage
+                ,re_rent_id
+                ,delete_yn
+                ,reg_datetime
+                ,last_update_datetime
+            FROM id_asset_re ar
+                LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
+            WHERE 1 = 1
+              <if test = 'assetId != null and assetId !=""'>
+                    AND ar.asset_id = ${assetId}
+              </if>
+              <if test = 'reType != null and reType !=""'>
+                    AND ar.re_type = #{reType}
+              </if>
+    </select>
+
+</mapper>

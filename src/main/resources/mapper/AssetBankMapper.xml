@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idlelife.myasset.repository.AssetBankMapper">
+    <insert id="insertAssetBank" parameterType="AssetBankEntity">
+            INSERT id_asset_bank (
+                 asset_id
+                 ,acno_type
+                 ,bank_cd
+                 ,bank_name
+                 ,acno
+                 ,able_amt
+                 ,loan_bal_amt
+                 ,int_rate
+                 ,loan_rate
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            ) VALUES
+            (
+                ${assetId}
+                ,#{acnoType}
+                ,#{bankCd}
+                ,#{bankName}
+                ,#{acno}
+                ,${ableAmt}
+                ,${loanBalAmt}
+                ,${intRate}
+                ,${loanRate}
+                ,#{deleteYn}
+                ,NOW()
+                ,NOW()
+            )
+    </insert>
+
+    <update id="updateAssetBank" parameterType="AssetBankEntity">
+            UPDATE id_asset_bank
+               SET
+                  acno_type = #{acnoType}
+                 ,bank_cd = #{bankCd}
+                 ,bank_name = #{bankName}
+                 ,acno = #{acno}
+                 ,able_amt = ${ableAmt}
+                 ,loan_bal_amt = ${loanBalAmt}
+                 ,int_rate = ${intRate}
+                 ,loan_rate = ${loanRate}
+                 ,delete_yn = #{deleteYn}
+                 ,last_update_datetime = NOW()
+            WHERE asset_id = ${assetId}
+    </update>
+
+    <delete id="deleteAssetBank" parameterType="Long">
+            UPDATE id_asset_bank
+            SET
+               delete_yn = 'Y'
+              ,last_update_datetime = NOW()
+            WHERE asset_id = ${assetId}
+    </delete>
+
+    <select id="selectAssetBank" parameterType="Long" resultType="AssetBankEntity">
+            SELECT
+                asset_id
+                 ,acno_type
+                 ,bank_cd
+                 ,bank_name
+                 ,acno
+                 ,able_amt
+                 ,loan_bal_amt
+                 ,int_rate
+                 ,loan_rate
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset_bank ab
+            WHERE ab.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetBankDto" parameterType="Long" resultType="AssetBankDto">
+            SELECT
+                asset_id
+                 ,acno_type
+                 ,cc.code_name AS acno_type_name
+                 ,bank_cd
+                 ,bank_name
+                 ,acno
+                 ,able_amt
+                 ,loan_bal_amt
+                 ,int_rate
+                 ,loan_rate
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM id_asset_bank ab
+                 LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
+            WHERE ab.asset_id = ${assetId}
+    </select>
+
+    <select id="selectAssetBankDtoList" parameterType="AssetSearch" resultType="AssetBankDto">
+            SELECT
+                asset_id
+                ,acno_type
+                ,cc.code_name AS acno_type_name
+                ,bank_cd
+                ,bank_name
+                ,acno
+                ,able_amt
+                ,loan_bal_amt
+                ,int_rate
+                ,loan_rate
+                ,delete_yn
+                ,reg_datetime
+                ,last_update_datetime
+            FROM id_asset_bank ab
+                LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
+            WHERE 1 = 1
+              <if test = 'assetId != null and assetId !=""'>
+                    AND ab.asset_id = ${assetId}
+              </if>
+              <if test = 'bankAcnoType != null and bankAcnoType !=""'>
+                    AND ab.acno_type = #{bankAcnoType}
+              </if>
+              <if test = 'memberId != null and memberId !=""'>
+                    AND ab.member_id = ${memberId}
+              </if>
+    </select>
+
+</mapper>
