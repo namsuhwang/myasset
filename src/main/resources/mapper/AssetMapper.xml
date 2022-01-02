@@ -111,4 +111,16 @@
               </if>
     </select>
 
+
+    <select id="selectTotalAssetSummary" parameterType="Long" resultType="TotalAssetSummaryDto">
+        /* 종합현황 요약 */
+        SELECT
+              SUM(IFNULL(eval_amt, 0)) AS net_asset
+             ,SUM(IFNULL(loan_bal_amt, 0)) AS total_loan_bal_amt
+             ,SUM(CASE WHEN asset_type = 'STOCK' THEN IFNULL(eval_amt, 0) ELSE 0 END) AS stock_eval_amt
+             ,SUM(CASE WHEN asset_type IN ('STOCK', 'BANK') THEN IFNULL(able_amt, 0) ELSE 0 END) AS able_amt
+             ,SUM(CASE WHEN asset_type = 'RE' THEN IFNULL(eval_amt, 0) ELSE 0 END) AS re_eval_amt
+        FROM asset ia
+        WHERE ia.member_id = ${memberId}
+    </select>
 </mapper>

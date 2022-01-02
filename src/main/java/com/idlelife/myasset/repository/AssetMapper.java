@@ -2,6 +2,7 @@ package com.idlelife.myasset.repository;
 
 import com.idlelife.myasset.models.dto.AssetDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
+import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
 import com.idlelife.myasset.models.entity.AssetEntity;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -25,4 +26,7 @@ public interface AssetMapper {
     AssetEntity selectAsset(long assetId);
 
     AssetDto selectAssetDto(long assetId);
+
+    // 종합현황 요약
+    TotalAssetSummaryDto selectTotalAssetSummary(Long memberId);
 }

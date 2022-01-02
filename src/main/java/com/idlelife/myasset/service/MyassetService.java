@@ -2,6 +2,7 @@ package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.models.dto.AssetDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
+import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
 import com.idlelife.myasset.models.dto.form.AssetForm;
 import com.idlelife.myasset.models.entity.AssetEntity;
 import com.idlelife.myasset.repository.AssetMapper;
@@ -75,4 +76,9 @@ public class MyassetService {
         return assetEntity;
     }
 
+    // 종합현황 요약
+    public TotalAssetSummaryDto getTotalAssetSummary(Long memberId){
+        TotalAssetSummaryDto totalAssetSummary = assetMapper.selectTotalAssetSummary(memberId);
+        return totalAssetSummary;
+    }
 }

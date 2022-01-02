@@ -1,12 +1,17 @@
 package com.idlelife.myasset.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class AssetDto {
     private Long assetId;
     private Long memberId;

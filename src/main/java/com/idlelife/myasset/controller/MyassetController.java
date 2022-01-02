@@ -3,6 +3,7 @@ package com.idlelife.myasset.controller;
 
 import com.idlelife.myasset.models.dto.AssetDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
+import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
 import com.idlelife.myasset.models.dto.form.AssetForm;
 import com.idlelife.myasset.models.dto.form.ControllerForm;
 import com.idlelife.myasset.service.MyassetService;
@@ -85,6 +86,20 @@ public class MyassetController {
         log.info("call : /asset/list");
         log.info("params : " + dom.toString());
         List<AssetDto> result = myassetService.getAssetDtoList(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+
+
+    @PostMapping("/asset/total/summary")
+    public ResponseEntity<TotalAssetSummaryDto> getTotalAssetSummary(
+            @RequestBody AssetForm dom
+    ){
+        log.info("call 종합현황 요약 : /asset/total/summary ");
+        log.info("params : " + dom.toString());
+        TotalAssetSummaryDto result = myassetService.getTotalAssetSummary(dom.getMemberId());
 
         return ResponseEntity.ok().body(result);
     }
