@@ -4,17 +4,17 @@
 <mapper namespace="com.idlelife.myasset.repository.AssetMapper">
     <select id="selectAssetTest" resultType="String">
             SELECT asset_name
-            FROM id_asset ia
+            FROM asset ia
             LIMIT 1
     </select>
 
     <select id="createAssetId" resultType="Long">
         SELECT IFNULL(MAX(asset_id), 0) + 1 AS asset_id
-        FROM id_asset
+        FROM asset
     </select>
 
     <insert id="insertAsset" parameterType="AssetEntity">
-            INSERT id_asset (
+            INSERT asset (
                     asset_id
                     ,member_id
                     ,asset_type
@@ -37,7 +37,7 @@
     </insert>
 
     <update id="updateAsset" parameterType="AssetEntity">
-            UPDATE id_asset
+            UPDATE asset
                SET
                     member_id = ${memberId}
                     ,asset_type = #{assetType}
@@ -49,7 +49,7 @@
     </update>
 
     <delete id="deleteAsset" parameterType="Long">
-            UPDATE id_asset
+            UPDATE asset
             SET
                delete_yn = 'Y'
               ,last_update_datetime = NOW()
@@ -66,7 +66,7 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM id_asset ia
+            FROM asset ia
             WHERE ia.asset_id = ${assetId}
     </select>
 
@@ -81,8 +81,8 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM id_asset ia
-                 LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
+            FROM asset ia
+                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
             WHERE ia.asset_id = ${assetId}
     </select>
 
@@ -97,8 +97,8 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM id_asset ia
-                LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
+            FROM asset ia
+                LEFT OUTER JOIN common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
             WHERE 1 = 1
               <if test = 'assetId != null and assetId !=""'>
                     AND ia.asset_id = ${assetId}

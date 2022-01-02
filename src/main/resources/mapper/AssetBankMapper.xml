@@ -3,7 +3,7 @@
 
 <mapper namespace="com.idlelife.myasset.repository.AssetBankMapper">
     <insert id="insertAssetBank" parameterType="AssetBankEntity">
-            INSERT id_asset_bank (
+            INSERT asset_bank (
                  asset_id
                  ,acno_type
                  ,bank_cd
@@ -34,7 +34,7 @@
     </insert>
 
     <update id="updateAssetBank" parameterType="AssetBankEntity">
-            UPDATE id_asset_bank
+            UPDATE asset_bank
                SET
                   acno_type = #{acnoType}
                  ,bank_cd = #{bankCd}
@@ -50,7 +50,7 @@
     </update>
 
     <delete id="deleteAssetBank" parameterType="Long">
-            UPDATE id_asset_bank
+            UPDATE asset_bank
             SET
                delete_yn = 'Y'
               ,last_update_datetime = NOW()
@@ -71,7 +71,7 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM id_asset_bank ab
+            FROM asset_bank ab
             WHERE ab.asset_id = ${assetId}
     </select>
 
@@ -90,8 +90,8 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM id_asset_bank ab
-                 LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
+            FROM asset_bank ab
+                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
             WHERE ab.asset_id = ${assetId}
     </select>
 
@@ -110,8 +110,8 @@
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
-            FROM id_asset_bank ab
-                LEFT OUTER JOIN id_common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
+            FROM asset_bank ab
+                LEFT OUTER JOIN common_code cc ON cc.div_code = 'BANK_ACNO_TYPE' AND cc.code = ab.acno_type
             WHERE 1 = 1
               <if test = 'assetId != null and assetId !=""'>
                     AND ab.asset_id = ${assetId}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.idlelife.myasset.repository.AssetReMapper">
-    <insert id="insertAssetRe" parameterType="AssetReEntity">
-            INSERT asset_re (
+<mapper namespace="com.idlelife.myasset.repository.AssetStockMapper">
+    <insert id="insertAssetRe" parameterType="AssetStockEntity">
+            INSERT asset_stock (
                 asset_id
                 ,re_type
                 ,re_name
@@ -46,8 +46,8 @@
             )
     </insert>
 
-    <update id="updateAssetRe" parameterType="AssetReEntity">
-            UPDATE asset_re
+    <update id="updateAssetStock" parameterType="AssetStockEntity">
+            UPDATE asset_stock
                SET
                    re_type = ${reType}
                    ,re_name              = #{reName}
@@ -69,15 +69,15 @@
             WHERE asset_id = ${assetId}
     </update>
 
-    <delete id="deleteAssetRe" parameterType="Long">
-            UPDATE asset_re
+    <delete id="deleteAssetStock" parameterType="Long">
+            UPDATE asset_stock
             SET
                delete_yn = 'Y'
               ,last_update_datetime = NOW()
             WHERE asset_id = ${assetId}
     </delete>
 
-    <select id="selectAssetRe" parameterType="Long" resultType="AssetReEntity">
+    <select id="selectAssetStock" parameterType="Long" resultType="AssetStockEntity">
             SELECT
                 asset_id
                  ,re_type
@@ -98,11 +98,11 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM asset_re ar
+            FROM asset_stock as
             WHERE ab.asset_id = ${assetId}
     </select>
 
-    <select id="selectAssetReDto" parameterType="Long" resultType="AssetReDto">
+    <select id="selectAssetStockDto" parameterType="Long" resultType="AssetStockDto">
             SELECT
                 asset_id
                  ,re_type
@@ -124,12 +124,12 @@
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM asset_re ar
+            FROM asset_stock as
                  LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
-            WHERE ab.asset_id = ${assetId}
+            WHERE as.asset_id = ${assetId}
     </select>
 
-    <select id="selectAssetReDtoList" parameterType="AssetSearch" resultType="AssetReDto">
+    <select id="selectAssetStockDtoList" parameterType="AssetSearch" resultType="AssetStockDto">
             SELECT
                 asset_id
                 ,re_type
@@ -151,14 +151,14 @@
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
-            FROM asset_re ar
+            FROM asset_stock as
                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
             WHERE 1 = 1
               <if test = 'assetId != null and assetId !=""'>
-                    AND ar.asset_id = ${assetId}
+                    AND as.asset_id = ${assetId}
               </if>
               <if test = 'reType != null and reType !=""'>
-                    AND ar.re_type = #{reType}
+                    AND as.re_type = #{reType}
               </if>
     </select>
 
@@ -169,8 +169,8 @@
 
 
 
-    <insert id="insertAssetReRent" parameterType="AssetReRentEntity">
-        INSERT asset_re_rent (
+    <insert id="insertStockKind" parameterType="StockKindEntity">
+        INSERT stock_kind (
                 re_rent_id
                 ,asset_id
                 ,rent_start_date
@@ -198,8 +198,8 @@
         )
     </insert>
 
-    <update id="updateAssetReRent" parameterType="AssetReRentEntity">
-        UPDATE asset_re_rent
+    <update id="updateStockKind" parameterType="StockKindEntity">
+        UPDATE stock_kind
         SET
             asset_id              = #{assetId}
             ,rent_start_date      = #{rentStartDate}
@@ -210,18 +210,18 @@
             ,month_fee            = ${monthFee}
             ,delete_yn            = #{deleteYn}
             ,last_update_datetime = NOW()
-        WHERE re_rent_id = ${reRentId}
+        WHERE stock_kind_id = ${stockKindId}
     </update>
 
-    <delete id="deleteAssetReRent" parameterType="Long">
-        UPDATE asset_re_rent
+    <delete id="deleteStockKind" parameterType="Long">
+        UPDATE stock_kind
         SET
             delete_yn = 'Y'
           ,last_update_datetime = NOW()
-        WHERE re_rent_id = ${reRentId}
+        WHERE stock_kind_id = ${stockKindId}
     </delete>
 
-    <select id="selectAssetReRent" parameterType="Long" resultType="AssetReRentEntity">
+    <select id="selectStockKind" parameterType="Long" resultType="StockKindEntity">
         SELECT
              re_rent_id
              ,asset_id
@@ -234,11 +234,11 @@
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
-        FROM asset_re_rent arr
-        WHERE re_rent_id = ${reRentId}
+        FROM stock_kind sk
+        WHERE stock_kind_id = ${stockKindId}
     </select>
 
-    <select id="selectAssetReRentDto" parameterType="Long" resultType="AssetReRentDto">
+    <select id="selectStockKindDto" parameterType="Long" resultType="StockKindDto">
         SELECT
             re_rent_id
              ,asset_id
@@ -251,11 +251,11 @@
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
-        FROM asset_re_rent arr
-        WHERE re_rent_id = ${reRentId}
+        FROM stock_kind sk
+        WHERE stock_kind_id = ${stockKindId}
     </select>
 
-    <select id="selectAssetReRentDtoList" parameterType="AssetSearch" resultType="AssetReRentDto">
+    <select id="selectStockKindDtoList" parameterType="AssetSearch" resultType="StockKindDto">
         SELECT
             re_rent_id
             ,asset_id
@@ -268,11 +268,127 @@
             ,delete_yn
             ,reg_datetime
             ,last_update_datetime
-        FROM asset_re_rent arr
-            INNER JOIN asset a ON a.asset_id = arr.asset_id
+        FROM stock_kind sk
+            INNER JOIN asset a ON a.asset_id = sk.asset_id
         WHERE 1 = 1
-        <if test = 'assetId != null and assetId !=""'>
-            AND arr.asset_id = ${assetId}
+        <if test = 'stockKindId != null and stockKindId !=""'>
+            AND sk.stock_kind_id = ${stockKindId}
+        </if>
+        <if test = 'memberId != null and memberId !=""'>
+            AND a.member_id = ${memberId}
+        </if>
+    </select>
+
+
+
+
+
+
+
+    <insert id="insertStockTrade" parameterType="StockTradeEntity">
+        INSERT stock_trade (
+                re_rent_id
+                ,asset_id
+                ,rent_start_date
+                ,rent_end_date
+                ,renter_name
+                ,renter_contact
+                ,deposit
+                ,month_fee
+                ,delete_yn
+                ,reg_datetime
+                ,last_update_datetime
+            ) VALUES
+            (
+        #{reRentId}
+        ,#{assetId}
+        ,#{rentStartDate}
+        ,#{rentEndDate}
+        ,#{renterName}
+        ,#{renterContact}
+        ,${deposit}
+        ,${monthFee}
+        ,#{deleteYn}
+        ,NOW()
+        ,NOW()
+        )
+    </insert>
+
+    <update id="updateStockTrade" parameterType="StockTradeEntity">
+        UPDATE stock_trade
+        SET
+            asset_id              = #{assetId}
+          ,rent_start_date      = #{rentStartDate}
+          ,rent_end_date        = #{rentEndDate}
+          ,renter_name          = #{renterName}
+          ,renter_contact       = #{renterContact}
+          ,deposit              = ${deposit}
+          ,month_fee            = ${monthFee}
+          ,delete_yn            = #{deleteYn}
+          ,last_update_datetime = NOW()
+        WHERE stock_trade_id = ${stockTradeId}
+    </update>
+
+    <delete id="deleteStockTrade" parameterType="Long">
+        UPDATE stock_trade
+        SET
+            delete_yn = 'Y'
+          ,last_update_datetime = NOW()
+        WHERE stock_trade_id = ${stockTradeId}
+    </delete>
+
+    <select id="selectStockTrade" parameterType="Long" resultType="StockTradeEntity">
+        SELECT
+            re_rent_id
+             ,asset_id
+             ,rent_start_date
+             ,rent_end_date
+             ,renter_name
+             ,renter_contact
+             ,deposit
+             ,month_fee
+             ,delete_yn
+             ,reg_datetime
+             ,last_update_datetime
+        FROM stock_trade st
+        WHERE stock_trade_id = ${stockTradeId}
+    </select>
+
+    <select id="selectStockTradeDto" parameterType="Long" resultType="StockTradeDto">
+        SELECT
+            re_rent_id
+             ,asset_id
+             ,rent_start_date
+             ,rent_end_date
+             ,renter_name
+             ,renter_contact
+             ,deposit
+             ,month_fee
+             ,delete_yn
+             ,reg_datetime
+             ,last_update_datetime
+        FROM stock_trade st
+        WHERE stock_trade_id = ${stockTradeId}
+    </select>
+
+    <select id="selectStockTradeDtoList" parameterType="AssetSearch" resultType="StockTradeDto">
+        SELECT
+        re_rent_id
+        ,asset_id
+        ,rent_start_date
+        ,rent_end_date
+        ,renter_name
+        ,renter_contact
+        ,deposit
+        ,month_fee
+        ,delete_yn
+        ,reg_datetime
+        ,last_update_datetime
+        FROM stock_trade st
+        INNER JOIN asset a ON a.asset_id = st.asset_id
+        WHERE 1 = 1
+        <if test = 'stockTradeId != null and stockTradeId !=""'>
+            AND st.stock_trade_id = ${stockTradeId}
         </if>
         <if test = 'memberId != null and memberId !=""'>
             AND a.member_id = ${memberId}

@@ -1,8 +1,10 @@
 package com.idlelife.myasset.repository;
 
 import com.idlelife.myasset.models.dto.AssetReDto;
+import com.idlelife.myasset.models.dto.AssetReRentDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
 import com.idlelife.myasset.models.entity.AssetReEntity;
+import com.idlelife.myasset.models.entity.AssetReRentEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -21,4 +23,17 @@ public interface AssetReMapper {
     AssetReEntity selectAssetRe(long assetId);
 
     AssetReDto selectAssetReDto(long assetId);
+
+
+    int insertAssetReRent(AssetReRentEntity dom);
+
+    int updateAssetReRent(AssetReRentEntity dom);
+
+    int deleteAssetReRent(long reRentId);
+
+    List<AssetReRentDto> selectAssetReRentDtoList(AssetSearch dom);
+
+    AssetReRentEntity selectAssetReRent(long reRentId);
+
+    AssetReRentDto selectAssetReRentDto(long reRentId);
 }

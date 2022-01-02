@@ -1,4 +1,4 @@
-package com.idlelife.myasset.models.entity;
+package com.idlelife.myasset.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,18 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetEntity {
+public class AssetReRentDto {
+    private Long reRentId;
     private Long assetId;
-    private Long memberId;
-    private String assetType;
-    private String assetName;
-    private Long evalAmt;
+    private String rentStartDate;
+    private String rentEndDate;
+    private String renterName;
+    private String renterContact;
+    private Long deposit;
+    private Long monthFee;
     private String deleteYn;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;

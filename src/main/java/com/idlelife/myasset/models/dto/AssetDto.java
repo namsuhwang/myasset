@@ -3,6 +3,7 @@ package com.idlelife.myasset.models.dto;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -14,10 +15,6 @@ public class AssetDto {
     private String AssetName;
     private Long evalAmt;
     private String deleteYn;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime regDatetime;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime lastUpdateDatetime;
+    private Timestamp regDatetime;
+    private Timestamp lastUpdateDatetime;
 }

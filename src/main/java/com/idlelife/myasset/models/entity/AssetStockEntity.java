@@ -12,12 +12,14 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetEntity {
-    private Long assetId;
-    private Long memberId;
-    private String assetType;
-    private String assetName;
-    private Long evalAmt;
+public class AssetStockEntity {
+    private long assetId;
+    private String securityCd;
+    private String securityName;
+    private String stockAcno;
+    private Long ableAmt;
+    private Long loanBalAmt;
+    private Float loanRate;
     private String deleteYn;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;

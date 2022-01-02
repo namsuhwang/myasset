@@ -2,8 +2,10 @@ package com.idlelife.myasset.controller;
 
 
 import com.idlelife.myasset.models.dto.AssetReDto;
+import com.idlelife.myasset.models.dto.AssetReRentDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
 import com.idlelife.myasset.models.dto.form.AssetReForm;
+import com.idlelife.myasset.models.dto.form.AssetReRentForm;
 import com.idlelife.myasset.service.ReService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,54 @@ public class ReController {
         log.info("call : /re/list");
         log.info("params : " + dom.toString());
         List<AssetReDto> result = reService.getAssetReDtoList(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+
+
+    @PostMapping("/re/rent/reg")
+    public ResponseEntity<AssetReRentDto> regAssetReRent(
+            @RequestBody AssetReRentForm dom
+    ){
+        log.info("call : /re/rent/reg");
+        log.info("params : " + dom.toString());
+        AssetReRentDto result = reService.regAssetReRent(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+    @PostMapping("/re/rent/mod")
+    public ResponseEntity<AssetReRentDto> modAssetReRent(
+            @RequestBody AssetReRentForm dom
+    ){
+        log.info("call : /re/rent/mod");
+        log.info("params : " + dom.toString());
+        AssetReRentDto result = reService.modAssetReRent(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/re/rent/del")
+    public ResponseEntity<AssetReRentDto> delAssetReRent(
+            @RequestBody AssetReRentForm dom
+    ){
+        log.info("call : /re/rent/del");
+        log.info("params : " + dom.getReRentId());
+        AssetReRentDto result = reService.delAssetReRent(dom.getReRentId());
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/re/rent/list")
+    public ResponseEntity<List<AssetReRentDto>> getAssetRentList(
+            @RequestBody AssetSearch dom
+    ){
+        log.info("call : /re/rent/list");
+        log.info("params : " + dom.toString());
+        List<AssetReRentDto> result = reService.getAssetReRentDtoList(dom);
 
         return ResponseEntity.ok().body(result);
     }
