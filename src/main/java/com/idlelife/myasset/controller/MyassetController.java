@@ -101,6 +101,7 @@ public class MyassetController {
         log.info("params : " + dom.toString());
         TotalAssetSummaryDto result = myassetService.getTotalAssetSummary(dom.getMemberId());
 
+        log.info("result : " + result.toString());
         return ResponseEntity.ok().body(result);
     }
 
