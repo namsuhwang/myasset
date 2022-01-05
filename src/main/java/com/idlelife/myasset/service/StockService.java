@@ -7,8 +7,10 @@ import com.idlelife.myasset.repository.AssetStockMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Transactional
 @Service
 public class StockService {
     @Autowired
@@ -29,7 +31,7 @@ public class StockService {
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
-        assetForm.setMemberId(1L);
+        assetForm.setMemberId(form.getMemberId());
         assetForm.setEvalAmt(0L);  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
         AssetDto assetDto = assetService.regAsset(assetForm);
         if(assetDto == null){
@@ -71,8 +73,8 @@ public class StockService {
     private AssetStockEntity getAssetStockEntityFromForm(AssetStockForm form){
         AssetStockEntity assetStockEntity = new AssetStockEntity();
         assetStockEntity.setAssetId(form.getAssetId());
-        assetStockEntity.setSecurityCd(form.getSecurityCd());
-        assetStockEntity.setSecurityName(form.getSecurityName());
+        assetStockEntity.setOrgCd(form.getOrgCd());
+        assetStockEntity.setOrgName(form.getOrgName());
         assetStockEntity.setStockAcno(form.getStockAcno());
         assetStockEntity.setAbleAmt(form.getAbleAmt());
         assetStockEntity.setLoanBalAmt(form.getLoanBalAmt());

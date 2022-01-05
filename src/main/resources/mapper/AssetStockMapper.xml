@@ -2,45 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.idlelife.myasset.repository.AssetStockMapper">
-    <insert id="insertAssetRe" parameterType="AssetStockEntity">
+    <insert id="insertAssetStock" parameterType="AssetStockEntity">
             INSERT asset_stock (
                 asset_id
-                ,re_type
-                ,re_name
-                ,buy_date
-                ,buy_amt
-                ,buy_extra_amt
-                ,loan_amt
+                ,org_cd
+                ,org_name
+                ,stock_acno
+                ,able_amt
                 ,loan_bal_amt
                 ,loan_rate
-                ,sale_date
-                ,sale_amt
-                ,sale_income_tax_amt
-                ,sale_extra_amt
-                ,pal_amt
-                ,pal_percentage
-                ,re_rent_id
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
             ) VALUES
             (
                 ${assetId}
-                ,#{reType}
-                ,#{reName}
-                ,#{buyDate}
-                ,v{buyAmt}
-                ,v{buyExtraAmt}
-                ,v{loanAmt}
+                ,#{orgCd}
+                ,#{orgName}
+                ,#{stockAcno}
+                ,${ableAmt}
                 ,${loanBalAmt}
                 ,#{loanRate}
-                ,#{seleDate}
-                ,${seleAmt}
-                ,${seleIncomeTaxAmt}
-                ,${seleExtraAmt}
-                ,${palAmt}
-                ,${palPercentage}
-                ,${reRentId}
+                ,#{deleteYn}
                 ,NOW()
                 ,NOW()
             )
@@ -49,21 +32,12 @@
     <update id="updateAssetStock" parameterType="AssetStockEntity">
             UPDATE asset_stock
                SET
-                   re_type = ${reType}
-                   ,re_name              = #{reName}
-                   ,buy_date             = #{buyDate}
-                   ,buy_amt              = ${buyAmt}
-                   ,buy_extra_amt        = ${buyExtraAmt}
-                   ,loan_amt             = ${loanAmt}
+                   org_cd                = #{orgCd}
+                   ,org_name             = #{orgName}
+                   ,stock_acno           = #{stockAcno}
+                   ,able_amt             = ${ableAmt}
                    ,loan_bal_amt         = ${loanBalAmt}
                    ,loan_rate            = ${loanRate}
-                   ,sale_date            = #{seleDate}
-                   ,sale_amt             = ${seleAmt}
-                   ,sale_income_tax_amt  = ${seleIncomeTaxAmt}
-                   ,sale_extra_amt       = ${seleExtraAmt}
-                   ,pal_amt              = ${palAmt}
-                   ,pal_percentage       = ${palPercentage}
-                   ,re_rent_id           = ${reRentId}
                    ,delete_yn            = #{deleteYn} 
                    ,last_update_datetime = NOW() 
             WHERE asset_id = ${assetId}
@@ -80,85 +54,54 @@
     <select id="selectAssetStock" parameterType="Long" resultType="AssetStockEntity">
             SELECT
                 asset_id
-                 ,re_type
-                 ,re_name
-                 ,buy_date
-                 ,buy_amt
-                 ,buy_extra_amt
-                 ,loan_amt
+                 ,org_cd
+                 ,org_name
+                 ,stock_acno
+                 ,able_amt
                  ,loan_bal_amt
                  ,loan_rate
-                 ,sale_date
-                 ,sale_amt
-                 ,sale_income_tax_amt
-                 ,sale_extra_amt
-                 ,pal_amt
-                 ,pal_percentage
-                 ,re_rent_id
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM asset_stock as
-            WHERE ab.asset_id = ${assetId}
+            FROM asset_stock stock
+            WHERE stock.asset_id = ${assetId}
     </select>
 
     <select id="selectAssetStockDto" parameterType="Long" resultType="AssetStockDto">
             SELECT
                 asset_id
-                 ,re_type
-                 ,cc.cd_name AS re_type_name
-                 ,re_name
-                 ,buy_date
-                 ,buy_amt
-                 ,buy_extra_amt
-                 ,loan_amt
+                 ,org_cd
+                 ,org_name
+                 ,stock_acno
+                 ,able_amt
                  ,loan_bal_amt
                  ,loan_rate
-                 ,sale_date
-                 ,sale_amt
-                 ,sale_income_tax_amt
-                 ,sale_extra_amt
-                 ,pal_amt
-                 ,pal_percentage
-                 ,re_rent_id
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
-            FROM asset_stock as
-                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
-            WHERE as.asset_id = ${assetId}
+            FROM asset_stock stock
+            WHERE stock.asset_id = ${assetId}
     </select>
 
     <select id="selectAssetStockDtoList" parameterType="AssetSearch" resultType="AssetStockDto">
             SELECT
                 asset_id
-                ,re_type
-                ,cc.cd_name AS re_type_name
-                ,re_name
-                ,buy_date
-                ,buy_amt
-                ,buy_extra_amt
-                ,loan_amt
+                ,org_cd
+                ,org_name
+                ,stock_acno
+                ,able_amt
                 ,loan_bal_amt
                 ,loan_rate
-                ,sale_date
-                ,sale_amt
-                ,sale_income_tax_amt
-                ,sale_extra_amt
-                ,pal_amt
-                ,pal_percentage
-                ,re_rent_id
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
-            FROM asset_stock as
-                LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
+            FROM asset_stock stock
             WHERE 1 = 1
               <if test = 'assetId != null and assetId !=""'>
-                    AND as.asset_id = ${assetId}
+                    AND stock.asset_id = ${assetId}
               </if>
-              <if test = 'reType != null and reType !=""'>
-                    AND as.re_type = #{reType}
+              <if test = 'memberId != null and memberId !=""'>
+                    AND stock.member_id = ${memberId}
               </if>
     </select>
 

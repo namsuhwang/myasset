@@ -12,9 +12,11 @@ import lombok.ToString;
 @AllArgsConstructor
 public class AssetBankForm {
     private Long assetId;
+    private long memberId;
+    private String assetName;
     private String acnoType;      // 계좌유형
-    private String bankCd;        // 은행코드
-    private String bankName;      // 은행명
+    private String orgCd;        // 은행코드
+    private String orgName;      // 은행명
     private String acno;          // 계좌번호
     private Long ableAmt;         // 출금가능금액
     private Long loanBalAmt;      // 대출잔액

@@ -105,4 +105,15 @@ public class MyassetController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/asset/total/list")
+    public ResponseEntity<List<AssetDto>> getTotalAssetList(
+            @RequestBody AssetSearch dom
+    ){
+        log.info("call 종합현황 자산 목록 : /asset/total/list ");
+        log.info("params : " + dom.toString());
+        List<AssetDto> result = myassetService.getAssetDtoList(dom);
+
+        log.info("result : " + result.toString());
+        return ResponseEntity.ok().body(result);
+    }
 }

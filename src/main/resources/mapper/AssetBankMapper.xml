@@ -6,8 +6,8 @@
             INSERT asset_bank (
                  asset_id
                  ,acno_type
-                 ,bank_cd
-                 ,bank_name
+                 ,org_cd
+                 ,org_name
                  ,acno
                  ,able_amt
                  ,loan_bal_amt
@@ -20,8 +20,8 @@
             (
                 ${assetId}
                 ,#{acnoType}
-                ,#{bankCd}
-                ,#{bankName}
+                ,#{orgCd}
+                ,#{orgName}
                 ,#{acno}
                 ,${ableAmt}
                 ,${loanBalAmt}
@@ -37,8 +37,8 @@
             UPDATE asset_bank
                SET
                   acno_type = #{acnoType}
-                 ,bank_cd = #{bankCd}
-                 ,bank_name = #{bankName}
+                 ,org_cd = #{orgCd}
+                 ,org_name = #{orgName}
                  ,acno = #{acno}
                  ,able_amt = ${ableAmt}
                  ,loan_bal_amt = ${loanBalAmt}
@@ -61,8 +61,8 @@
             SELECT
                 asset_id
                  ,acno_type
-                 ,bank_cd
-                 ,bank_name
+                 ,org_cd
+                 ,org_name
                  ,acno
                  ,able_amt
                  ,loan_bal_amt
@@ -80,8 +80,8 @@
                 asset_id
                  ,acno_type
                  ,cc.code_name AS acno_type_name
-                 ,bank_cd
-                 ,bank_name
+                 ,org_cd
+                 ,org_name
                  ,acno
                  ,able_amt
                  ,loan_bal_amt
@@ -100,8 +100,8 @@
                 asset_id
                 ,acno_type
                 ,cc.code_name AS acno_type_name
-                ,bank_cd
-                ,bank_name
+                ,org_cd
+                ,org_name
                 ,acno
                 ,able_amt
                 ,loan_bal_amt
