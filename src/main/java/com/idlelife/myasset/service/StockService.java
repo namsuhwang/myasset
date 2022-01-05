@@ -1,14 +1,8 @@
 package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.AssetBankForm;
-import com.idlelife.myasset.models.dto.form.AssetStockForm;
-import com.idlelife.myasset.models.dto.form.StockKindForm;
-import com.idlelife.myasset.models.dto.form.StockTradeForm;
-import com.idlelife.myasset.models.entity.AssetBankEntity;
-import com.idlelife.myasset.models.entity.AssetStockEntity;
-import com.idlelife.myasset.models.entity.StockKindEntity;
-import com.idlelife.myasset.models.entity.StockTradeEntity;
+import com.idlelife.myasset.models.dto.form.*;
+import com.idlelife.myasset.models.entity.*;
 import com.idlelife.myasset.repository.AssetStockMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +13,9 @@ import java.util.List;
 public class StockService {
     @Autowired
     AssetStockMapper assetStockMapper;
+
+    @Autowired
+    MyassetService assetService;
  
     public AssetStockDto getAssetStockDto(Long assetId){
         return assetStockMapper.selectAssetStockDto(assetId);
@@ -29,8 +26,18 @@ public class StockService {
     }
 
     public AssetStockDto regAssetStock(AssetStockForm form){
-        AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
+        AssetForm assetForm = new AssetForm();
+        assetForm.setAssetName(form.getAssetName());
+        assetForm.setAssetType("STOCK");
+        assetForm.setMemberId(1L);
+        assetForm.setEvalAmt(0L);  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
+        AssetDto assetDto = assetService.regAsset(assetForm);
+        if(assetDto == null){
+            throw new RuntimeException();
+        }
 
+        form.setAssetId(assetDto.getAssetId());
+        AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
         int cnt = assetStockMapper.insertAssetStock(assetStockEntity);
         if(cnt < 1){
             throw new RuntimeException();
@@ -47,6 +54,7 @@ public class StockService {
         }
         return assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
     }
+
     public AssetStockDto delAssetStock(Long assetId){
         int cnt = assetStockMapper.deleteAssetStock(assetId);
         if(cnt < 1){

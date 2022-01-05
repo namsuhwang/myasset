@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AssetStockForm {
     private long assetId;
+    private String assetName;
     private String securityCd;
     private String securityName;
     private String stockAcno;
