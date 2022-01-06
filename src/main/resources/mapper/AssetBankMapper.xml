@@ -122,6 +122,9 @@
               <if test = 'memberId != null and memberId !=""'>
                     AND ab.member_id = ${memberId}
               </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND ab.delete_yn = #{deleteYn}
+            </if>
     </select>
 
 </mapper>

@@ -23,6 +23,10 @@ public class AssetReDto {
     private Long loanAmt;
     private Long loanBalAmt;
     private Long loanRate;
+    private Long deposit;
+    private Long monthFee;
+    private Long curExpectAmt;
+    private Long curCostAmt;
     private String saleDate;
     private Long saleAmt;
     private Long saleIncomeTaxAmt;
@@ -31,6 +35,7 @@ public class AssetReDto {
     private Float palPercentage;
     private Long reRentId;
     private String deleteYn;
+    private Long memberId;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;
 }

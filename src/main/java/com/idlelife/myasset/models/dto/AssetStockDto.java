@@ -20,6 +20,7 @@ public class AssetStockDto {
     private Long loanBalAmt;
     private Float loanRate;
     private String deleteYn;
+    private Long memberId;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;
 }

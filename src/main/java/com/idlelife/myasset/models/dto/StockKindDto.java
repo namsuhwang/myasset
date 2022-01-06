@@ -26,6 +26,7 @@ public class StockKindDto {
   private Float pnlRate;
   private Long pnlAmt;
   private String deleteYn;
+  private Long memberId;
   private Timestamp regDatetime;
   private Timestamp lastUpdateDatetime;
 }

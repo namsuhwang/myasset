@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TotalAssetSummaryDto {
-    private Long netAsset;
+    private Long totalNetAsset;
     private Long totalAsset;
     private Long TotalLoanBalAmt;
     private Long stockEvalAmt;

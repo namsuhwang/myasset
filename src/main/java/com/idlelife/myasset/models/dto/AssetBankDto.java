@@ -22,6 +22,7 @@ public class AssetBankDto {
     private Float intRate;        // 예금금리
     private Float loanRate;       // 대출금리
     private String deleteYn;
+    private Long memberId;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;
 }

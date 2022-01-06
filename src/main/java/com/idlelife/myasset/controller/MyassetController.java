@@ -3,14 +3,13 @@ package com.idlelife.myasset.controller;
 
 import com.idlelife.myasset.models.dto.AssetDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
+import com.idlelife.myasset.models.dto.TotalAssetDto;
 import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
 import com.idlelife.myasset.models.dto.form.AssetForm;
 import com.idlelife.myasset.models.dto.form.ControllerForm;
 import com.idlelife.myasset.service.MyassetService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -116,4 +115,18 @@ public class MyassetController {
         log.info("result : " + result.toString());
         return ResponseEntity.ok().body(result);
     }
+
+
+    @PostMapping("/asset/total")
+    public ResponseEntity<TotalAssetDto> getTotalAsset(
+            @RequestBody AssetSearch dom
+    ){
+        log.info("call 종합현황 자산 목록 : /asset/total ");
+        log.info("params : " + dom.toString());
+        TotalAssetDto result = myassetService.getTotalAsset(dom.getMemberId());
+
+        log.info("result : " + result.toString());
+        return ResponseEntity.ok().body(result);
+    }
+
 }

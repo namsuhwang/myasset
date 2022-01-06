@@ -41,6 +41,7 @@
                 ,${palAmt}
                 ,${palPercentage}
                 ,${reRentId}
+                ,#{deleteYn}
                 ,NOW()
                 ,NOW()
             )
@@ -99,14 +100,14 @@
                  ,reg_datetime
                  ,last_update_datetime
             FROM asset_re ar
-            WHERE ab.asset_id = ${assetId}
+            WHERE ar.asset_id = ${assetId}
     </select>
 
     <select id="selectAssetReDto" parameterType="Long" resultType="AssetReDto">
             SELECT
                 asset_id
                  ,re_type
-                 ,cc.cd_name AS re_type_name
+                 ,cc.code_name AS re_type_name
                  ,re_name
                  ,buy_date
                  ,buy_amt
@@ -125,40 +126,49 @@
                  ,reg_datetime
                  ,last_update_datetime
             FROM asset_re ar
-                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
-            WHERE ab.asset_id = ${assetId}
+                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ar.re_type
+            WHERE ar.asset_id = ${assetId}
     </select>
 
     <select id="selectAssetReDtoList" parameterType="AssetSearch" resultType="AssetReDto">
             SELECT
-                asset_id
-                ,re_type
-                ,cc.cd_name AS re_type_name
-                ,re_name
-                ,buy_date
-                ,buy_amt
-                ,buy_extra_amt
-                ,loan_amt
-                ,loan_bal_amt
-                ,loan_rate
-                ,sale_date
-                ,sale_amt
-                ,sale_income_tax_amt
-                ,sale_extra_amt
-                ,pal_amt
-                ,pal_percentage
-                ,re_rent_id
-                ,delete_yn
-                ,reg_datetime
-                ,last_update_datetime
+                ar.asset_id
+                ,ar.re_type
+                ,cc.code_name AS re_type_name
+                ,ar.re_name
+                ,ar.buy_date
+                ,ar.buy_amt
+                ,ar.buy_extra_amt
+                ,IFNULL(ar.loan_amt, 0) AS loan_amt
+                ,IFNULL(ar.loan_bal_amt, 0) AS loab_bal_amt
+                ,IFNULL(ar.loan_rate, 0.0) AS loan_rate
+                ,IFNULL(ar.cur_expect_amt, buy_amt) AS cur_expect_amt
+                ,IFNULL(ar.cur_cost_amt, 0) AS cur_cost_amt
+                ,ar.sale_date
+                ,ar.sale_amt
+                ,ar.sale_income_tax_amt
+                ,ar.sale_extra_amt
+                ,ar.pal_amt
+                ,ar.pal_percentage
+                ,ar.re_rent_id
+                ,ar.delete_yn
+                ,ar.reg_datetime
+                ,ar.last_update_datetime
             FROM asset_re ar
-                LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ab.re_type
+                LEFT OUTER JOIN common_code cc ON cc.div_code = 'RE_TYPE' AND cc.code = ar.re_type
+                LEFT OUTER JOIN re_rent rr ON rr.re_rent_id = ar.re_rent_id
             WHERE 1 = 1
               <if test = 'assetId != null and assetId !=""'>
                     AND ar.asset_id = ${assetId}
               </if>
               <if test = 'reType != null and reType !=""'>
                     AND ar.re_type = #{reType}
+              </if>
+              <if test = 'deleteYn != null and deleteYn !=""'>
+                AND ar.delete_yn = #{deleteYn}
+              </if>
+              <if test = 'memberId != null and memberId !=""'>
+                    AND ar.member_id = ${memberId}
               </if>
     </select>
 
@@ -275,7 +285,7 @@
             AND arr.asset_id = ${assetId}
         </if>
         <if test = 'memberId != null and memberId !=""'>
-            AND a.member_id = ${memberId}
+            AND arr.member_id = ${memberId}
         </if>
     </select>
 </mapper>

@@ -15,4 +15,6 @@ public class AssetSearch {
     private String assetType;
     private String bankAcnoType;
     private String reType;
+    private String deleteYn;
+    private Long stockKindId;
 }

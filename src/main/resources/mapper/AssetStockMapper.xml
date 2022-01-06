@@ -103,6 +103,9 @@
               <if test = 'memberId != null and memberId !=""'>
                     AND stock.member_id = ${memberId}
               </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND stock.delete_yn = #{deleteYn}
+            </if>
     </select>
 
 
@@ -114,27 +117,35 @@
 
     <insert id="insertStockKind" parameterType="StockKindEntity">
         INSERT stock_kind (
-                re_rent_id
+                stock_kind_id
                 ,asset_id
-                ,rent_start_date
-                ,rent_end_date
-                ,renter_name
-                ,renter_contact
-                ,deposit
-                ,month_fee
+                ,stock_kind_cd
+                ,stock_kind_name
+                ,stock_acno
+                ,quantity
+                ,buy_avg_price
+                ,buy_tot_price
+                ,cur_price
+                ,cur_tot_price
+                ,pnl_rate
+                ,pnl_amt
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
             ) VALUES
             (
-                #{reRentId}
-                ,#{assetId}
-                ,#{rentStartDate}
-                ,#{rentEndDate}
-                ,#{renterName}
-                ,#{renterContact}
-                ,${deposit}
-                ,${monthFee}
+                ${stockKindId}
+                ,${assetId}
+                ,#{stockKindCd}
+                ,#{stockKindName}
+                ,#{stockAcno}
+                ,${quantity}
+                ,${buyAvgPrice}
+                ,${buyTotPrice}
+                ,${curPrice}
+                ,${curTotPrice}
+                ,${pnlRate}
+                ,${pnlAmt}
                 ,#{deleteYn}
                 ,NOW()
                 ,NOW()
@@ -144,15 +155,20 @@
     <update id="updateStockKind" parameterType="StockKindEntity">
         UPDATE stock_kind
         SET
-            asset_id              = #{assetId}
-            ,rent_start_date      = #{rentStartDate}
-            ,rent_end_date        = #{rentEndDate}
-            ,renter_name          = #{renterName}
-            ,renter_contact       = #{renterContact}
-            ,deposit              = ${deposit}
-            ,month_fee            = ${monthFee}
-            ,delete_yn            = #{deleteYn}
-            ,last_update_datetime = NOW()
+           stock_kind_id     = ${stockKindId}
+          ,asset_id          = ${assetId}
+          ,stock_kind_cd     = #{stockKindCd}
+          ,stock_kind_name   = #{stockKindName}
+          ,stock_acno        = #{stockAcno}
+          ,quantity          = ${quantity}
+          ,buy_avg_price     = ${buyAvgPrice}
+          ,buy_tot_price     = ${buyTotPrice}
+          ,cur_price         = ${curPrice}
+          ,cur_tot_price     = ${curTotPrice}
+          ,pnl_rate          = ${pnlRate}
+          ,pnl_amt           = ${pnlAmt}
+          ,delete_yn         = #{deleteYn}
+          ,last_update_datetime = NOW()
         WHERE stock_kind_id = ${stockKindId}
     </update>
 
@@ -166,14 +182,18 @@
 
     <select id="selectStockKind" parameterType="Long" resultType="StockKindEntity">
         SELECT
-             re_rent_id
+              stock_kind_id
              ,asset_id
-             ,rent_start_date
-             ,rent_end_date
-             ,renter_name
-             ,renter_contact
-             ,deposit
-             ,month_fee
+             ,stock_kind_cd
+             ,stock_kind_name
+             ,stock_acno
+             ,quantity
+             ,buy_avg_price
+             ,buy_tot_price
+             ,cur_price
+             ,cur_tot_price
+             ,pnl_rate
+             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -183,14 +203,18 @@
 
     <select id="selectStockKindDto" parameterType="Long" resultType="StockKindDto">
         SELECT
-            re_rent_id
+            stock_kind_id
              ,asset_id
-             ,rent_start_date
-             ,rent_end_date
-             ,renter_name
-             ,renter_contact
-             ,deposit
-             ,month_fee
+             ,stock_kind_cd
+             ,stock_kind_name
+             ,stock_acno
+             ,quantity
+             ,buy_avg_price
+             ,buy_tot_price
+             ,cur_price
+             ,cur_tot_price
+             ,pnl_rate
+             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -200,25 +224,31 @@
 
     <select id="selectStockKindDtoList" parameterType="AssetSearch" resultType="StockKindDto">
         SELECT
-            re_rent_id
+            stock_kind_id
             ,asset_id
-            ,rent_start_date
-            ,rent_end_date
-            ,renter_name
-            ,renter_contact
-            ,deposit
-            ,month_fee
+            ,stock_kind_cd
+            ,stock_kind_name
+            ,stock_acno
+            ,quantity
+            ,buy_avg_price
+            ,buy_tot_price
+            ,cur_price
+            ,cur_tot_price
+            ,pnl_rate
+            ,pnl_amt
             ,delete_yn
             ,reg_datetime
             ,last_update_datetime
         FROM stock_kind sk
-            INNER JOIN asset a ON a.asset_id = sk.asset_id
         WHERE 1 = 1
         <if test = 'stockKindId != null and stockKindId !=""'>
             AND sk.stock_kind_id = ${stockKindId}
         </if>
         <if test = 'memberId != null and memberId !=""'>
-            AND a.member_id = ${memberId}
+            AND sk.member_id = ${memberId}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND sk.delete_yn = #{deleteYn}
         </if>
     </select>
 
@@ -230,45 +260,70 @@
 
     <insert id="insertStockTrade" parameterType="StockTradeEntity">
         INSERT stock_trade (
-                re_rent_id
-                ,asset_id
-                ,rent_start_date
-                ,rent_end_date
-                ,renter_name
-                ,renter_contact
-                ,deposit
-                ,month_fee
+                stock_trade_id
+                ,trade_type
+                ,stock_kind_id
+                ,trade_datetime
+                ,trade_type_name
+                ,trade_cnt
+                ,trade_price
+                ,trade_amt
+                ,bef_quantity
+                ,aft_quantity
+                ,bef_buy_avg_price
+                ,bef_buy_tot_price
+                ,aft_buy_avg_price
+                ,aft_buy_tot_price
+                ,pnl_rate
+                ,pnl_amt
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
             ) VALUES
             (
-        #{reRentId}
-        ,#{assetId}
-        ,#{rentStartDate}
-        ,#{rentEndDate}
-        ,#{renterName}
-        ,#{renterContact}
-        ,${deposit}
-        ,${monthFee}
-        ,#{deleteYn}
-        ,NOW()
-        ,NOW()
-        )
+                ,${stockTradeId}
+                ,#{tradeType}
+                ,${stockKindId}
+                ,#{tradeDatetime}
+                ,#{tradeTypeName}
+                ,${tradeCnt}
+                ,${tradePrice}
+                ,${tradeAmt}
+                ,${befQuantity}
+                ,${aftQuantity}
+                ,${befBuyAvgPrice}
+                ,${befBuyTotPrice}
+                ,${aftBuyAvgPrice}
+                ,${aftBuyTotPrice}
+                ,${pnlRate}
+                ,${pnlAmt}
+                ,#{deleteYn}
+                ,NOW()
+                ,NOW()
+            )
     </insert>
 
     <update id="updateStockTrade" parameterType="StockTradeEntity">
         UPDATE stock_trade
         SET
-            asset_id              = #{assetId}
-          ,rent_start_date      = #{rentStartDate}
-          ,rent_end_date        = #{rentEndDate}
-          ,renter_name          = #{renterName}
-          ,renter_contact       = #{renterContact}
-          ,deposit              = ${deposit}
-          ,month_fee            = ${monthFee}
-          ,delete_yn            = #{deleteYn}
-          ,last_update_datetime = NOW()
+                 stock_trade_id       = ${stockTradeId}
+                ,trade_type           = #{tradeType}
+                ,stock_kind_id        = ${stockKindId}
+                ,trade_datetime       = #{tradeDatetime}
+                ,trade_type_name      = #{tradeTypeName}
+                ,trade_cnt            = ${tradeCnt}
+                ,trade_price          = ${tradePrice}
+                ,trade_amt            = ${tradeAmt}
+                ,bef_quantity         = ${befQuantity}
+                ,aft_quantity         = ${aftQuantity}
+                ,bef_buy_avg_price    = ${befBuyAvgPrice}
+                ,bef_buy_tot_price    = ${befBuyTotPrice}
+                ,aft_buy_avg_price    = ${aftBuyAvgPrice}
+                ,aft_buy_tot_price    = ${aftBuyTotPrice}
+                ,pnl_rate             = ${pnlRate}
+                ,pnl_amt              = ${pnlAmt}
+                ,delete_yn            = #{deleteYn}
+                ,last_update_datetime = NOW()
         WHERE stock_trade_id = ${stockTradeId}
     </update>
 
@@ -282,14 +337,22 @@
 
     <select id="selectStockTrade" parameterType="Long" resultType="StockTradeEntity">
         SELECT
-            re_rent_id
-             ,asset_id
-             ,rent_start_date
-             ,rent_end_date
-             ,renter_name
-             ,renter_contact
-             ,deposit
-             ,month_fee
+            stock_trade_id
+             ,trade_type
+             ,stock_kind_id
+             ,trade_datetime
+             ,trade_type_name
+             ,trade_cnt
+             ,trade_price
+             ,trade_amt
+             ,bef_quantity
+             ,aft_quantity
+             ,bef_buy_avg_price
+             ,bef_buy_tot_price
+             ,aft_buy_avg_price
+             ,aft_buy_tot_price
+             ,pnl_rate
+             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -299,14 +362,22 @@
 
     <select id="selectStockTradeDto" parameterType="Long" resultType="StockTradeDto">
         SELECT
-            re_rent_id
-             ,asset_id
-             ,rent_start_date
-             ,rent_end_date
-             ,renter_name
-             ,renter_contact
-             ,deposit
-             ,month_fee
+            stock_trade_id
+             ,trade_type
+             ,stock_kind_id
+             ,trade_datetime
+             ,trade_type_name
+             ,trade_cnt
+             ,trade_price
+             ,trade_amt
+             ,bef_quantity
+             ,aft_quantity
+             ,bef_buy_avg_price
+             ,bef_buy_tot_price
+             ,aft_buy_avg_price
+             ,aft_buy_tot_price
+             ,pnl_rate
+             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -316,25 +387,37 @@
 
     <select id="selectStockTradeDtoList" parameterType="AssetSearch" resultType="StockTradeDto">
         SELECT
-        re_rent_id
-        ,asset_id
-        ,rent_start_date
-        ,rent_end_date
-        ,renter_name
-        ,renter_contact
-        ,deposit
-        ,month_fee
-        ,delete_yn
-        ,reg_datetime
-        ,last_update_datetime
+            stock_trade_id
+            ,trade_type
+            ,cc.code_name AS trade_type_name
+            ,stock_kind_id
+            ,trade_datetime
+            ,trade_type_name
+            ,trade_cnt
+            ,trade_price
+            ,trade_amt
+            ,bef_quantity
+            ,aft_quantity
+            ,bef_buy_avg_price
+            ,bef_buy_tot_price
+            ,aft_buy_avg_price
+            ,aft_buy_tot_price
+            ,pnl_rate
+            ,pnl_amt
+            ,delete_yn
+            ,reg_datetime
+            ,last_update_datetime
         FROM stock_trade st
-        INNER JOIN asset a ON a.asset_id = st.asset_id
+            LEFT OUTER JOIN common_code cc ON cc.div_code = 'STOCK_TRADE_TYPE' AND cc.code = st.trade_type
         WHERE 1 = 1
         <if test = 'stockTradeId != null and stockTradeId !=""'>
             AND st.stock_trade_id = ${stockTradeId}
         </if>
         <if test = 'memberId != null and memberId !=""'>
-            AND a.member_id = ${memberId}
+            AND st.member_id = ${memberId}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND st.delete_yn = #{deleteYn}
         </if>
     </select>
 </mapper>

@@ -6,7 +6,6 @@ import com.idlelife.myasset.models.dto.AssetSearch;
 import com.idlelife.myasset.models.dto.form.AssetBankForm;
 import com.idlelife.myasset.models.dto.form.AssetForm;
 import com.idlelife.myasset.models.entity.AssetBankEntity;
-import com.idlelife.myasset.models.entity.AssetStockEntity;
 import com.idlelife.myasset.repository.AssetBankMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
