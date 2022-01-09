@@ -18,8 +18,8 @@ public class StockTradeForm {
   private Timestamp tradeDatetime;
   private String tradeTypeName;
   private Long stockKindId;
-  private Long tradeCnt;
-  private Long tradePrice;
+  private Long tradeQuantity;
+  private Long tradeUnitPrice;
   private Long tradeAmt;
   private Long befQuantity;
   private Long aftQuantity;

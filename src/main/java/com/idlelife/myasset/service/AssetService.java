@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MyassetService {
+public class AssetService {
     @Autowired
     AssetMapper assetMapper;
 
@@ -35,9 +35,7 @@ public class MyassetService {
         return assetMapper.selectAsset(assetId);
     }
 
-    public AssetDto regAsset(AssetForm form){
-        AssetEntity assetEntity = getAssetEntityFromForm(form);
-
+    public AssetDto regAsset(AssetEntity assetEntity){
         int cnt = assetMapper.insertAsset(assetEntity);
         if(cnt < 1){
             throw new RuntimeException();
@@ -45,8 +43,7 @@ public class MyassetService {
         return assetMapper.selectAssetDto(assetEntity.getAssetId());
     }
 
-    public AssetDto modAsset(AssetForm form){
-        AssetEntity assetEntity = getAssetEntityFromForm(form);
+    public AssetDto modAsset(AssetEntity assetEntity){
 
         int cnt = assetMapper.updateAsset(assetEntity);
         if(cnt < 1){
@@ -67,7 +64,7 @@ public class MyassetService {
         return list;
     }
 
-    private AssetEntity getAssetEntityFromForm(AssetForm form){
+    public AssetEntity getAssetEntityFromForm(AssetForm form){
         AssetEntity assetEntity = new AssetEntity();
         if(form.getAssetId() == null || form.getAssetId() <= 0){
             long assetId = assetMapper.createAssetId();
@@ -93,6 +90,9 @@ public class MyassetService {
     public TotalAssetDto getTotalAsset(long memberId){
         TotalAssetDto result = new TotalAssetDto();
         TotalAssetSummaryDto summary = getTotalAssetSummary(memberId);
+        if(summary == null){
+            return result;
+        }
         result.setTotalNetAssetAmt(summary.getTotalNetAsset());
         result.setTotalLoanBalAmt(summary.getTotalLoanBalAmt());
         result.setTotalAssetAmt(summary.getTotalNetAsset() + summary.getTotalLoanBalAmt());
@@ -103,7 +103,6 @@ public class MyassetService {
         long totalAssetAmt = 0;
         long totalNetAssetAmt = 0;
         long totalLoanBalAmt = 0;
-
 
         // 은행 잔액, 은행 대출잔액 합계
         long bankAssetAmt = 0;

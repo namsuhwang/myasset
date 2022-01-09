@@ -1,24 +1,29 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.dto.*;
 import com.idlelife.myasset.models.dto.form.*;
 import com.idlelife.myasset.models.entity.*;
 import com.idlelife.myasset.repository.AssetStockMapper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
-@Transactional
+import static com.idlelife.myasset.models.common.ErrorCode.*;
+
+@Log4j2
 @Service
+@Transactional
 public class StockService {
     @Autowired
     AssetStockMapper assetStockMapper;
 
     @Autowired
-    MyassetService assetService;
- 
+    AssetService assetService;
+
     public AssetStockDto getAssetStockDto(Long assetId){
         return assetStockMapper.selectAssetStockDto(assetId);
     }
@@ -28,39 +33,54 @@ public class StockService {
     }
 
     public AssetStockDto regAssetStock(AssetStockForm form){
+        log.info("Asset 등록");
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
         assetForm.setMemberId(form.getMemberId());
-        assetForm.setEvalAmt(0L);  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
-        AssetDto assetDto = assetService.regAsset(assetForm);
+        assetForm.setEvalAmt(form.getAbleAmt() - form.getLoanBalAmt());  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
+        AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
+        AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 자산 등록 실패", MYASSET_ERROR_1000);
         }
 
+        log.info("AssetStock 등록");
         form.setAssetId(assetDto.getAssetId());
         AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
         int cnt = assetStockMapper.insertAssetStock(assetStockEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 증권사 등록 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+        AssetStockDto assetStockDto = assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+        return assetStockDto;
     }
 
     public AssetStockDto modAssetStock(AssetStockForm form){
-        AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
+        log.info("Asset 수정");
+        log.info("기존 Asset 조회");
+        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
+        assetEntity.setAssetName(form.getAssetName());
+        assetEntity.setEvalAmt(form.getAbleAmt() - form.getLoanBalAmt());
+        AssetDto assetDto = assetService.modAsset(assetEntity);
+        if(assetDto == null){
+            throw new MyassetException("DB 에러 : 자산 수정 실패", MYASSET_ERROR_1000);
+        }
 
+        AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
         int cnt = assetStockMapper.updateAssetStock(assetStockEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+
+        AssetStockDto assetStockDto = assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+        return assetStockDto;
     }
 
     public AssetStockDto delAssetStock(Long assetId){
         int cnt = assetStockMapper.deleteAssetStock(assetId);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 증권사 삭제 실패", MYASSET_ERROR_1000);
         }
         return assetStockMapper.selectAssetStockDto(assetId);
     }
@@ -97,28 +117,70 @@ public class StockService {
     }
 
     public StockKindDto regStockKind(StockKindForm form){
-        StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
+        log.info("주식 종목(StockKind) 등록");
+        if(form.getAssetId() == null){
+            log.error("Asset 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1001);
+        }
 
+        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        if(assetStockEntity == null){
+            log.error("증권사(AssetStock) 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1002);
+        }
+
+        log.info("자산 정보 업데이트");
+        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
+        long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
+        assetEntity.setEvalAmt(evalAmt);
+        assetService.modAsset(assetEntity);
+
+        log.info("자산 종목(StockKind) 등록");
+        StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
         int cnt = assetStockMapper.insertStockKind(stockKindEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 주식 종목 등록 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        return stockKindDto;
     }
 
     public StockKindDto modStockKind(StockKindForm form){
+        log.info("주식 종목(StockKind) 수정");
+        if(form.getAssetId() == null){
+            log.error("Asset 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1001);
+        }
+
+        // 증권사(AssetStock) 는 예수금, 대출잔액관 관리하므로 종목(StockKind) 관리에서는 업데이트 하지 않음
+        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        if(assetStockEntity == null){
+            log.error("증권사(AssetStock) 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1002);
+        }
+
+        log.info("자산 정보 업데이트");
+        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
+        long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
+        assetEntity.setEvalAmt(evalAmt);
+        assetService.modAsset(assetEntity);
+
+        log.info("주식 종목(StockKind) 수정");
         StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
 
         int cnt = assetStockMapper.updateStockKind(stockKindEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 주식 종목 수정 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+
+        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        return stockKindDto;
     }
+
     public StockKindDto delStockKind(Long stockKindId){
         int cnt = assetStockMapper.deleteStockKind(stockKindId);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 주식 종목 삭제 실패", MYASSET_ERROR_1000);
         }
         return assetStockMapper.selectStockKindDto(stockKindId);
     }
@@ -128,9 +190,38 @@ public class StockService {
         return list;
     }
 
+    public StockKindDto updateStockKindCurrentStatus(StockKindForm form){
+        log.info("주식 종목 현재가 수정");
+        if(form.getAssetId() == null){
+            log.error("Asset 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1001);
+        }
+
+        // 증권사(AssetStock) 는 예수금, 대출잔액관 관리하므로 종목(StockKind) 관리에서는 업데이트 하지 않음
+        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        if(assetStockEntity == null){
+            log.error("증권사(AssetStock) 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1002);
+        }
+
+        log.info("주식 종목(StockKind) 수정");
+        StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
+
+        int cnt = assetStockMapper.updateStockKind(stockKindEntity);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : 주식 종목 수정 실패", MYASSET_ERROR_1000);
+        }
+
+        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        return stockKindDto;
+    }
+
+
+
+
     private StockKindEntity getStockKindEntityFromForm(StockKindForm form){
         StockKindEntity stockKindEntity = new StockKindEntity();
-        stockKindEntity.setStockKindId(form.getStockKindId());
+        stockKindEntity.setStockKindId(form.getStockKindId() == null ? assetStockMapper.createStockKindId() : form.getStockKindId());
         stockKindEntity.setAssetId(form.getAssetId());
         stockKindEntity.setStockKindCd(form.getStockKindCd());
         stockKindEntity.setStockKindName(form.getStockKindName());
@@ -138,7 +229,7 @@ public class StockService {
         stockKindEntity.setQuantity(form.getQuantity());
         stockKindEntity.setBuyAvgPrice(form.getBuyAvgPrice());
         stockKindEntity.setBuyTotPrice(form.getBuyTotPrice());
-        stockKindEntity.setCurPrice(form.getCurPrice());
+        stockKindEntity.setCurUnitPrice(form.getCurUnitPrice());
         stockKindEntity.setCurTotPrice(form.getCurTotPrice());
         stockKindEntity.setPnlRate(form.getPnlRate());
         stockKindEntity.setPnlAmt(form.getPnlAmt());
@@ -164,12 +255,47 @@ public class StockService {
     }
 
     public StockTradeDto regStockTrade(StockTradeForm form){
-        StockTradeEntity stockTradeEntity = getStockTradeEntityFromForm(form);
+        log.info("주식 거래 등록");
+        StockKindEntity stockKindEntity = assetStockMapper.selectStockKind(form.getStockKindId());
+        if(stockKindEntity == null){
+            log.error("주식 종목(StockKind) 먼저 등록");
+            throw new MyassetException(MYASSET_ERROR_1003);
+        }
 
+        log.info("주식 종목 정보 업데이트");
+        StockTradeEntity stockTradeEntity = getStockTradeEntityFromForm(form);
+        log.info("주식 평단가 계산");
+        long buyTotPrice = 0;
+        long avgPrice = 0;
+        log.info("보유수량, 평단가 등 계산");
+        if(form.getTradeType().equals("BUY")) {
+            log.info("매수");
+            stockKindEntity.setQuantity(stockKindEntity.getQuantity() + stockTradeEntity.getTradeQuantity());
+            buyTotPrice = stockKindEntity.getBuyTotPrice() + stockTradeEntity.getTradeAmt();
+            avgPrice = buyTotPrice / stockKindEntity.getQuantity();
+        }else{
+            log.info("매도");
+            stockKindEntity.setQuantity(stockKindEntity.getQuantity() - stockTradeEntity.getTradeQuantity());
+            buyTotPrice = stockKindEntity.getBuyTotPrice() - stockTradeEntity.getTradeAmt();
+            avgPrice = buyTotPrice / stockKindEntity.getQuantity();
+        }
+        stockKindEntity.setBuyTotPrice(buyTotPrice);
+        stockKindEntity.setBuyAvgPrice(avgPrice);
+        assetStockMapper.updateStockKind(stockKindEntity);
+
+        log.info("주식 거래내역 등록");
+        StockTradeEntity stockTradeEntityOld = assetStockMapper.selectLastStockTrade(stockKindEntity.getStockKindId());
+        stockTradeEntity.setBefQuantity(stockTradeEntityOld.getAftQuantity());
+        stockTradeEntity.setBefBuyAvgPrice(stockTradeEntityOld.getAftBuyAvgPrice());
+        stockTradeEntity.setBefBuyTotPrice(stockTradeEntityOld.getAftBuyTotPrice());
+        stockTradeEntity.setAftQuantity(stockKindEntity.getQuantity());
+        stockTradeEntity.setAftBuyAvgPrice(stockKindEntity.getBuyAvgPrice());
+        stockTradeEntity.setAftBuyTotPrice(stockKindEntity.getBuyTotPrice());
         int cnt = assetStockMapper.insertStockTrade(stockTradeEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 주식 거래 내역 등록 실패", MYASSET_ERROR_1000);
         }
+
         return assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
     }
 
@@ -178,7 +304,7 @@ public class StockService {
 
         int cnt = assetStockMapper.updateStockTrade(stockTradeEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 주식 거래 내역 조회 실패", MYASSET_ERROR_1000);
         }
         return assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
     }
@@ -197,13 +323,13 @@ public class StockService {
 
     private StockTradeEntity getStockTradeEntityFromForm(StockTradeForm form){
         StockTradeEntity stockTradeEntity = new StockTradeEntity();
-        stockTradeEntity.setStockTradeId(form.getStockTradeId());
+        stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
         stockTradeEntity.setTradeType(form.getTradeType());
         stockTradeEntity.setStockKindId(form.getStockTradeId());
         stockTradeEntity.setTradeDatetime(form.getTradeDatetime());
         stockTradeEntity.setTradeTypeName(form.getTradeTypeName());
-        stockTradeEntity.setTradeCnt(form.getTradeCnt());
-        stockTradeEntity.setTradePrice(form.getTradePrice());
+        stockTradeEntity.setTradeQuantity(form.getTradeQuantity());
+        stockTradeEntity.setTradeUnitPrice(form.getTradeUnitPrice());
         stockTradeEntity.setTradeAmt(form.getTradeAmt());
         stockTradeEntity.setBefQuantity(form.getBefQuantity());
         stockTradeEntity.setAftQuantity(form.getAftQuantity());

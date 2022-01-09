@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idlelife.myasset.repository.CommonMapper">
+
+    <select id="selectCommonCodeDtoList" parameterType="CommonCodeForm" resultType="CommonCodeDto">
+            SELECT
+                cc.div_code
+                ,cc.code
+                ,cc.code_name
+                ,cc.code_desc
+                ,cc.order
+                ,cc.use_yn
+            FROM common_code cc
+            WHERE cc.div_code = #{divCode}
+                <if test = 'code != null and code !=""'>
+                    AND cc.code = #{code}
+                </if>
+                <if test = 'codeDesc != null and codeDesc !=""'>
+                    AND cc.code_desc = #{codeDesc}
+                </if>
+            ORDER BY cc.order
+    </select>
+
+</mapper>

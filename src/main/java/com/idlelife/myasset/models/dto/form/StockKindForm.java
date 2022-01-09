@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.sql.Timestamp;
-
 @Data
 @ToString
 @NoArgsConstructor
@@ -21,7 +19,7 @@ public class StockKindForm {
   private Long quantity;
   private Long buyAvgPrice;
   private Long buyTotPrice;
-  private Long curPrice;
+  private Long curUnitPrice;
   private Long curTotPrice;
   private Float pnlRate;
   private Long pnlAmt;

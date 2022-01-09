@@ -22,6 +22,8 @@ public interface AssetStockMapper {
     AssetStockDto selectAssetStockDto(long assetId);
 
 
+    long createStockKindId();
+
     int insertStockKind(StockKindEntity dom);
 
     int updateStockKind(StockKindEntity dom);
@@ -34,9 +36,11 @@ public interface AssetStockMapper {
 
     StockKindDto selectStockKindDto(long stockKindId);
 
+    int updateStockKindCurrentStatus(StockKindEntity dom);
 
 
 
+    long createStockTradeId();
 
     int insertStockTrade(StockTradeEntity dom);
 
@@ -47,6 +51,8 @@ public interface AssetStockMapper {
     List<StockTradeDto> selectStockTradeDtoList(AssetSearch dom);
 
     StockTradeEntity selectStockTrade(long stockTradeId);
+
+    StockTradeEntity selectLastStockTrade(long stockKindId);
 
     StockTradeDto selectStockTradeDto(long stockTradeId);
 }

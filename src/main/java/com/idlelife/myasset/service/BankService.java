@@ -6,19 +6,24 @@ import com.idlelife.myasset.models.dto.AssetSearch;
 import com.idlelife.myasset.models.dto.form.AssetBankForm;
 import com.idlelife.myasset.models.dto.form.AssetForm;
 import com.idlelife.myasset.models.entity.AssetBankEntity;
+import com.idlelife.myasset.models.entity.AssetEntity;
 import com.idlelife.myasset.repository.AssetBankMapper;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Log4j2
 @Service
+@Transactional
 public class BankService {
     @Autowired
     AssetBankMapper assetBankMapper;
 
     @Autowired
-    MyassetService assetService;
+    AssetService assetService;
  
     public AssetBankDto getAssetBankDto(Long assetId){
         return assetBankMapper.selectAssetBankDto(assetId);
@@ -29,16 +34,27 @@ public class BankService {
     }
 
     public AssetBankDto regAssetBank(AssetBankForm form){
+        log.info("Asset 등록");
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("BANK");
         assetForm.setMemberId(form.getMemberId());
-        assetForm.setEvalAmt(0L);  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
-        AssetDto assetDto = assetService.regAsset(assetForm);
+        long evalAmt = 0;
+        long loanBalAmt = 0;
+        switch(form.getAcnoType()){
+            case "IO":
+            case "ACC": evalAmt = form.getAbleAmt(); loanBalAmt = 0; break;
+            case "MINUS": evalAmt = form.getAbleAmt() - form.getLoanBalAmt(); loanBalAmt = form.getLoanBalAmt(); break;
+            case "LOAN": evalAmt = 0; loanBalAmt = form.getLoanBalAmt(); break;
+        }
+        assetForm.setEvalAmt(evalAmt);
+        AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
+        AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
             throw new RuntimeException();
         }
 
+        log.info("AssetBank 등록");
         form.setAssetId(assetDto.getAssetId());
         AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
         int cnt = assetBankMapper.insertAssetBank(assetBankEntity);
@@ -46,21 +62,45 @@ public class BankService {
             throw new RuntimeException();
         }
 
-        return assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        return assetBankDto;
     }
 
     public AssetBankDto modAssetBank(AssetBankForm form){
-        AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
+        log.info("Asset 수정");
+        log.info("기존 Asset 조회");
+        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
+        assetEntity.setAssetName(form.getAssetName());
+        long evalAmt = 0;
+        long loanBalAmt = 0;
+        switch(form.getAcnoType()){
+            case "IO":
+            case "ACC": evalAmt = form.getAbleAmt(); loanBalAmt = 0; break;
+            case "MINUS": evalAmt = form.getAbleAmt() - form.getLoanBalAmt(); loanBalAmt = form.getLoanBalAmt(); break;
+            case "LOAN": evalAmt = 0; loanBalAmt = form.getLoanBalAmt(); break;
+        }
+        assetEntity.setEvalAmt(evalAmt);
+        AssetDto assetDto = assetService.modAsset(assetEntity);
+        if(assetDto == null){
+            throw new RuntimeException();
+        }
 
+        log.info("AssetBank 수정");
+        AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
         int cnt = assetBankMapper.updateAssetBank(assetBankEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
 
-        return assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        return assetBankDto;
     }
 
     public AssetBankDto delAssetBank(Long assetId){
+        log.info("Asset 삭제");
+        assetService.delAsset(assetId);
+
+        log.info("AssetBank 삭제");
         int cnt = assetBankMapper.deleteAssetBank(assetId);
         if(cnt < 1){
             throw new RuntimeException();

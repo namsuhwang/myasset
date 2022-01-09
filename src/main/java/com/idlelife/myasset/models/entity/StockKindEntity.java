@@ -21,7 +21,7 @@ public class StockKindEntity {
   private Long quantity;
   private Long buyAvgPrice;
   private Long buyTotPrice;
-  private Long curPrice;
+  private Long curUnitPrice;
   private Long curTotPrice;
   private Float pnlRate;
   private Long pnlAmt;

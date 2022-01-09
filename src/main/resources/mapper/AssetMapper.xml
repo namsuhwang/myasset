@@ -115,8 +115,8 @@
     <select id="selectTotalAssetSummary" parameterType="Long" resultType="TotalAssetSummaryDto">
         /* 종합현황 요약 */
         SELECT
-              SUM(IFNULL(eval_amt, 0)) AS total_net_asset
-             ,SUM(IFNULL(loan_bal_amt, 0)) AS total_loan_bal_amt
+              IFNULL(SUM(IFNULL(eval_amt, 0)), 0) AS total_net_asset
+             ,IFNULL(SUM(IFNULL(loan_bal_amt, 0)), 0) AS total_loan_bal_amt
         FROM asset ia
         WHERE ia.member_id = ${memberId}
     </select>
