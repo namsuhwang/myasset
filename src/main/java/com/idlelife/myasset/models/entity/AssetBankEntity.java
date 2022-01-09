@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class AssetBankEntity {
     private Long assetId;         // 자산ID
+    private Long memberId;        // 회원ID
     private String acnoType;      // 계좌유형
     private String orgCd;        // 은행코드
     private String orgName;      // 은행명

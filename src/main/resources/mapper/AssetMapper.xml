@@ -20,6 +20,7 @@
                     ,asset_type
                     ,asset_name
                     ,eval_amt
+                    ,able_amt
                     ,delete_yn
                     ,reg_datetime
                     ,last_update_datetime
@@ -30,6 +31,7 @@
                 ,#{assetType}
                 ,#{assetName}
                 ,${evalAmt}
+                ,${ableAmt}
                 ,#{deleteYn}
                 ,NOW()
                 ,NOW()
@@ -43,6 +45,7 @@
                     ,asset_type = #{assetType}
                     ,asset_name = #{assetName}
                     ,eval_amt = ${evalAmt}
+                    ,able_amt = ${ableAmt}
                     ,delete_yn = #{deleteYn}
                     ,last_update_datetime = NOW()
             WHERE asset_id = ${assetId}
@@ -63,6 +66,7 @@
                  ,asset_type
                  ,asset_name
                  ,eval_amt
+                 ,able_amt
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
@@ -78,6 +82,7 @@
                  ,cc.code_name AS asset_type_name
                  ,asset_name
                  ,eval_amt
+                 ,able_amt
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime
@@ -94,6 +99,7 @@
                  ,cc.code_name AS asset_type_name
                  ,asset_name
                  ,eval_amt
+                 ,able_amt
                  ,delete_yn
                  ,reg_datetime
                  ,last_update_datetime

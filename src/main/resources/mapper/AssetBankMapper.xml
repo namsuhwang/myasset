@@ -5,6 +5,7 @@
     <insert id="insertAssetBank" parameterType="AssetBankEntity">
             INSERT asset_bank (
                  asset_id
+                 ,member_id
                  ,acno_type
                  ,org_cd
                  ,org_name
@@ -19,6 +20,7 @@
             ) VALUES
             (
                 ${assetId}
+                ,${memberId}
                 ,#{acnoType}
                 ,#{orgCd}
                 ,#{orgName}

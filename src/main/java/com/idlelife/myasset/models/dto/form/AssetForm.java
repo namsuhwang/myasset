@@ -16,4 +16,5 @@ public class AssetForm {
     private String AssetType;
     private String AssetName;
     private Long evalAmt;
+    private Long ableAmt;
 }

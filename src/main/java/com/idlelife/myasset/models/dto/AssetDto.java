@@ -19,6 +19,7 @@ public class AssetDto {
     private String AssetTypeName;
     private String AssetName;
     private Long evalAmt;
+    private Long ableAmt;
     private String deleteYn;
     private Timestamp regDatetime;
     private Timestamp lastUpdateDatetime;

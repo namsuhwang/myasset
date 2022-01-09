@@ -1,5 +1,6 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.dto.AssetBankDto;
 import com.idlelife.myasset.models.dto.AssetDto;
 import com.idlelife.myasset.models.dto.AssetSearch;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+
+import static com.idlelife.myasset.models.common.ErrorCode.MYASSET_ERROR_1000;
 
 @Log4j2
 @Service
@@ -49,9 +52,10 @@ public class BankService {
         }
         assetForm.setEvalAmt(evalAmt);
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
+        assetEntity.setAbleAmt(form.getAbleAmt());
         AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 자산 등록 실패", MYASSET_ERROR_1000);
         }
 
         log.info("AssetBank 등록");
@@ -59,7 +63,7 @@ public class BankService {
         AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
         int cnt = assetBankMapper.insertAssetBank(assetBankEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 은행 자산 등록 실패", MYASSET_ERROR_1000);
         }
 
         AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
@@ -82,14 +86,14 @@ public class BankService {
         assetEntity.setEvalAmt(evalAmt);
         AssetDto assetDto = assetService.modAsset(assetEntity);
         if(assetDto == null){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 자산 수정 실패", MYASSET_ERROR_1000);
         }
 
         log.info("AssetBank 수정");
         AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
         int cnt = assetBankMapper.updateAssetBank(assetBankEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : 은행 자산 수정 실패", MYASSET_ERROR_1000);
         }
 
         AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
@@ -115,10 +119,12 @@ public class BankService {
 
     private AssetBankEntity getAssetBankEntityFromForm(AssetBankForm form){
         AssetBankEntity assetBankEntity = new AssetBankEntity();
-//        assetBankEntity.setAssetId(form.getAssetId());
+        assetBankEntity.setAssetId(form.getAssetId());
+        assetBankEntity.setMemberId(form.getMemberId());
         assetBankEntity.setAcnoType(form.getAcnoType());
         assetBankEntity.setOrgCd(form.getOrgCd());
         assetBankEntity.setOrgName(form.getOrgName());
+        assetBankEntity.setAcnoType(form.getAcnoType());
         assetBankEntity.setAcno(form.getAcno());
         assetBankEntity.setAbleAmt(form.getAbleAmt());
         assetBankEntity.setLoanBalAmt(form.getLoanBalAmt());
