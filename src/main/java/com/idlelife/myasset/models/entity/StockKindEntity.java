@@ -17,7 +17,6 @@ public class StockKindEntity {
   private Long assetId;
   private String stockKindCd;
   private String stockKindName;
-  private String stockAcno;
   private Long quantity;
   private Long buyAvgPrice;
   private Long buyTotPrice;

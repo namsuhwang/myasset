@@ -5,6 +5,7 @@
     <insert id="insertAssetStock" parameterType="AssetStockEntity">
             INSERT asset_stock (
                 asset_id
+                ,member_id
                 ,org_cd
                 ,org_name
                 ,stock_acno
@@ -17,6 +18,7 @@
             ) VALUES
             (
                 ${assetId}
+                ,${memberId}
                 ,#{orgCd}
                 ,#{orgName}
                 ,#{stockAcno}
@@ -32,7 +34,8 @@
     <update id="updateAssetStock" parameterType="AssetStockEntity">
             UPDATE asset_stock
                SET
-                   org_cd                = #{orgCd}
+                   member_id             = ${memberId}
+                   ,org_cd                = #{orgCd}
                    ,org_name             = #{orgName}
                    ,stock_acno           = #{stockAcno}
                    ,able_amt             = ${ableAmt}
@@ -54,6 +57,7 @@
     <select id="selectAssetStock" parameterType="Long" resultType="AssetStockEntity">
             SELECT
                 asset_id
+                 ,member_id
                  ,org_cd
                  ,org_name
                  ,stock_acno
@@ -70,6 +74,7 @@
     <select id="selectAssetStockDto" parameterType="Long" resultType="AssetStockDto">
             SELECT
                 asset_id
+                 ,member_id
                  ,org_cd
                  ,org_name
                  ,stock_acno
@@ -86,6 +91,7 @@
     <select id="selectAssetStockDtoList" parameterType="AssetSearch" resultType="AssetStockDto">
             SELECT
                 asset_id
+                ,member_id
                 ,org_cd
                 ,org_name
                 ,stock_acno

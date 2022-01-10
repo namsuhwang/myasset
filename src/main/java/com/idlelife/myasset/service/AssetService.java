@@ -75,6 +75,7 @@ public class AssetService {
         assetEntity.setMemberId(form.getMemberId());
         assetEntity.setAssetType(form.getAssetType());
         assetEntity.setAssetName(form.getAssetName());
+        assetEntity.setAbleAmt(form.getAbleAmt());
         assetEntity.setEvalAmt(form.getEvalAmt());
         assetEntity.setDeleteYn("N");
         return assetEntity;

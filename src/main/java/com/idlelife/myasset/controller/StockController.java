@@ -24,11 +24,11 @@ public class StockController {
     @Autowired
     StockService stockService;
  
-    @PostMapping("/stock/reg")
+    @PostMapping("/stock/acno/reg")
     public ResponseEntity<AssetStockDto> regAssetStock(
             @RequestBody AssetStockForm dom
     ){
-        log.info("call : /stock/reg");
+        log.info("call : /stock/acno/reg");
         log.info("params : " + dom.toString());
         AssetStockDto result = stockService.regAssetStock(dom);
 
@@ -36,33 +36,33 @@ public class StockController {
     }
 
 
-    @PostMapping("/stock/mod")
+    @PostMapping("/stock/acno/mod")
     public ResponseEntity<AssetStockDto> modAssetStock(
             @RequestBody AssetStockForm dom
     ){
-        log.info("call : /stock/mod");
+        log.info("call : /stock/acno/mod");
         log.info("params : " + dom.toString());
         AssetStockDto result = stockService.modAssetStock(dom);
 
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/stock/del")
+    @PostMapping("/stock/acno/del")
     public ResponseEntity<AssetStockDto> delAssetStock(
             @RequestBody AssetStockForm dom
     ){
-        log.info("call : /stock/del");
+        log.info("call : /stock/acno/del");
         log.info("params : " + dom.getAssetId());
         AssetStockDto result = stockService.delAssetStock(dom.getAssetId());
 
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/stock/list")
+    @PostMapping("/stock/acno/list")
     public ResponseEntity<List<AssetStockDto>> getAssetStockList(
             @RequestBody AssetSearch dom
     ){
-        log.info("call : /stock/list");
+        log.info("call : /stock/acno/list");
         log.info("params : " + dom.toString());
         List<AssetStockDto> result = stockService.getAssetStockDtoList(dom);
 

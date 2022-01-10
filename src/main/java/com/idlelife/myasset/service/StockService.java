@@ -38,6 +38,7 @@ public class StockService {
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
         assetForm.setMemberId(form.getMemberId());
+        assetForm.setAbleAmt(form.getAbleAmt());
         assetForm.setEvalAmt(form.getAbleAmt() - form.getLoanBalAmt());  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         AssetDto assetDto = assetService.regAsset(assetEntity);
@@ -93,6 +94,7 @@ public class StockService {
     private AssetStockEntity getAssetStockEntityFromForm(AssetStockForm form){
         AssetStockEntity assetStockEntity = new AssetStockEntity();
         assetStockEntity.setAssetId(form.getAssetId());
+        assetStockEntity.setMemberId(form.getMemberId());
         assetStockEntity.setOrgCd(form.getOrgCd());
         assetStockEntity.setOrgName(form.getOrgName());
         assetStockEntity.setStockAcno(form.getStockAcno());
@@ -225,7 +227,6 @@ public class StockService {
         stockKindEntity.setAssetId(form.getAssetId());
         stockKindEntity.setStockKindCd(form.getStockKindCd());
         stockKindEntity.setStockKindName(form.getStockKindName());
-        stockKindEntity.setStockAcno(form.getStockAcno());
         stockKindEntity.setQuantity(form.getQuantity());
         stockKindEntity.setBuyAvgPrice(form.getBuyAvgPrice());
         stockKindEntity.setBuyTotPrice(form.getBuyTotPrice());

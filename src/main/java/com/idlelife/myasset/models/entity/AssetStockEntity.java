@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class AssetStockEntity {
     private long assetId;
+    private long memberId;
     private String orgCd;
     private String orgName;
     private String stockAcno;
