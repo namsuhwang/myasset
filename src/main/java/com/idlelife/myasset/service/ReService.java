@@ -10,10 +10,12 @@ import com.idlelife.myasset.models.entity.AssetReRentEntity;
 import com.idlelife.myasset.repository.AssetReMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ReService {
     @Autowired
     AssetReMapper assetReMapper;

@@ -1,4 +1,4 @@
-package com.idlelife.myasset.config.profile;
+package com.idlelife.myasset.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +19,9 @@ import javax.sql.DataSource;
 
 @Slf4j
 @Configuration
-@PropertySource("classpath:/application.yml")
+//@MapperScan(basePackages = {"com.idlelife.myasset.repository"}, annotationClass = org.apache.ibatis.annotations.Mapper.class)
+@MapperScan(value = {"com.idlelife.myasset.repository"})
+//@PropertySource("classpath:/application.yml")
 public class DataSourceConfig {
 
     @Autowired
