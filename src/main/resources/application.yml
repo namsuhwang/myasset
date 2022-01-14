@@ -9,7 +9,7 @@ spring:
 spring:
   main:
     allow-circular-references: true
-profiles:
-  active: dev
+  profiles:
+    active: dev
 
 
