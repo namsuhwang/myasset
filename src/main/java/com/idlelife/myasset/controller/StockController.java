@@ -31,6 +31,7 @@ public class StockController {
         log.info("call : /stock/acno/reg");
         log.info("params : " + dom.toString());
         AssetStockDto result = stockService.regAssetStock(dom);
+        log.info("result : " + result.toString());
 
         return ResponseEntity.ok().body(result);
     }

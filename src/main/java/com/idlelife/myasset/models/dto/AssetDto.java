@@ -1,6 +1,5 @@
 package com.idlelife.myasset.models.dto;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +14,9 @@ import java.sql.Timestamp;
 public class AssetDto {
     private Long assetId;
     private Long memberId;
-    private String AssetType;
-    private String AssetTypeName;
-    private String AssetName;
+    private String assetType;
+    private String assetTypeName;
+    private String assetName;
     private Long evalAmt;
     private Long ableAmt;
     private String deleteYn;

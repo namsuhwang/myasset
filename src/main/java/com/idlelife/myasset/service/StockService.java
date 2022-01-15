@@ -24,6 +24,9 @@ public class StockService {
     @Autowired
     AssetService assetService;
 
+    @Autowired
+    CommonService commonService;
+
     public AssetStockDto getAssetStockDto(Long assetId){
         return assetStockMapper.selectAssetStockDto(assetId);
     }
@@ -131,14 +134,25 @@ public class StockService {
             throw new MyassetException(MYASSET_ERROR_1002);
         }
 
+        if(form.getMemberId() == null){
+            form.setMemberId(assetStockEntity.getMemberId());
+        }
+
         log.info("자산 정보 업데이트");
         AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
         long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
         assetEntity.setEvalAmt(evalAmt);
         assetService.modAsset(assetEntity);
 
+        log.info("주식 종목 코드 등록/수정(StockKindCode)");
+        setStockKindCode(form.getStockKindCd(), form.getStockKindName());
+
         log.info("자산 종목(StockKind) 등록");
         StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
+        long pnlAmt = stockKindEntity.getCurTotPrice() - stockKindEntity.getBuyTotPrice();
+        double pnlRate = Math.round((double)pnlAmt / (double)stockKindEntity.getBuyTotPrice() * 10000.0) / 100.0;
+        stockKindEntity.setPnlAmt(pnlAmt);
+        stockKindEntity.setPnlRate(pnlRate);
         int cnt = assetStockMapper.insertStockKind(stockKindEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 종목 등록 실패", MYASSET_ERROR_1000);
@@ -146,6 +160,7 @@ public class StockService {
         StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
         return stockKindDto;
     }
+
 
     public StockKindDto modStockKind(StockKindForm form){
         log.info("주식 종목(StockKind) 수정");
@@ -166,6 +181,9 @@ public class StockService {
         long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
         assetEntity.setEvalAmt(evalAmt);
         assetService.modAsset(assetEntity);
+
+        log.info("주식 종목 코드 등록/수정(StockKindCode)");
+        setStockKindCode(form.getStockKindCd(), form.getStockKindName());
 
         log.info("주식 종목(StockKind) 수정");
         StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
@@ -225,6 +243,7 @@ public class StockService {
         StockKindEntity stockKindEntity = new StockKindEntity();
         stockKindEntity.setStockKindId(form.getStockKindId() == null ? assetStockMapper.createStockKindId() : form.getStockKindId());
         stockKindEntity.setAssetId(form.getAssetId());
+        stockKindEntity.setMemberId(form.getMemberId());
         stockKindEntity.setStockKindCd(form.getStockKindCd());
         stockKindEntity.setStockKindName(form.getStockKindName());
         stockKindEntity.setQuantity(form.getQuantity());
@@ -343,4 +362,22 @@ public class StockService {
         stockTradeEntity.setDeleteYn("N");
         return stockTradeEntity;
     }
+
+
+
+    private void setStockKindCode(String code, String kindName){
+        StockKindCodeDto stockKindCodeDto;
+        stockKindCodeDto = commonService.getStockKindCode(code);
+        if(stockKindCodeDto == null){
+            stockKindCodeDto = new StockKindCodeDto();
+            stockKindCodeDto.setCode(code);
+            stockKindCodeDto.setKindName(kindName);
+            commonService.insertStockKindCode(stockKindCodeDto);
+        }else if(!stockKindCodeDto.getKindName().equals(kindName)){
+            stockKindCodeDto.setKindName(kindName);
+            commonService.updateStockKindCode(stockKindCodeDto);
+        }
+
+    }
+
 }

@@ -32,7 +32,7 @@ public class JsoupComponent {
     }
 
     private ScrapStockKindDto parseScrapStockKind(Document document){
-        ScrapStockKindDto scrapStockKindDto = new ScrapStockKindDto();
+        ScrapStockKindDto kindDto = new ScrapStockKindDto();
 
         Elements dl = document.select("dl.blind");
         Element stockElement = dl.get(0);
@@ -41,14 +41,36 @@ public class JsoupComponent {
         for(Node nodeData : stockElement.childNodes()){
             if(nodeData.getClass().getName().equals(Element.class.getName())){
                 pStr = ((Element) nodeData).text();
-                if(pStr.contains("종목명")){
+                if(pStr.contains("종목명")) {
+                    kindDto.setStockName(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
+                }else if(pStr.contains("종목코드")) {
+                    kindDto.setKindCode(pStr.substring(pStr.indexOf(" ") + 1, pStr.indexOf(" ") + 7));
+                    kindDto.setStockType(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
+                }else if(pStr.contains("전일가")) {
+                    kindDto.setYdPrice(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
+                }else if(pStr.contains("현재가")) {
+                    String[] tmp = pStr.split(" ");
+                    kindDto.setPrice(tmp[1]);
+                    if(tmp[3].equals("하락")){
+                        kindDto.setDiffAmount("▼" + tmp[4]);
+                    }else{
+                        kindDto.setDiffAmount("▲" + tmp[4]);
+                    }
 
+                    if(tmp[5].equals("마이너스")){
+                        kindDto.setDayRange("-" + tmp[6]);
+                    }else{
+                        kindDto.setDayRange("+" + tmp[6]);
+                    }
+                }else if(pStr.contains("고가")) {
+                    kindDto.setHighPrice(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
+                }else if(pStr.contains("저가")) {
+                    kindDto.setLowPrice(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
                 }
-                log.info(pStr);
             }
         }
 
-        return scrapStockKindDto;
+        return kindDto;
 
     }
 

@@ -22,4 +22,48 @@
             ORDER BY cc.order
     </select>
 
+    <insert id="insertStockKindCode" parameterType="StockKindCodeDto">
+        INSERT INTO stock_kind_code (code, kind_name)
+        VALUES
+        (
+         #{code}, #{kindName}
+        )
+    </insert>
+
+
+    <insert id="updateStockKindCode" parameterType="StockKindCodeDto">
+        UPDATE stock_kind_code
+           SET kind_name = #{kindName}
+        WHERE code = #{code}
+    </insert>
+
+    <select id="selectStockKindCodeList" parameterType="StockKindCodeDto" resultType="StockKindCodeDto">
+        SELECT
+        skc.code
+        ,skc.kind_name
+        FROM stock_kind_code skc
+        WHERE 1 = 1
+        <if test = 'code != null and code !=""'>
+            AND skc.code = #{code}
+        </if>
+        <if test = 'kindName != null and kindName !=""'>
+            AND skc.kind_name LIKE CONCAT('%', #{kindName}, '%')
+        </if>
+        ORDER BY skc.kind_name
+    </select>
+
+
+    <select id="selectStockKindCode" parameterType="StockKindCodeDto" resultType="StockKindCodeDto">
+        SELECT
+        skc.code
+        ,skc.kind_name
+        FROM stock_kind_code skc
+        WHERE 1 = 1
+        <if test = 'code != null and code !=""'>
+            AND skc.code = #{code}
+        </if>
+        <if test = 'kindName != null and kindName !=""'>
+            AND skc.kind_name = #{kindName}
+        </if>
+    </select>
 </mapper>

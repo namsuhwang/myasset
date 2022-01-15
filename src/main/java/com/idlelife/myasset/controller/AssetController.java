@@ -88,6 +88,7 @@ public class AssetController {
         log.info("call : /asset/list");
         log.info("params : " + dom.toString());
         List<AssetDto> result = assetService.getAssetDtoList(dom);
+        log.info("result : " + result.toString());
 
         return ResponseEntity.ok().body(result);
     }

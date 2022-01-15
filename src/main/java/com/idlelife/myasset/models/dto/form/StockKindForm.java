@@ -13,14 +13,14 @@ import lombok.ToString;
 public class StockKindForm {
   private Long stockKindId;
   private Long assetId;
+  private Long memberId;
   private String stockKindCd;
   private String stockKindName;
-  private String stockAcno;
   private Long quantity;
   private Long buyAvgPrice;
   private Long buyTotPrice;
   private Long curUnitPrice;
   private Long curTotPrice;
-  private Float pnlRate;
+  private Double pnlRate;
   private Long pnlAmt;
 }

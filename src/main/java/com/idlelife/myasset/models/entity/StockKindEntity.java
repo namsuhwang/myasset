@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 public class StockKindEntity {
   private Long stockKindId;
   private Long assetId;
+  private Long memberId;
   private String stockKindCd;
   private String stockKindName;
   private Long quantity;
@@ -22,7 +23,7 @@ public class StockKindEntity {
   private Long buyTotPrice;
   private Long curUnitPrice;
   private Long curTotPrice;
-  private Float pnlRate;
+  private Double pnlRate;
   private Long pnlAmt;
   private String deleteYn;
   private Timestamp regDatetime;

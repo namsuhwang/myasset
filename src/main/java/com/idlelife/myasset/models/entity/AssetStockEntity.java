@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssetStockEntity {
-    private long assetId;
-    private long memberId;
+    private Long assetId;
+    private Long memberId;
     private String orgCd;
     private String orgName;
     private String stockAcno;

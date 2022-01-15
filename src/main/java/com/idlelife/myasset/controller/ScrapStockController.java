@@ -32,8 +32,11 @@ public class ScrapStockController {
     @PostMapping("/scrap/stockkind")
     public ResponseEntity<ScrapStockKindDto> getStockKind(
             @RequestBody ScrapStockKindDto dom){
+        log.info("/scrap/stockkind");
+        log.info("kindCode : " + dom.getKindCode());
         ScrapStockKindDto result = scrapStockService.getScrapStockKind(dom.getKindCode());
 
+        log.info("종목정보 : " + result.toString());
         return ResponseEntity.ok().body(result);
     }
 }

@@ -3,7 +3,7 @@
 
 <mapper namespace="com.idlelife.myasset.repository.AssetStockMapper">
     <insert id="insertAssetStock" parameterType="AssetStockEntity">
-            INSERT asset_stock (
+            INSERT INTO asset_stock (
                 asset_id
                 ,member_id
                 ,org_cd
@@ -126,12 +126,12 @@
     </select>
 
     <insert id="insertStockKind" parameterType="StockKindEntity">
-        INSERT stock_kind (
+        INSERT INTO stock_kind (
                 stock_kind_id
                 ,asset_id
+                ,member_id
                 ,stock_kind_cd
                 ,stock_kind_name
-                ,stock_acno
                 ,quantity
                 ,buy_avg_price
                 ,buy_tot_price
@@ -146,9 +146,9 @@
             (
                 ${stockKindId}
                 ,${assetId}
+                ,${memberId}
                 ,#{stockKindCd}
                 ,#{stockKindName}
-                ,#{stockAcno}
                 ,${quantity}
                 ,${buyAvgPrice}
                 ,${buyTotPrice}
@@ -166,13 +166,13 @@
         UPDATE stock_kind
         SET
            asset_id          = ${assetId}
+          ,member_id         = ${memberId}
           ,stock_kind_cd     = #{stockKindCd}
           ,stock_kind_name   = #{stockKindName}
-          ,stock_acno        = #{stockAcno}
           ,quantity          = ${quantity}
           ,buy_avg_price     = ${buyAvgPrice}
           ,buy_tot_price     = ${buyTotPrice}
-          ,cur_unit_price         = ${curUnitPrice}
+          ,cur_unit_price    = ${curUnitPrice}
           ,cur_tot_price     = ${curTotPrice}
           ,pnl_rate          = ${pnlRate}
           ,pnl_amt           = ${pnlAmt}
@@ -202,9 +202,9 @@
         SELECT
               stock_kind_id
              ,asset_id
+             ,member_id
              ,stock_kind_cd
              ,stock_kind_name
-             ,stock_acno
              ,quantity
              ,buy_avg_price
              ,buy_tot_price
@@ -223,9 +223,9 @@
         SELECT
             stock_kind_id
              ,asset_id
+             ,member_id
              ,stock_kind_cd
              ,stock_kind_name
-             ,stock_acno
              ,quantity
              ,buy_avg_price
              ,buy_tot_price
@@ -244,9 +244,9 @@
         SELECT
             stock_kind_id
             ,asset_id
+            ,member_id
             ,stock_kind_cd
             ,stock_kind_name
-            ,stock_acno
             ,quantity
             ,buy_avg_price
             ,buy_tot_price
@@ -281,7 +281,7 @@
     </select>
 
     <insert id="insertStockTrade" parameterType="StockTradeEntity">
-        INSERT stock_trade (
+        INSERT INTO stock_trade (
                 stock_trade_id
                 ,trade_type
                 ,stock_kind_id
