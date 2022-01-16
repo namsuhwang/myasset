@@ -186,6 +186,8 @@
         SET
            cur_unit_price    = ${curUnitPrice}
           ,cur_tot_price     = ${curTotPrice}
+          ,pnl_rate          = ${pnlRate}
+          ,pnl_amt           = ${pnlAmt}
           ,last_update_datetime = NOW()
         WHERE stock_kind_id = ${stockKindId}
     </update>
@@ -194,7 +196,7 @@
         UPDATE stock_kind
         SET
             delete_yn = 'Y'
-          ,last_update_datetime = NOW()
+           ,last_update_datetime = NOW()
         WHERE stock_kind_id = ${stockKindId}
     </delete>
 

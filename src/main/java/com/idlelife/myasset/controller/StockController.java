@@ -23,7 +23,19 @@ import java.util.List;
 public class StockController {
     @Autowired
     StockService stockService;
- 
+
+    @PostMapping("/stock/total")
+    public ResponseEntity<TotalStockAssetDto> getTotalStockAsset(
+            @RequestBody AssetSearch dom
+    ){
+        log.info("call : /stock/total");
+        log.info("params : " + dom.toString());
+        TotalStockAssetDto result = stockService.getTotalStockAssetDto(dom.getMemberId());
+        log.info("result : " + result.toString());
+
+        return ResponseEntity.ok().body(result);
+    }
+
     @PostMapping("/stock/acno/reg")
     public ResponseEntity<AssetStockDto> regAssetStock(
             @RequestBody AssetStockForm dom

@@ -10,8 +10,8 @@ spring:
   datasource:
     platform: mysql
 #    jdbc-url: jdbc:mysql://c24host.cafe24.com:3306/c24host?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Seoul
-    jdbc-url: jdbc:mysql://myasset.ddns.net:3306/myasset_opr?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Seoul
+    jdbc-url: jdbc:log4jdbc:mysql://myasset.ddns.net:3306/myasset_opr?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Seoul
     username: myasset
     password: dba3048!01
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
 

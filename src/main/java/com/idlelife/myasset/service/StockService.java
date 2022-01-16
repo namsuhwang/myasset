@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.idlelife.myasset.models.common.ErrorCode.*;
@@ -25,6 +26,9 @@ public class StockService {
     AssetService assetService;
 
     @Autowired
+    ScrapStockService scrapStockService;
+
+    @Autowired
     CommonService commonService;
 
     public AssetStockDto getAssetStockDto(Long assetId){
@@ -34,6 +38,41 @@ public class StockService {
     public AssetStockEntity getAssetStock(Long assetId){
         return assetStockMapper.selectAssetStock(assetId);
     }
+
+    public TotalStockAssetDto getTotalStockAssetDto(Long memberId){
+        log.info("TotalStockAssetDto 시작 memberId : " + memberId);
+        TotalStockAssetDto result = new TotalStockAssetDto();
+        AssetSearch param = new AssetSearch();
+        param.setMemberId(memberId);
+        param.setDeleteYn("N");
+        List<StockKindDto> stockKindDtoList = assetStockMapper.selectStockKindDtoList(param);
+
+        Long totBuyPrice = 0L;
+        Long totCurPrice = 0L;
+        Long totPnlAmt = 0L;
+
+        for(StockKindDto kindDto : stockKindDtoList){
+            kindDto = updateCurStockKind(kindDto);
+            totBuyPrice =+ kindDto.getBuyTotPrice();
+            totCurPrice =+ kindDto.getCurTotPrice();
+            totPnlAmt =+ kindDto.getPnlAmt();
+        }
+
+        if(stockKindDtoList != null && stockKindDtoList.size() > 0){
+            String baseTime = stockKindDtoList.get(0).getBaseTime().replaceAll("코스피", "").replaceAll("코스닥", "");
+            result.setBaseTime(baseTime);
+        }
+        Double totPnlRate = Math.round((double)totPnlAmt / (double)totBuyPrice * 10000.0) / 100.0;
+
+        result.setTotBuyPrice(totBuyPrice);
+        result.setTotCurPrice(totCurPrice);
+        result.setTotPnlRate(totPnlRate);
+        result.setTotPnlAmt(totPnlAmt);
+        result.setList(stockKindDtoList);
+        log.info("TotalStockAssetDto result : " + result.toString());
+        return result;
+    }
+
 
     public AssetStockDto regAssetStock(AssetStockForm form){
         log.info("Asset 등록");
@@ -153,6 +192,37 @@ public class StockService {
     }
 
 
+    // 현재 주가 정보 조회 및 반영
+    private StockKindDto updateCurStockKind(StockKindDto kindDto){
+        ScrapStockKindDto curStockInfo = scrapStockService.getScrapStockKind(kindDto.getStockKindCd());
+        long curPrice = Long.valueOf(curStockInfo.getPrice().replaceAll(",", ""));
+        long curTotPrice = curPrice * kindDto.getQuantity();
+        long pnlAmt = curTotPrice - kindDto.getBuyTotPrice();
+        double pnlRate = Math.round((double)pnlAmt / (double)kindDto.getBuyTotPrice() * 10000.0) / 100.0;
+
+        StockKindEntity stockKindEntity = new StockKindEntity();
+        stockKindEntity.setStockKindId(kindDto.getStockKindId());
+        stockKindEntity.setCurUnitPrice(curPrice);
+        stockKindEntity.setCurTotPrice(curTotPrice);
+        stockKindEntity.setPnlAmt(pnlAmt);
+        stockKindEntity.setPnlRate(pnlRate);
+        int cnt = assetStockMapper.updateStockKindCurrentStatus(stockKindEntity);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : updateCurStockKind 주식 종목 수정 실패", MYASSET_ERROR_1000);
+        }
+
+        kindDto.setBaseTime(curStockInfo.getBaseTime());
+        kindDto.setCurUnitPrice(curPrice);
+        kindDto.setCurTotPrice(stockKindEntity.getCurTotPrice());
+        kindDto.setPnlAmt(pnlAmt);
+        kindDto.setPnlRate(pnlRate);
+        kindDto.setDiffAmount(curStockInfo.getDiffAmount());
+        kindDto.setDayRange(curStockInfo.getDayRange());
+        kindDto.setHighPrice(curStockInfo.getHighPrice());
+        kindDto.setLowPrice(curStockInfo.getLowPrice());
+        return kindDto;
+    }
+
     public StockKindDto modStockKind(StockKindForm form){
         log.info("주식 종목(StockKind) 수정");
         if(form.getAssetId() == null){
@@ -175,7 +245,7 @@ public class StockService {
 
         int cnt = assetStockMapper.updateStockKind(stockKindEntity);
         if(cnt < 1){
-            throw new MyassetException("DB 에러 : 주식 종목 수정 실패", MYASSET_ERROR_1000);
+            throw new MyassetException("DB 에러 : modStockKind 주식 종목 수정 실패", MYASSET_ERROR_1000);
         }
 
         StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
