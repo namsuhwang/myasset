@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ScrapStockKindDto {
+    private String baseTime;             // 기준일시
     private String kindCode;             // 종목코드
     private String stockName;            // 종목명
-    private String StockType;            // 코스피/코스닥
+    private String stockType;            // 코스피/코스닥
     private String price;                // 현재가
     private String ydPrice;              // 전일가
     private String diffAmount;           // 전일비(전일대비 차이)

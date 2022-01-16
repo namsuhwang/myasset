@@ -41,8 +41,6 @@ public class StockService {
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
         assetForm.setMemberId(form.getMemberId());
-        assetForm.setAbleAmt(form.getAbleAmt());
-        assetForm.setEvalAmt(form.getAbleAmt() - form.getLoanBalAmt());  // 처음 자산 등록시에는 평가금액 0원. 추후 세부 자산 등록시 업데이트해야 함.
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
@@ -65,7 +63,6 @@ public class StockService {
         log.info("기존 Asset 조회");
         AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
         assetEntity.setAssetName(form.getAssetName());
-        assetEntity.setEvalAmt(form.getAbleAmt() - form.getLoanBalAmt());
         AssetDto assetDto = assetService.modAsset(assetEntity);
         if(assetDto == null){
             throw new MyassetException("DB 에러 : 자산 수정 실패", MYASSET_ERROR_1000);
@@ -138,12 +135,6 @@ public class StockService {
             form.setMemberId(assetStockEntity.getMemberId());
         }
 
-        log.info("자산 정보 업데이트");
-        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
-        long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
-        assetEntity.setEvalAmt(evalAmt);
-        assetService.modAsset(assetEntity);
-
         log.info("주식 종목 코드 등록/수정(StockKindCode)");
         setStockKindCode(form.getStockKindCd(), form.getStockKindName());
 
@@ -175,12 +166,6 @@ public class StockService {
             log.error("증권사(AssetStock) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1002);
         }
-
-        log.info("자산 정보 업데이트");
-        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
-        long evalAmt = assetEntity.getEvalAmt() == null ? form.getCurTotPrice() :  assetEntity.getEvalAmt() + form.getCurTotPrice();
-        assetEntity.setEvalAmt(evalAmt);
-        assetService.modAsset(assetEntity);
 
         log.info("주식 종목 코드 등록/수정(StockKindCode)");
         setStockKindCode(form.getStockKindCd(), form.getStockKindName());
@@ -377,7 +362,6 @@ public class StockService {
             stockKindCodeDto.setKindName(kindName);
             commonService.updateStockKindCode(stockKindCodeDto);
         }
-
     }
 
 }

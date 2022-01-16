@@ -15,6 +15,4 @@ public class AssetForm {
     private Long memberId;
     private String AssetType;
     private String AssetName;
-    private Long evalAmt;
-    private Long ableAmt;
 }

@@ -42,6 +42,8 @@ public class BankService {
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("BANK");
         assetForm.setMemberId(form.getMemberId());
+        AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
+        /*
         long evalAmt = 0;
         long loanBalAmt = 0;
         switch(form.getAcnoType()){
@@ -51,8 +53,8 @@ public class BankService {
             case "LOAN": evalAmt = 0; loanBalAmt = form.getLoanBalAmt(); break;
         }
         assetForm.setEvalAmt(evalAmt);
-        AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         assetEntity.setAbleAmt(form.getAbleAmt());
+        */
         AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
             throw new MyassetException("DB 에러 : 자산 등록 실패", MYASSET_ERROR_1000);
@@ -75,6 +77,7 @@ public class BankService {
         log.info("기존 Asset 조회");
         AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
         assetEntity.setAssetName(form.getAssetName());
+        /*
         long evalAmt = 0;
         long loanBalAmt = 0;
         switch(form.getAcnoType()){
@@ -84,6 +87,7 @@ public class BankService {
             case "LOAN": evalAmt = 0; loanBalAmt = form.getLoanBalAmt(); break;
         }
         assetEntity.setEvalAmt(evalAmt);
+        */
         AssetDto assetDto = assetService.modAsset(assetEntity);
         if(assetDto == null){
             throw new MyassetException("DB 에러 : 자산 수정 실패", MYASSET_ERROR_1000);
