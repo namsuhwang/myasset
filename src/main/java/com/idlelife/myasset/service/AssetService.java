@@ -83,7 +83,8 @@ public class AssetService {
 
     // 종합현황 요약
     public TotalAssetSummaryDto getTotalAssetSummary(Long memberId){
-        TotalAssetSummaryDto totalAssetSummary = assetMapper.selectTotalAssetSummary(memberId);
+        TotalAssetSummaryDto totalAssetSummary = new TotalAssetSummaryDto();
+//        TotalAssetSummaryDto totalAssetSummary = assetMapper.selectTotalAssetSummary(memberId);
         return totalAssetSummary;
     }
 

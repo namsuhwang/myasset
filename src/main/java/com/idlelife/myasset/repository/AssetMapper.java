@@ -28,5 +28,5 @@ public interface AssetMapper {
     AssetDto selectAssetDto(long assetId);
 
     // 종합현황 요약
-    TotalAssetSummaryDto selectTotalAssetSummary(Long memberId);
+    //TotalAssetSummaryDto selectTotalAssetSummary(Long memberId);
 }
