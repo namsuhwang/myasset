@@ -273,6 +273,23 @@
     </select>
 
 
+    <select id="selectStockKindCodeDtoList" parameterType="StockKindForm" resultType="StockKindCodeDto">
+        SELECT
+            skc.code, skc.kind_name, skc.exchange
+        FROM stock_kind_code skc
+        WHERE 1 = 1
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND skc.code LIKE CONCAT('%', #{stockKindCd}, '%')
+        </if>
+        <if test = 'stockKindName != null and stockKindName !=""'>
+            AND skc.kind_name LIKE CONCAT('%', #{stockKindName}, '%')
+        </if>
+        ORDER BY skc.code, skc.kind_name
+    </select>
+
+
+
+
 
 
 

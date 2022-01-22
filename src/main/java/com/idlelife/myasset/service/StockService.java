@@ -265,6 +265,11 @@ public class StockService {
         return list;
     }
 
+    public List<StockKindCodeDto> getStockKindCodeDtoList(StockKindForm dom){
+        List<StockKindCodeDto> list = assetStockMapper.selectStockKindCodeDtoList(dom);
+        return list;
+    }
+
     public StockKindDto updateStockKindCurrentStatus(StockKindForm form){
         log.info("주식 종목 현재가 수정");
         if(form.getAssetId() == null){

@@ -1,6 +1,7 @@
 package com.idlelife.myasset.repository;
 
 import com.idlelife.myasset.models.dto.*;
+import com.idlelife.myasset.models.dto.form.StockKindForm;
 import com.idlelife.myasset.models.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -17,6 +18,7 @@ public interface AssetStockMapper {
 
     List<AssetStockDto> selectAssetStockDtoList(AssetSearch dom);
 
+
     AssetStockEntity selectAssetStock(long assetId);
 
     AssetStockDto selectAssetStockDto(long assetId);
@@ -31,6 +33,8 @@ public interface AssetStockMapper {
     int deleteStockKind(long stockKindId);
 
     List<StockKindDto> selectStockKindDtoList(AssetSearch dom);
+
+    List<StockKindCodeDto> selectStockKindCodeDtoList(StockKindForm dom);
 
     StockKindEntity selectStockKind(long stockKindId);
 

@@ -130,6 +130,16 @@ public class StockController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/stock/kind/code/search")
+    public ResponseEntity<List<StockKindCodeDto>> getStockKindCodeSearch(
+            @RequestBody StockKindForm dom
+    ){
+        log.info("call : /stock/kind/code/search");
+        log.info("params : " + dom.toString());
+        List<StockKindCodeDto> result = stockService.getStockKindCodeDtoList(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
 
 
 

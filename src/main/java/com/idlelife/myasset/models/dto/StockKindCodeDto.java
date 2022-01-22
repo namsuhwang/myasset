@@ -15,4 +15,5 @@ import java.sql.Timestamp;
 public class StockKindCodeDto {
   private String code;
   private String KindName;
+  private String exchange;
 }
