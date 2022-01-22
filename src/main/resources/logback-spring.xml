@@ -37,9 +37,9 @@
     </appender>
 
 
-    <springProfile name="default, local">
+    <springProfile name="default, local, dev">
         <logger name="com.idlelife" level="DEBUG"/>
-        <logger name="jdbc.audit" level="ON"/>
+        <logger name="jdbc.audit" level="OFF"/>
         <logger name="jdbc.resultset" level="ON"/>
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
@@ -48,8 +48,8 @@
 
     <springProfile name="dev">
         <logger name="com.idlelife" level="DEBUG"/>
-        <logger name="jdbc.audit" level="ON"/>
-        <logger name="jdbc.resultset" level="ON"/>
+        <logger name="jdbc.audit" level="OFF"/>
+        <logger name="jdbc.resultset" level="OFF"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
@@ -58,7 +58,7 @@
     <springProfile name="alp">
         <logger name="com.idlelife" level="DEBUG"/>
         <logger name="jdbc.audit" level="ON"/>
-        <logger name="jdbc.resultset" level="ON"/>
+        <logger name="jdbc.resultset" level="OFF"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
@@ -66,8 +66,8 @@
     </springProfile>
     <springProfile name="opr">
         <logger name="com.idlelife" level="DEBUG"/>
-        <logger name="jdbc.audit" level="ON"/>
-        <logger name="jdbc.resultset" level="ON"/>
+        <logger name="jdbc.audit" level="OFF"/>
+        <logger name="jdbc.resultset" level="OFF"/>
 
         <root level="INFO">
             <appender-ref ref="STDOUT"/>
