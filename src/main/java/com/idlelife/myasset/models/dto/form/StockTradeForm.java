@@ -6,27 +6,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.sql.Timestamp;
-
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockTradeForm {
   private Long stockTradeId;
-  private String tradeType;
-  private Timestamp tradeDatetime;
-  private String tradeTypeName;
+  private String trType;
+  private String trDate;
+  private String trTypeName;
   private Long stockKindId;
-  private Long tradeQuantity;
-  private Long tradeUnitPrice;
-  private Long tradeAmt;
+  private Long quantity;
+  private Long unitPrice;
+  private Long trAmt;
+  private Long taxAmt;
+  private Long feeAmt;
   private Long befQuantity;
   private Long aftQuantity;
   private Long befBuyAvgPrice;
   private Long befBuyTotPrice;
   private Long aftBuyAvgPrice;
   private Long aftBuyTotPrice;
-  private double pnlRate;
+  private Double pnlRate;
   private Long pnlAmt;
 }

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.idlelife.myasset.models.common.ErrorCode.*;
@@ -348,7 +347,7 @@ public class StockService {
         long buyTotPrice = 0;
         long avgPrice = 0;
         log.info("보유수량, 평단가 등 계산");
-        if(form.getTradeType().equals("BUY")) {
+        if(form.getTrType().equals("BUY")) {
             log.info("매수");
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() + stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() + stockTradeEntity.getTradeAmt();
@@ -371,6 +370,7 @@ public class StockService {
         stockTradeEntity.setAftQuantity(stockKindEntity.getQuantity());
         stockTradeEntity.setAftBuyAvgPrice(stockKindEntity.getBuyAvgPrice());
         stockTradeEntity.setAftBuyTotPrice(stockKindEntity.getBuyTotPrice());
+
         int cnt = assetStockMapper.insertStockTrade(stockTradeEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 거래 내역 등록 실패", MYASSET_ERROR_1000);
@@ -404,19 +404,21 @@ public class StockService {
     private StockTradeEntity getStockTradeEntityFromForm(StockTradeForm form){
         StockTradeEntity stockTradeEntity = new StockTradeEntity();
         stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
-        stockTradeEntity.setTradeType(form.getTradeType());
+        stockTradeEntity.setTradeType(form.getTrType());
         stockTradeEntity.setStockKindId(form.getStockTradeId());
-        stockTradeEntity.setTradeDatetime(form.getTradeDatetime());
-        stockTradeEntity.setTradeTypeName(form.getTradeTypeName());
-        stockTradeEntity.setTradeQuantity(form.getTradeQuantity());
-        stockTradeEntity.setTradeUnitPrice(form.getTradeUnitPrice());
-        stockTradeEntity.setTradeAmt(form.getTradeAmt());
+        stockTradeEntity.setTradeDate(form.getTrDate());
+        stockTradeEntity.setTradeTypeName(form.getTrTypeName());
+        stockTradeEntity.setTradeQuantity(form.getQuantity());
+        stockTradeEntity.setTradeUnitPrice(form.getUnitPrice());
+        stockTradeEntity.setTradeAmt(form.getTrAmt());
         stockTradeEntity.setBefQuantity(form.getBefQuantity());
         stockTradeEntity.setAftQuantity(form.getAftQuantity());
         stockTradeEntity.setBefBuyAvgPrice(form.getBefBuyAvgPrice());
         stockTradeEntity.setBefBuyTotPrice(form.getBefBuyTotPrice());
         stockTradeEntity.setAftBuyAvgPrice(form.getAftBuyAvgPrice());
         stockTradeEntity.setAftBuyTotPrice(form.getAftBuyTotPrice());
+        stockTradeEntity.setTaxAmt(form.getTaxAmt());
+        stockTradeEntity.setFeeAmt(form.getFeeAmt());
         stockTradeEntity.setPnlRate(form.getPnlRate());
         stockTradeEntity.setPnlAmt(form.getPnlAmt());
         stockTradeEntity.setDeleteYn("N");

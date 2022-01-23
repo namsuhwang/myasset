@@ -315,6 +315,8 @@
                 ,bef_buy_tot_price
                 ,aft_buy_avg_price
                 ,aft_buy_tot_price
+                ,tax_amt
+                ,fee_amt
                 ,pnl_rate
                 ,pnl_amt
                 ,delete_yn
@@ -336,6 +338,8 @@
                 ,${befBuyTotPrice}
                 ,${aftBuyAvgPrice}
                 ,${aftBuyTotPrice}
+                ,${taxAmt}
+                ,${feeAmt}
                 ,${pnlRate}
                 ,${pnlAmt}
                 ,#{deleteYn}
@@ -352,8 +356,8 @@
                 ,stock_kind_id        = ${stockKindId}
                 ,trade_datetime       = #{tradeDatetime}
                 ,trade_type_name      = #{tradeTypeName}
-                ,trade_quantity            = ${tradeQuantity}
-                ,trade_unit_price          = ${tradeUnitPrice}
+                ,trade_quantity       = ${tradeQuantity}
+                ,trade_unit_price     = ${tradeUnitPrice}
                 ,trade_amt            = ${tradeAmt}
                 ,bef_quantity         = ${befQuantity}
                 ,aft_quantity         = ${aftQuantity}
@@ -361,6 +365,8 @@
                 ,bef_buy_tot_price    = ${befBuyTotPrice}
                 ,aft_buy_avg_price    = ${aftBuyAvgPrice}
                 ,aft_buy_tot_price    = ${aftBuyTotPrice}
+                ,tax_amt              = ${taxAmt}
+                ,fee_amt              = ${feeAmt}
                 ,pnl_rate             = ${pnlRate}
                 ,pnl_amt              = ${pnlAmt}
                 ,delete_yn            = #{deleteYn}
@@ -392,6 +398,8 @@
              ,bef_buy_tot_price
              ,aft_buy_avg_price
              ,aft_buy_tot_price
+             ,tax_amt
+             ,fee_amt
              ,pnl_rate
              ,pnl_amt
              ,delete_yn
@@ -417,6 +425,8 @@
              ,bef_buy_tot_price
              ,aft_buy_avg_price
              ,aft_buy_tot_price
+             ,tax_amt
+             ,fee_amt
              ,pnl_rate
              ,pnl_amt
              ,delete_yn
@@ -442,6 +452,8 @@
              ,bef_buy_tot_price
              ,aft_buy_avg_price
              ,aft_buy_tot_price
+             ,tax_amt
+             ,fee_amt
              ,pnl_rate
              ,pnl_amt
              ,delete_yn
@@ -468,6 +480,8 @@
             ,bef_buy_tot_price
             ,aft_buy_avg_price
             ,aft_buy_tot_price
+            ,tax_amt
+            ,fee_amt
             ,pnl_rate
             ,pnl_amt
             ,delete_yn

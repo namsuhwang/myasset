@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class StockTradeEntity {
   private Long stockTradeId;
   private String tradeType;
-  private Timestamp tradeDatetime;
+  private String tradeDate;
   private String tradeTypeName;
   private Long stockKindId;
   private Long tradeQuantity;
@@ -27,6 +27,8 @@ public class StockTradeEntity {
   private Long befBuyTotPrice;
   private Long aftBuyAvgPrice;
   private Long aftBuyTotPrice;
+  private Long taxAmt;
+  private Long feeAmt;
   private double pnlRate;
   private Long pnlAmt;
   private String deleteYn;
