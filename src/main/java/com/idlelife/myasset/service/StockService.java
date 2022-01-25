@@ -347,7 +347,7 @@ public class StockService {
         long buyTotPrice = 0;
         long avgPrice = 0;
         log.info("보유수량, 평단가 등 계산");
-        if(form.getTrType().equals("BUY")) {
+        if(form.getTrType().equalsIgnoreCase("BUY")) {
             log.info("매수");
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() + stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() + stockTradeEntity.getTradeAmt();
@@ -406,21 +406,13 @@ public class StockService {
         stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
         stockTradeEntity.setTradeType(form.getTrType());
         stockTradeEntity.setStockKindId(form.getStockTradeId());
-        stockTradeEntity.setTradeDate(form.getTrDate());
+        stockTradeEntity.setTradeDate(form.getTrDate().replaceAll("-", ""));
         stockTradeEntity.setTradeTypeName(form.getTrTypeName());
         stockTradeEntity.setTradeQuantity(form.getQuantity());
         stockTradeEntity.setTradeUnitPrice(form.getUnitPrice());
         stockTradeEntity.setTradeAmt(form.getTrAmt());
-        stockTradeEntity.setBefQuantity(form.getBefQuantity());
-        stockTradeEntity.setAftQuantity(form.getAftQuantity());
-        stockTradeEntity.setBefBuyAvgPrice(form.getBefBuyAvgPrice());
-        stockTradeEntity.setBefBuyTotPrice(form.getBefBuyTotPrice());
-        stockTradeEntity.setAftBuyAvgPrice(form.getAftBuyAvgPrice());
-        stockTradeEntity.setAftBuyTotPrice(form.getAftBuyTotPrice());
         stockTradeEntity.setTaxAmt(form.getTaxAmt());
         stockTradeEntity.setFeeAmt(form.getFeeAmt());
-        stockTradeEntity.setPnlRate(form.getPnlRate());
-        stockTradeEntity.setPnlAmt(form.getPnlAmt());
         stockTradeEntity.setDeleteYn("N");
         return stockTradeEntity;
     }
