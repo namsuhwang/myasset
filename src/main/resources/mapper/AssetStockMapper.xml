@@ -324,7 +324,7 @@
                 ,last_update_datetime
             ) VALUES
             (
-                ,${stockTradeId}
+                 ${stockTradeId}
                 ,#{tradeType}
                 ,${stockKindId}
                 ,#{tradeDatetime}

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @ToString
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 public class StockTradeDto {
   private Long stockTradeId;
   private String tradeType;
-  private String tradeDate;
+  private LocalDateTime tradeDateTime;
   private String tradeTypeName;
   private Long stockKindId;
   private Long tradeQuantity;

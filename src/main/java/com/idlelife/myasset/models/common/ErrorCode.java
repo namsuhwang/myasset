@@ -18,6 +18,8 @@ public enum ErrorCode {
     MYASSET_ERROR_1001(400,"1001","자산(Asset) 등록 필요"),
     MYASSET_ERROR_1002(400,"1002","증권사(AssetStock) 먼저 등록"),
     MYASSET_ERROR_1003(400,"1003","주식 종목(StockKind) 먼저 등록"),
+    MYASSET_ERROR_1004(400,"1004","주식 거래내역 필수입력 확인(거래종류, 종목코드, 거래수량, 거래단가)"),
+    MYASSET_ERROR_1005(400,"1005","매도수량이 보유수량보다 많습니다."),
     ;
 
     private int status;

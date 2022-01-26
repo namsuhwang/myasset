@@ -1,5 +1,6 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.CommonUtil;
 import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.dto.*;
 import com.idlelife.myasset.models.dto.form.*;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.idlelife.myasset.models.common.ErrorCode.*;
@@ -335,6 +338,12 @@ public class StockService {
 
     public StockTradeDto regStockTrade(StockTradeForm form){
         log.info("주식 거래 등록");
+
+        long buyTotPrice = 0;
+        long avgPrice = 0;
+        long pnlAmt = 0;
+        Double pnlRate;
+
         StockKindEntity stockKindEntity = assetStockMapper.selectStockKind(form.getStockKindId());
         if(stockKindEntity == null){
             log.error("주식 종목(StockKind) 먼저 등록");
@@ -343,17 +352,36 @@ public class StockService {
 
         log.info("주식 종목 정보 업데이트");
         StockTradeEntity stockTradeEntity = getStockTradeEntityFromForm(form);
+        StockTradeEntity stockTradeEntityOld = assetStockMapper.selectLastStockTrade(stockKindEntity.getStockKindId());
+        if(stockTradeEntityOld != null) {
+            stockTradeEntity.setBefQuantity(stockTradeEntityOld.getAftQuantity());
+            stockTradeEntity.setBefBuyAvgPrice(stockTradeEntityOld.getAftBuyAvgPrice());
+            stockTradeEntity.setBefBuyTotPrice(stockTradeEntityOld.getAftBuyTotPrice());
+        }else{
+            stockTradeEntity.setBefQuantity(0L);
+            stockTradeEntity.setBefBuyAvgPrice(0L);
+            stockTradeEntity.setBefBuyTotPrice(0L);
+        }
+        // 수익금액, 수익률은 거래내역에 포함할지 나중에 실시간 계산할지 결정 필요
+        // 일단은 0으로 세팅
+        // stock_kind 테이블에만 업데이트하면 될 듯.
+        stockTradeEntity.setPnlAmt(0L);
+        stockTradeEntity.setPnlRate(0.0);
+
         log.info("주식 평단가 계산");
-        long buyTotPrice = 0;
-        long avgPrice = 0;
         log.info("보유수량, 평단가 등 계산");
         if(form.getTrType().equalsIgnoreCase("BUY")) {
             log.info("매수");
+            stockTradeEntity.setTradeTypeName("매수");
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() + stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() + stockTradeEntity.getTradeAmt();
             avgPrice = buyTotPrice / stockKindEntity.getQuantity();
         }else{
             log.info("매도");
+            stockTradeEntity.setTradeTypeName("매도");
+            if((stockKindEntity.getQuantity() - stockTradeEntity.getTradeQuantity()) > 0){
+                throw new MyassetException(MYASSET_ERROR_1003);
+            }
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() - stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() - stockTradeEntity.getTradeAmt();
             avgPrice = buyTotPrice / stockKindEntity.getQuantity();
@@ -363,10 +391,6 @@ public class StockService {
         assetStockMapper.updateStockKind(stockKindEntity);
 
         log.info("주식 거래내역 등록");
-        StockTradeEntity stockTradeEntityOld = assetStockMapper.selectLastStockTrade(stockKindEntity.getStockKindId());
-        stockTradeEntity.setBefQuantity(stockTradeEntityOld.getAftQuantity());
-        stockTradeEntity.setBefBuyAvgPrice(stockTradeEntityOld.getAftBuyAvgPrice());
-        stockTradeEntity.setBefBuyTotPrice(stockTradeEntityOld.getAftBuyTotPrice());
         stockTradeEntity.setAftQuantity(stockKindEntity.getQuantity());
         stockTradeEntity.setAftBuyAvgPrice(stockKindEntity.getBuyAvgPrice());
         stockTradeEntity.setAftBuyTotPrice(stockKindEntity.getBuyTotPrice());
@@ -376,7 +400,8 @@ public class StockService {
             throw new MyassetException("DB 에러 : 주식 거래 내역 등록 실패", MYASSET_ERROR_1000);
         }
 
-        return assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
+        StockTradeDto resultDto = assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
+        return resultDto;
     }
 
     public StockTradeDto modStockTrade(StockTradeForm form){
@@ -402,15 +427,22 @@ public class StockService {
     }
 
     private StockTradeEntity getStockTradeEntityFromForm(StockTradeForm form){
+        if(CommonUtil.isNullEmpty(form.getStockKindCd())
+            || CommonUtil.isNullEmpty(form.getQuantity().toString()) || form.getQuantity() <= 0
+            || CommonUtil.isNullEmpty(form.getUnitPrice().toString()) || form.getUnitPrice() <= 0){
+            throw new MyassetException(MYASSET_ERROR_1004);
+        }
+        Long trAmt = form.getQuantity() * form.getUnitPrice();
         StockTradeEntity stockTradeEntity = new StockTradeEntity();
         stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
         stockTradeEntity.setTradeType(form.getTrType());
-        stockTradeEntity.setStockKindId(form.getStockTradeId());
-        stockTradeEntity.setTradeDate(form.getTrDate().replaceAll("-", ""));
+        stockTradeEntity.setStockKindId(form.getStockKindId());
+        LocalDateTime tradeDate = LocalDateTime.parse(form.getTrDate().replaceAll("-", "") + "000000", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        stockTradeEntity.setTradeDatetime(tradeDate);
         stockTradeEntity.setTradeTypeName(form.getTrTypeName());
         stockTradeEntity.setTradeQuantity(form.getQuantity());
         stockTradeEntity.setTradeUnitPrice(form.getUnitPrice());
-        stockTradeEntity.setTradeAmt(form.getTrAmt());
+        stockTradeEntity.setTradeAmt(trAmt);
         stockTradeEntity.setTaxAmt(form.getTaxAmt());
         stockTradeEntity.setFeeAmt(form.getFeeAmt());
         stockTradeEntity.setDeleteYn("N");
