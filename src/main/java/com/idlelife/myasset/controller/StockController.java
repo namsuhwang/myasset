@@ -180,13 +180,13 @@ public class StockController {
         return ResponseEntity.ok().body(result);
     }
 
-    @PostMapping("/stock/trade/list")
-    public ResponseEntity<List<StockTradeDto>> getStockTradeList(
+    @PostMapping("/stock/trade/history")
+    public ResponseEntity<StockTradeHistoryDto> getStockTradeHistory(
             @RequestBody AssetSearch dom
     ){
         log.info("call : /stock/trade/list");
         log.info("params : " + dom.toString());
-        List<StockTradeDto> result = stockService.getStockTradeDtoList(dom);
+        StockTradeHistoryDto result = stockService.getStockTradeHistory(dom);
 
         return ResponseEntity.ok().body(result);
     }

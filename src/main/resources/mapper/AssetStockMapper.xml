@@ -135,10 +135,6 @@
                 ,quantity
                 ,buy_avg_price
                 ,buy_tot_price
-                ,cur_unit_price
-                ,cur_tot_price
-                ,pnl_rate
-                ,pnl_amt
                 ,delete_yn
                 ,reg_datetime
                 ,last_update_datetime
@@ -152,10 +148,6 @@
                 ,${quantity}
                 ,${buyAvgPrice}
                 ,${buyTotPrice}
-                ,${curUnitPrice}
-                ,${curTotPrice}
-                ,${pnlRate}
-                ,${pnlAmt}
                 ,#{deleteYn}
                 ,NOW()
                 ,NOW()
@@ -172,22 +164,7 @@
           ,quantity          = ${quantity}
           ,buy_avg_price     = ${buyAvgPrice}
           ,buy_tot_price     = ${buyTotPrice}
-          ,cur_unit_price    = ${curUnitPrice}
-          ,cur_tot_price     = ${curTotPrice}
-          ,pnl_rate          = ${pnlRate}
-          ,pnl_amt           = ${pnlAmt}
           ,delete_yn         = #{deleteYn}
-          ,last_update_datetime = NOW()
-        WHERE stock_kind_id = ${stockKindId}
-    </update>
-
-    <update id="updateStockKindCurrentStatus" parameterType="StockKindEntity">
-        UPDATE stock_kind
-        SET
-           cur_unit_price    = ${curUnitPrice}
-          ,cur_tot_price     = ${curTotPrice}
-          ,pnl_rate          = ${pnlRate}
-          ,pnl_amt           = ${pnlAmt}
           ,last_update_datetime = NOW()
         WHERE stock_kind_id = ${stockKindId}
     </update>
@@ -210,10 +187,6 @@
              ,quantity
              ,buy_avg_price
              ,buy_tot_price
-             ,cur_unit_price
-             ,cur_tot_price
-             ,pnl_rate
-             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -231,10 +204,6 @@
              ,quantity
              ,buy_avg_price
              ,buy_tot_price
-             ,cur_unit_price
-             ,cur_tot_price
-             ,pnl_rate
-             ,pnl_amt
              ,delete_yn
              ,reg_datetime
              ,last_update_datetime
@@ -252,10 +221,6 @@
             ,quantity
             ,buy_avg_price
             ,buy_tot_price
-            ,cur_unit_price
-            ,cur_tot_price
-            ,pnl_rate
-            ,pnl_amt
             ,delete_yn
             ,reg_datetime
             ,last_update_datetime
@@ -270,6 +235,7 @@
         <if test = 'deleteYn != null and deleteYn !=""'>
             AND sk.delete_yn = #{deleteYn}
         </if>
+        ORDER BY stock_kind_name
     </select>
 
 
@@ -465,33 +431,40 @@
 
     <select id="selectStockTradeDtoList" parameterType="AssetSearch" resultType="StockTradeDto">
         SELECT
-            stock_trade_id
-            ,trade_type
-            ,cc.code_name AS trade_type_name
-            ,stock_kind_id
-            ,trade_datetime
-            ,trade_type_name
-            ,trade_quantity
-            ,trade_unit_price
-            ,trade_amt
-            ,bef_quantity
-            ,aft_quantity
-            ,bef_buy_avg_price
-            ,bef_buy_tot_price
-            ,aft_buy_avg_price
-            ,aft_buy_tot_price
-            ,tax_amt
-            ,fee_amt
-            ,pnl_rate
-            ,pnl_amt
-            ,delete_yn
-            ,reg_datetime
-            ,last_update_datetime
+            st.stock_trade_id
+            ,st.trade_type
+            ,st.trade_type_name
+            ,st.stock_kind_id
+            ,sk.stock_kind_cd
+            ,sk.stock_kind_name
+            ,SUBSTR(DATE_FORMAT(st.trade_datetime, '%Y-%m-%d %H:%i'), 3) AS trade_datetime
+            ,st.trade_quantity
+            ,st.trade_unit_price
+            ,st.trade_amt
+            ,st.bef_quantity
+            ,st.aft_quantity
+            ,st.bef_buy_avg_price
+            ,st.bef_buy_tot_price
+            ,st.aft_buy_avg_price
+            ,st.aft_buy_tot_price
+            ,st.tax_amt
+            ,st.fee_amt
+            ,st.pnl_rate
+            ,st.pnl_amt
+            ,st.delete_yn
+            ,st.reg_datetime
+            ,st.last_update_datetime
         FROM stock_trade st
-            LEFT OUTER JOIN common_code cc ON cc.div_code = 'STOCK_TRADE_TYPE' AND cc.code = st.trade_type
+            LEFT OUTER JOIN stock_kind sk ON sk.stock_kind_id = st.stock_kind_id
         WHERE 1 = 1
         <if test = 'stockTradeId != null and stockTradeId !=""'>
             AND st.stock_trade_id = ${stockTradeId}
+        </if>
+        <if test = 'stockTradeType != null and stockTradeType !="" and stockTradeType != "ALL"'>
+            AND sk.trade_type = ${stockTradeType}
+        </if>
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND sk.stock_kind_cd = ${stockKindCd}
         </if>
         <if test = 'memberId != null and memberId !=""'>
             AND st.member_id = ${memberId}
@@ -499,5 +472,6 @@
         <if test = 'deleteYn != null and deleteYn !=""'>
             AND st.delete_yn = #{deleteYn}
         </if>
+        ORDER BY trade_datetime, reg_datetime desc
     </select>
 </mapper>

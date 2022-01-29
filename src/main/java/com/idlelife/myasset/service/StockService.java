@@ -54,7 +54,7 @@ public class StockService {
         Long totPnlAmt = 0L;
 
         for(StockKindDto kindDto : stockKindDtoList){
-            kindDto = updateCurStockKind(kindDto);
+            kindDto = getCurStockKind(kindDto);
             totBuyPrice =+ kindDto.getBuyTotPrice();
             totCurPrice =+ kindDto.getCurTotPrice();
             totPnlAmt =+ kindDto.getPnlAmt();
@@ -194,6 +194,7 @@ public class StockService {
     }
 
 
+    /*  stock_kind 테이블에서 현재가격 및 손익정보 관리 하지 않기로 함에 따라 주석처리
     // 현재 주가 정보 조회 및 반영
     private StockKindDto updateCurStockKind(StockKindDto kindDto){
         ScrapStockKindDto curStockInfo = scrapStockService.getScrapStockKind(kindDto.getStockKindCd());
@@ -212,6 +213,40 @@ public class StockService {
         if(cnt < 1){
             throw new MyassetException("DB 에러 : updateCurStockKind 주식 종목 수정 실패", MYASSET_ERROR_1000);
         }
+
+        kindDto.setBaseTime(curStockInfo.getBaseTime());
+        kindDto.setCurUnitPrice(curPrice);
+        kindDto.setCurTotPrice(stockKindEntity.getCurTotPrice());
+        kindDto.setPnlAmt(pnlAmt);
+        kindDto.setPnlRate(pnlRate);
+        kindDto.setDiffAmount(curStockInfo.getDiffAmount());
+        kindDto.setDayRange(curStockInfo.getDayRange());
+        kindDto.setHighPrice(curStockInfo.getHighPrice());
+        kindDto.setLowPrice(curStockInfo.getLowPrice());
+        return kindDto;
+    }
+        */
+
+    // 현재 주가 정보 조회 및 반영
+    private StockKindDto getCurStockKind(StockKindDto kindDto){
+        ScrapStockKindDto curStockInfo = scrapStockService.getScrapStockKind(kindDto.getStockKindCd());
+        long curPrice = Long.valueOf(curStockInfo.getPrice().replaceAll(",", ""));
+        long curTotPrice = curPrice * kindDto.getQuantity();
+        long pnlAmt = curTotPrice - kindDto.getBuyTotPrice();
+        double pnlRate = Math.round((double)pnlAmt / (double)kindDto.getBuyTotPrice() * 10000.0) / 100.0;
+
+        StockKindEntity stockKindEntity = new StockKindEntity();
+        stockKindEntity.setStockKindId(kindDto.getStockKindId());
+        stockKindEntity.setCurUnitPrice(curPrice);
+        stockKindEntity.setCurTotPrice(curTotPrice);
+        stockKindEntity.setPnlAmt(pnlAmt);
+        stockKindEntity.setPnlRate(pnlRate);
+        /*
+        int cnt = assetStockMapper.updateStockKindCurrentStatus(stockKindEntity);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : updateCurStockKind 주식 종목 수정 실패", MYASSET_ERROR_1000);
+        }
+        */
 
         kindDto.setBaseTime(curStockInfo.getBaseTime());
         kindDto.setCurUnitPrice(curPrice);
@@ -341,8 +376,6 @@ public class StockService {
 
         long buyTotPrice = 0;
         long avgPrice = 0;
-        long pnlAmt = 0;
-        Double pnlRate;
 
         StockKindEntity stockKindEntity = assetStockMapper.selectStockKind(form.getStockKindId());
         if(stockKindEntity == null){
@@ -352,43 +385,48 @@ public class StockService {
 
         log.info("주식 종목 정보 업데이트");
         StockTradeEntity stockTradeEntity = getStockTradeEntityFromForm(form);
-        StockTradeEntity stockTradeEntityOld = assetStockMapper.selectLastStockTrade(stockKindEntity.getStockKindId());
-        if(stockTradeEntityOld != null) {
-            stockTradeEntity.setBefQuantity(stockTradeEntityOld.getAftQuantity());
-            stockTradeEntity.setBefBuyAvgPrice(stockTradeEntityOld.getAftBuyAvgPrice());
-            stockTradeEntity.setBefBuyTotPrice(stockTradeEntityOld.getAftBuyTotPrice());
+
+        if(stockKindEntity != null) {
+            stockTradeEntity.setBefQuantity(stockKindEntity.getQuantity());
+            stockTradeEntity.setBefBuyAvgPrice(stockKindEntity.getBuyAvgPrice());
+            stockTradeEntity.setBefBuyTotPrice(stockKindEntity.getBuyTotPrice());
         }else{
             stockTradeEntity.setBefQuantity(0L);
             stockTradeEntity.setBefBuyAvgPrice(0L);
             stockTradeEntity.setBefBuyTotPrice(0L);
         }
-        // 수익금액, 수익률은 거래내역에 포함할지 나중에 실시간 계산할지 결정 필요
-        // 일단은 0으로 세팅
-        // stock_kind 테이블에만 업데이트하면 될 듯.
-        stockTradeEntity.setPnlAmt(0L);
-        stockTradeEntity.setPnlRate(0.0);
 
         log.info("주식 평단가 계산");
         log.info("보유수량, 평단가 등 계산");
+
         if(form.getTrType().equalsIgnoreCase("BUY")) {
             log.info("매수");
             stockTradeEntity.setTradeTypeName("매수");
+            stockTradeEntity.setPnlAmt(0L);
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() + stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() + stockTradeEntity.getTradeAmt();
-            avgPrice = buyTotPrice / stockKindEntity.getQuantity();
         }else{
             log.info("매도");
             stockTradeEntity.setTradeTypeName("매도");
             if((stockKindEntity.getQuantity() - stockTradeEntity.getTradeQuantity()) > 0){
                 throw new MyassetException(MYASSET_ERROR_1003);
             }
+            // 손익금액 = (거래단가 - 직전 평단가) X 거래수량
+            // 손익율 = 손익금액 / (직전 평단가 X 거래수량)
+            long pnlAmt = (stockTradeEntity.getTradeUnitPrice() - stockKindEntity.getBuyAvgPrice()) * stockTradeEntity.getTradeQuantity();
+            Double pnlRate = Math.round((double)pnlAmt / (stockKindEntity.getBuyAvgPrice() * stockTradeEntity.getTradeQuantity() * 10000.0)) / 100.0;
+            stockTradeEntity.setPnlAmt(pnlAmt);
+            stockTradeEntity.setPnlRate(pnlRate);
+
             stockKindEntity.setQuantity(stockKindEntity.getQuantity() - stockTradeEntity.getTradeQuantity());
             buyTotPrice = stockKindEntity.getBuyTotPrice() - stockTradeEntity.getTradeAmt();
-            avgPrice = buyTotPrice / stockKindEntity.getQuantity();
         }
+        avgPrice = buyTotPrice / stockKindEntity.getQuantity();
         stockKindEntity.setBuyTotPrice(buyTotPrice);
         stockKindEntity.setBuyAvgPrice(avgPrice);
-        assetStockMapper.updateStockKind(stockKindEntity);
+        if(assetStockMapper.updateStockKind(stockKindEntity) < 1){
+            throw new MyassetException("DB 에러 : 주식 종목 정보 업데이트 실패", MYASSET_ERROR_1000);
+        }
 
         log.info("주식 거래내역 등록");
         stockTradeEntity.setAftQuantity(stockKindEntity.getQuantity());
@@ -421,9 +459,25 @@ public class StockService {
         return assetStockMapper.selectStockTradeDto(stockTradeId);
     }
 
-    public List<StockTradeDto> getStockTradeDtoList(AssetSearch dom){
+    public StockTradeHistoryDto getStockTradeHistory(AssetSearch dom){
+        Long totalBuyAmt = 0L;
+        Long totalSaleAmt = 0L;
         List<StockTradeDto> list = assetStockMapper.selectStockTradeDtoList(dom);
-        return list;
+
+        for(StockTradeDto dto : list){
+            if(dto.getTradeType().equalsIgnoreCase("SALE")){
+                totalBuyAmt = totalBuyAmt + dto.getBefQuantity() * dto.getBefBuyAvgPrice();
+                totalSaleAmt = totalSaleAmt + dto.getTradeQuantity() * dto.getTradeUnitPrice();
+            }
+        }
+
+        Long realPnlAmt = totalSaleAmt - totalBuyAmt;
+        Double realPnlRate = Math.round(realPnlAmt / totalBuyAmt * 10000.0) / 100.0;
+        StockTradeHistoryDto result = new StockTradeHistoryDto();
+        result.setRealPnlAmt(realPnlAmt);
+        result.setRealPnlRate(realPnlRate);
+        result.setList(list);
+        return result;
     }
 
     private StockTradeEntity getStockTradeEntityFromForm(StockTradeForm form){
@@ -437,7 +491,7 @@ public class StockService {
         stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
         stockTradeEntity.setTradeType(form.getTrType());
         stockTradeEntity.setStockKindId(form.getStockKindId());
-        LocalDateTime tradeDate = LocalDateTime.parse(form.getTrDate().replaceAll("-", "") + "000000", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        LocalDateTime tradeDate = LocalDateTime.parse(form.getTrDate().replaceAll("-", "") + form.getTrTime().replaceAll(":", "") + "00", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         stockTradeEntity.setTradeDatetime(tradeDate);
         stockTradeEntity.setTradeTypeName(form.getTrTypeName());
         stockTradeEntity.setTradeQuantity(form.getQuantity());

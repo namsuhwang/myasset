@@ -14,7 +14,12 @@ public class AssetSearch {
     private Long memberId;
     private String assetType;
     private String bankAcnoType;
+    private String stockKindCd;
+    private String stockTradeType;
+    private String searchStartDate;
+    private String searchEndDate;
     private String reType;
     private String deleteYn;
+    private Long stockTradeId;
     private Long stockKindId;
 }

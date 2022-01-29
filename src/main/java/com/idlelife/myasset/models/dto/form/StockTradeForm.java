@@ -17,6 +17,7 @@ public class StockTradeForm {
   private String exchange;
   private String trType;
   private String trDate;
+  private String trTime;
   private String trTypeName;
   private Long quantity;
   private Long unitPrice;

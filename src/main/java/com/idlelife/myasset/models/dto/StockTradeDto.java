@@ -16,9 +16,11 @@ import java.time.LocalDateTime;
 public class StockTradeDto {
   private Long stockTradeId;
   private String tradeType;
-  private LocalDateTime tradeDateTime;
+  private String tradeDateTime;
   private String tradeTypeName;
   private Long stockKindId;
+  private String stockKindCd;
+  private String stockKindName;
   private Long tradeQuantity;
   private Long tradeUnitPrice;
   private Long tradeAmt;
