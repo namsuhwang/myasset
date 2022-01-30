@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idlelife.myasset.repository.MemberMapper">
+
+    <select id="createMemberId" resultType="Long">
+        SELECT IFNULL(MAX(member_id), 0) + 1 AS member_id
+        FROM member
+    </select>
+
+    <insert id="insertMember" parameterType="MemberEntity">
+            INSERT member (
+                    member_id
+                    ,member_name
+                    ,email
+                    ,pwd
+                    ,birth_year
+                    ,birth_month
+                    ,birth_day
+                    ,gender
+                    ,delete_yn
+                    ,reg_datetime
+                    ,last_update_datetime
+            ) VALUES
+            (
+                ${memberId}
+                ,#{memberName}
+                ,#{email}
+                ,#{pwd}
+                ,#{birthYear}
+                ,#{birthMonth}
+                ,#{birthDay}
+                ,#{gender}
+                ,#{deleteYn}
+                ,NOW()
+                ,NOW()
+            )
+    </insert>
+
+    <update id="updateMember" parameterType="MemberEntity">
+            UPDATE member
+               SET
+                  member_name   = #{memberName}
+                 ,email         = #{email}
+                 ,pwd           = #{pwd}
+                 ,birth_year    = #{birthYear}
+                 ,birth_month   = #{birthMonth}
+                 ,birth_day     = #{birthDay}
+                 ,gender        = #{gender}
+                 ,delete_yn     = #{deleteYn}
+                 ,last_update_datetime = NOW()
+            WHERE member_id = ${memberId}
+    </update>
+
+    <delete id="deleteMember" parameterType="Long">
+            UPDATE member
+            SET
+               delete_yn = 'Y'
+              ,last_update_datetime = NOW()
+            WHERE member_id = ${memberId}
+    </delete>
+
+    <select id="selectMember" parameterType="Long" resultType="MemberEntity">
+            SELECT
+                member_id
+                 ,member_name
+                 ,email
+                 ,pwd
+                 ,birth_year
+                 ,birth_month
+                 ,birth_day
+                 ,gender
+                 ,delete_yn
+                 ,reg_datetime
+                 ,last_update_datetime
+            FROM member
+            WHERE member_id = ${memberId}
+    </select>
+
+    <select id="selectMemberDto" parameterType="MemberSearch" resultType="MemberDto">
+            SELECT
+                member_id
+                 ,member_name
+                 ,email
+                 ,pwd
+                 ,CONCAT(birth_year, '-',  birth_month, '-',  birth_day) AS birth
+                 ,gender
+            FROM member
+            WHERE delete_yn != 'Y'
+            <if test = 'memberId != null and memberId !=""'>
+                AND member_id = ${memberId}
+            </if>
+            <if test = 'memberName != null and memberName !=""'>
+                AND member_name = #{memberName}
+            </if>
+            <if test = 'email != null and email !=""'>
+                AND email = #{email}
+            </if>
+    </select>
+
+    <select id="selectMemberDtoList" parameterType="MemberSearch" resultType="MemberDto">
+            SELECT
+                member_id
+                ,member_name
+                ,email
+                ,pwd
+                ,CONCAT(birth_year, '-',  birth_month, '-',  birth_day) AS birth
+                ,gender
+            FROM member
+            WHERE 1 = 1
+              <if test = 'memberName != null and memberName !=""'>
+                    AND member_name LIKE CONCAT('%', #{memberName}, '%')
+              </if>
+              <if test = 'email != null and email !=""'>
+                    AND email LIKE CONCAT('%', #{email}, '%')
+              </if>
+    </select>
+</mapper>
