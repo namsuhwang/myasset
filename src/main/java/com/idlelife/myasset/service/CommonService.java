@@ -1,11 +1,9 @@
 package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.common.exception.MyassetException;
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.AssetForm;
-import com.idlelife.myasset.models.dto.form.CommonCodeForm;
-import com.idlelife.myasset.models.entity.AssetEntity;
-import com.idlelife.myasset.repository.AssetMapper;
+import com.idlelife.myasset.models.common.form.CommonCodeForm;
+import com.idlelife.myasset.models.stock.dto.StockKindCodeDto;
+import com.idlelife.myasset.models.common.dto.CommonCodeDto;
 import com.idlelife.myasset.repository.CommonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

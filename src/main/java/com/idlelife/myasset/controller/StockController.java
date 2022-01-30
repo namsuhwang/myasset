@@ -1,8 +1,11 @@
 package com.idlelife.myasset.controller;
 
 
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.*;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.stock.dto.*;
+import com.idlelife.myasset.models.stock.form.AssetStockForm;
+import com.idlelife.myasset.models.stock.form.StockKindForm;
+import com.idlelife.myasset.models.stock.form.StockTradeForm;
 import com.idlelife.myasset.service.StockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ public class StockController {
 
     @PostMapping("/stock/total")
     public ResponseEntity<TotalStockAssetDto> getTotalStockAsset(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /stock/total");
         log.info("params : " + dom.toString());
@@ -73,7 +76,7 @@ public class StockController {
 
     @PostMapping("/stock/acno/list")
     public ResponseEntity<List<AssetStockDto>> getAssetStockList(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /stock/acno/list");
         log.info("params : " + dom.toString());
@@ -121,7 +124,7 @@ public class StockController {
 
     @PostMapping("/stock/kind/list")
     public ResponseEntity<List<StockKindDto>> getStockKindList(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /stock/kind/list");
         log.info("params : " + dom.toString());
@@ -182,7 +185,7 @@ public class StockController {
 
     @PostMapping("/stock/trade/history")
     public ResponseEntity<StockTradeHistoryDto> getStockTradeHistory(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /stock/trade/list");
         log.info("params : " + dom.toString());

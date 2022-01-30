@@ -1,11 +1,11 @@
 package com.idlelife.myasset.controller;
 
 
-import com.idlelife.myasset.models.dto.AssetReDto;
-import com.idlelife.myasset.models.dto.AssetReRentDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.dto.form.AssetReForm;
-import com.idlelife.myasset.models.dto.form.AssetReRentForm;
+import com.idlelife.myasset.models.re.dto.AssetReDto;
+import com.idlelife.myasset.models.re.dto.AssetReRentDto;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.re.form.AssetReForm;
+import com.idlelife.myasset.models.re.form.AssetReRentForm;
 import com.idlelife.myasset.service.ReService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class ReController {
 
     @PostMapping("/re/list")
     public ResponseEntity<List<AssetReDto>> getAssetList(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /re/list");
         log.info("params : " + dom.toString());
@@ -111,7 +111,7 @@ public class ReController {
 
     @PostMapping("/re/rent/list")
     public ResponseEntity<List<AssetReRentDto>> getAssetRentList(
-            @RequestBody AssetSearch dom
+            @RequestBody StockSearch dom
     ){
         log.info("call : /re/rent/list");
         log.info("params : " + dom.toString());

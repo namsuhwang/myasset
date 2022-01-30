@@ -88,7 +88,7 @@
             WHERE stock.asset_id = ${assetId}
     </select>
 
-    <select id="selectAssetStockDtoList" parameterType="AssetSearch" resultType="AssetStockDto">
+    <select id="selectAssetStockDtoList" parameterType="StockSearch" resultType="AssetStockDto">
             SELECT
                 asset_id
                 ,member_id
@@ -211,7 +211,7 @@
         WHERE stock_kind_id = ${stockKindId}
     </select>
 
-    <select id="selectStockKindDtoList" parameterType="AssetSearch" resultType="StockKindDto">
+    <select id="selectStockKindDtoList" parameterType="StockSearch" resultType="StockKindDto">
         SELECT
             stock_kind_id
             ,asset_id
@@ -429,7 +429,7 @@
         WHERE stock_trade_id = ${stockTradeId}
     </select>
 
-    <select id="selectStockTradeDtoList" parameterType="AssetSearch" resultType="StockTradeDto">
+    <select id="selectStockTradeDtoList" parameterType="StockSearch" resultType="StockTradeDto">
         SELECT
             st.stock_trade_id
             ,st.trade_type

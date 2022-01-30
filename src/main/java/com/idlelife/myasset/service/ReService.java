@@ -1,12 +1,12 @@
 package com.idlelife.myasset.service;
 
-import com.idlelife.myasset.models.dto.AssetReDto;
-import com.idlelife.myasset.models.dto.AssetReRentDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.dto.form.AssetReForm;
-import com.idlelife.myasset.models.dto.form.AssetReRentForm;
-import com.idlelife.myasset.models.entity.AssetReEntity;
-import com.idlelife.myasset.models.entity.AssetReRentEntity;
+import com.idlelife.myasset.models.re.dto.AssetReDto;
+import com.idlelife.myasset.models.re.dto.AssetReRentDto;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.re.form.AssetReForm;
+import com.idlelife.myasset.models.re.form.AssetReRentForm;
+import com.idlelife.myasset.models.re.entity.AssetReEntity;
+import com.idlelife.myasset.models.re.entity.AssetReRentEntity;
 import com.idlelife.myasset.repository.AssetReMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +56,7 @@ public class ReService {
         return assetReMapper.selectAssetReDto(assetId);
     }
 
-    public List<AssetReDto> getAssetReDtoList(AssetSearch dom){
+    public List<AssetReDto> getAssetReDtoList(StockSearch dom){
         List<AssetReDto> list = assetReMapper.selectAssetReDtoList(dom);
         return list;
     }
@@ -119,7 +119,7 @@ public class ReService {
         return assetReMapper.selectAssetReRentDto(reRentId);
     }
 
-    public List<AssetReRentDto> getAssetReRentDtoList(AssetSearch dom){
+    public List<AssetReRentDto> getAssetReRentDtoList(StockSearch dom){
         List<AssetReRentDto> list = assetReMapper.selectAssetReRentDtoList(dom);
         return list;
     }

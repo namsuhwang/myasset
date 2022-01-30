@@ -1,9 +1,8 @@
 package com.idlelife.myasset.repository;
 
-import com.idlelife.myasset.models.dto.AssetDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
-import com.idlelife.myasset.models.entity.AssetEntity;
+import com.idlelife.myasset.models.asset.AssetSearch;
+import com.idlelife.myasset.models.asset.dto.AssetDto;
+import com.idlelife.myasset.models.asset.entity.AssetEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

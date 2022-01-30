@@ -1,13 +1,20 @@
 package com.idlelife.myasset.service;
 
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.AssetForm;
-import com.idlelife.myasset.models.entity.AssetEntity;
+import com.idlelife.myasset.models.asset.AssetSearch;
+import com.idlelife.myasset.models.asset.dto.AssetDto;
+import com.idlelife.myasset.models.asset.dto.TotalAssetDto;
+import com.idlelife.myasset.models.asset.dto.TotalAssetSummaryDto;
+import com.idlelife.myasset.models.bank.dto.AssetBankDto;
+import com.idlelife.myasset.models.asset.form.AssetForm;
+import com.idlelife.myasset.models.asset.entity.AssetEntity;
+import com.idlelife.myasset.models.re.dto.AssetReDto;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.stock.dto.AssetStockDto;
+import com.idlelife.myasset.models.stock.dto.StockKindDto;
 import com.idlelife.myasset.repository.AssetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -26,9 +33,6 @@ public class AssetService {
     @Autowired
     ReService reService;
 
-    public String getAssetTest(){
-        return (String) assetMapper.selectAssetTest();
-    }
 
     public AssetDto getAssetDto(Long assetId){
         return assetMapper.selectAssetDto(assetId);
@@ -99,9 +103,9 @@ public class AssetService {
         result.setTotalNetAssetAmt(summary.getTotalNetAsset());
         result.setTotalLoanBalAmt(summary.getTotalLoanBalAmt());
         result.setTotalAssetAmt(summary.getTotalNetAsset() + summary.getTotalLoanBalAmt());
-        AssetSearch assetSearch = new AssetSearch();
-        assetSearch.setMemberId(memberId);
-        assetSearch.setDeleteYn("N");
+        StockSearch stockSearch = new StockSearch();
+        stockSearch.setMemberId(memberId);
+        stockSearch.setDeleteYn("N");
 
         long totalAssetAmt = 0;
         long totalNetAssetAmt = 0;
@@ -109,7 +113,7 @@ public class AssetService {
 
         // 은행 잔액, 은행 대출잔액 합계
         long bankAssetAmt = 0;
-        List<AssetBankDto> bankList = bankService.getAssetBankDtoList(assetSearch);
+        List<AssetBankDto> bankList = bankService.getAssetBankDtoList(stockSearch);
         if(bankList != null && bankList.size() > 0) {
             for (AssetBankDto bank : bankList) {
                 if (bank.getAcnoType().equals("IO") || bank.getAcnoType().equals("ACC")) {
@@ -125,7 +129,7 @@ public class AssetService {
 
         // 주식 평가액
         long stockKindAssetAmt = 0;
-        List<StockKindDto> stockKindList = stockService.getStockKindDtoList(assetSearch);
+        List<StockKindDto> stockKindList = stockService.getStockKindDtoList(stockSearch);
         if(stockKindList != null && stockKindList.size() > 0) {
             for (StockKindDto stockKind : stockKindList) {
                 stockKindAssetAmt = stockKindAssetAmt + stockKind.getCurTotPrice();
@@ -133,7 +137,7 @@ public class AssetService {
         }
 
         // 증권사 대출 합계
-        List<AssetStockDto> assetStockList = stockService.getAssetStockDtoList(assetSearch);
+        List<AssetStockDto> assetStockList = stockService.getAssetStockDtoList(stockSearch);
         if(assetStockList != null && assetStockList.size() > 0) {
             for (AssetStockDto assetStock : assetStockList) {
                 totalLoanBalAmt = totalLoanBalAmt + assetStock.getLoanBalAmt();
@@ -142,7 +146,7 @@ public class AssetService {
 
         long reAssetAmt = 0;
         long deposit = 0;
-        List<AssetReDto> reList = reService.getAssetReDtoList(assetSearch);
+        List<AssetReDto> reList = reService.getAssetReDtoList(stockSearch);
         if(reList != null && reList.size() > 0) {
             for (AssetReDto assetRe : reList) {
                 if(assetRe.getSaleDate() != null && assetRe.getSaleDate().length() == 8)

@@ -1,7 +1,7 @@
 package com.idlelife.myasset.component.stock;
 
-import com.idlelife.myasset.models.dto.ScrapKospiStockDto;
-import com.idlelife.myasset.models.dto.ScrapStockKindDto;
+import com.idlelife.myasset.models.stock.dto.ScrapKospiStockDto;
+import com.idlelife.myasset.models.stock.dto.ScrapStockKindDto;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

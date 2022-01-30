@@ -1,8 +1,7 @@
 package com.idlelife.myasset.controller;
 
-import com.idlelife.myasset.models.dto.AssetReDto;
-import com.idlelife.myasset.models.dto.ScrapKospiStockDto;
-import com.idlelife.myasset.models.dto.ScrapStockKindDto;
+import com.idlelife.myasset.models.stock.dto.ScrapKospiStockDto;
+import com.idlelife.myasset.models.stock.dto.ScrapStockKindDto;
 import com.idlelife.myasset.service.ScrapStockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

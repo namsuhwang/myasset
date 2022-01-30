@@ -1,7 +1,8 @@
 package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.component.stock.JsoupComponent;
-import com.idlelife.myasset.models.dto.*;
+import com.idlelife.myasset.models.stock.dto.ScrapKospiStockDto;
+import com.idlelife.myasset.models.stock.dto.ScrapStockKindDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,10 +1,10 @@
 package com.idlelife.myasset.repository;
 
-import com.idlelife.myasset.models.dto.AssetReDto;
-import com.idlelife.myasset.models.dto.AssetReRentDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.entity.AssetReEntity;
-import com.idlelife.myasset.models.entity.AssetReRentEntity;
+import com.idlelife.myasset.models.re.dto.AssetReDto;
+import com.idlelife.myasset.models.re.dto.AssetReRentDto;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.re.entity.AssetReEntity;
+import com.idlelife.myasset.models.re.entity.AssetReRentEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface AssetReMapper {
 
     int deleteAssetRe(long assetId);
 
-    List<AssetReDto> selectAssetReDtoList(AssetSearch dom);
+    List<AssetReDto> selectAssetReDtoList(StockSearch dom);
 
     AssetReEntity selectAssetRe(long assetId);
 
@@ -31,7 +31,7 @@ public interface AssetReMapper {
 
     int deleteAssetReRent(long reRentId);
 
-    List<AssetReRentDto> selectAssetReRentDtoList(AssetSearch dom);
+    List<AssetReRentDto> selectAssetReRentDtoList(StockSearch dom);
 
     AssetReRentEntity selectAssetReRent(long reRentId);
 

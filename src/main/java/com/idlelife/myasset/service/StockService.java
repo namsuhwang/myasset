@@ -2,9 +2,17 @@ package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.common.CommonUtil;
 import com.idlelife.myasset.common.exception.MyassetException;
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.*;
-import com.idlelife.myasset.models.entity.*;
+import com.idlelife.myasset.models.asset.dto.AssetDto;
+import com.idlelife.myasset.models.asset.entity.AssetEntity;
+import com.idlelife.myasset.models.asset.form.AssetForm;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.stock.dto.*;
+import com.idlelife.myasset.models.stock.entity.AssetStockEntity;
+import com.idlelife.myasset.models.stock.entity.StockKindEntity;
+import com.idlelife.myasset.models.stock.entity.StockTradeEntity;
+import com.idlelife.myasset.models.stock.form.AssetStockForm;
+import com.idlelife.myasset.models.stock.form.StockKindForm;
+import com.idlelife.myasset.models.stock.form.StockTradeForm;
 import com.idlelife.myasset.repository.AssetStockMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +52,7 @@ public class StockService {
     public TotalStockAssetDto getTotalStockAssetDto(Long memberId){
         log.info("TotalStockAssetDto 시작 memberId : " + memberId);
         TotalStockAssetDto result = new TotalStockAssetDto();
-        AssetSearch param = new AssetSearch();
+        StockSearch param = new StockSearch();
         param.setMemberId(memberId);
         param.setDeleteYn("N");
         List<StockKindDto> stockKindDtoList = assetStockMapper.selectStockKindDtoList(param);
@@ -127,7 +135,7 @@ public class StockService {
         return assetStockMapper.selectAssetStockDto(assetId);
     }
 
-    public List<AssetStockDto> getAssetStockDtoList(AssetSearch dom){
+    public List<AssetStockDto> getAssetStockDtoList(StockSearch dom){
         List<AssetStockDto> list = assetStockMapper.selectAssetStockDtoList(dom);
         return list;
     }
@@ -297,7 +305,7 @@ public class StockService {
         return assetStockMapper.selectStockKindDto(stockKindId);
     }
 
-    public List<StockKindDto> getStockKindDtoList(AssetSearch dom){
+    public List<StockKindDto> getStockKindDtoList(StockSearch dom){
         List<StockKindDto> list = assetStockMapper.selectStockKindDtoList(dom);
         return list;
     }
@@ -459,7 +467,7 @@ public class StockService {
         return assetStockMapper.selectStockTradeDto(stockTradeId);
     }
 
-    public StockTradeHistoryDto getStockTradeHistory(AssetSearch dom){
+    public StockTradeHistoryDto getStockTradeHistory(StockSearch dom){
         Long totalBuyAmt = 0L;
         Long totalSaleAmt = 0L;
         List<StockTradeDto> list = assetStockMapper.selectStockTradeDtoList(dom);
@@ -471,8 +479,12 @@ public class StockService {
             }
         }
 
-        Long realPnlAmt = totalSaleAmt - totalBuyAmt;
-        Double realPnlRate = Math.round(realPnlAmt / totalBuyAmt * 10000.0) / 100.0;
+        Long realPnlAmt = 0L;
+        Double realPnlRate = 0.0;
+        if(totalBuyAmt != null && totalBuyAmt > 0) {
+            realPnlAmt = totalSaleAmt - totalBuyAmt;
+            realPnlRate = Math.round(realPnlAmt / totalBuyAmt * 10000.0) / 100.0;
+        }
         StockTradeHistoryDto result = new StockTradeHistoryDto();
         result.setRealPnlAmt(realPnlAmt);
         result.setRealPnlRate(realPnlRate);

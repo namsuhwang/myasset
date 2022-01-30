@@ -1,13 +1,12 @@
 package com.idlelife.myasset.controller;
 
 
-import com.idlelife.myasset.models.dto.AssetDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.dto.TotalAssetDto;
-import com.idlelife.myasset.models.dto.TotalAssetSummaryDto;
-import com.idlelife.myasset.models.dto.form.AssetForm;
-import com.idlelife.myasset.models.dto.form.ControllerForm;
-import com.idlelife.myasset.models.entity.AssetEntity;
+import com.idlelife.myasset.models.asset.AssetSearch;
+import com.idlelife.myasset.models.asset.dto.AssetDto;
+import com.idlelife.myasset.models.asset.dto.TotalAssetDto;
+import com.idlelife.myasset.models.asset.dto.TotalAssetSummaryDto;
+import com.idlelife.myasset.models.asset.form.AssetForm;
+import com.idlelife.myasset.models.asset.entity.AssetEntity;
 import com.idlelife.myasset.service.AssetService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +24,6 @@ import java.util.List;
 public class AssetController {
     @Autowired
     AssetService assetService;
-
-    @GetMapping("/test/get")
-    public ResponseEntity<String> getAssetTest(){
-        String result = assetService.getAssetTest();
-
-        log.info("Get Call : " + result);
-        return ResponseEntity.ok().body(result);
-    }
-
-    @PostMapping("/test/post")
-    public ResponseEntity<String> getAssetPostTest(
-            @RequestBody ControllerForm param1
-    ){
-        log.info("111111");
-        log.info(param1.toString());
-        String result = assetService.getAssetTest();
-
-        return ResponseEntity.ok().body(result);
-    }
 
     @PostMapping("/asset/reg")
     public ResponseEntity<AssetDto> regAsset(

@@ -1,8 +1,8 @@
 package com.idlelife.myasset.repository;
 
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.CommonCodeForm;
-import com.idlelife.myasset.models.entity.AssetEntity;
+import com.idlelife.myasset.models.common.form.CommonCodeForm;
+import com.idlelife.myasset.models.stock.dto.StockKindCodeDto;
+import com.idlelife.myasset.models.common.dto.CommonCodeDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

@@ -1,12 +1,8 @@
 package com.idlelife.myasset.controller;
 
 
-import com.idlelife.myasset.models.dto.*;
-import com.idlelife.myasset.models.dto.form.AssetForm;
-import com.idlelife.myasset.models.dto.form.CommonCodeForm;
-import com.idlelife.myasset.models.dto.form.ControllerForm;
-import com.idlelife.myasset.models.entity.AssetEntity;
-import com.idlelife.myasset.service.AssetService;
+import com.idlelife.myasset.models.common.form.CommonCodeForm;
+import com.idlelife.myasset.models.common.dto.CommonCodeDto;
 import com.idlelife.myasset.service.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

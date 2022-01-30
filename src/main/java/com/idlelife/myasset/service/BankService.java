@@ -1,13 +1,13 @@
 package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.common.exception.MyassetException;
-import com.idlelife.myasset.models.dto.AssetBankDto;
-import com.idlelife.myasset.models.dto.AssetDto;
-import com.idlelife.myasset.models.dto.AssetSearch;
-import com.idlelife.myasset.models.dto.form.AssetBankForm;
-import com.idlelife.myasset.models.dto.form.AssetForm;
-import com.idlelife.myasset.models.entity.AssetBankEntity;
-import com.idlelife.myasset.models.entity.AssetEntity;
+import com.idlelife.myasset.models.bank.dto.AssetBankDto;
+import com.idlelife.myasset.models.asset.dto.AssetDto;
+import com.idlelife.myasset.models.stock.StockSearch;
+import com.idlelife.myasset.models.bank.form.AssetBankForm;
+import com.idlelife.myasset.models.asset.form.AssetForm;
+import com.idlelife.myasset.models.bank.entity.AssetBankEntity;
+import com.idlelife.myasset.models.asset.entity.AssetEntity;
 import com.idlelife.myasset.repository.AssetBankMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +116,7 @@ public class BankService {
         return assetBankMapper.selectAssetBankDto(assetId);
     }
 
-    public List<AssetBankDto> getAssetBankDtoList(AssetSearch dom){
+    public List<AssetBankDto> getAssetBankDtoList(StockSearch dom){
         List<AssetBankDto> list = assetBankMapper.selectAssetBankDtoList(dom);
         return list;
     }
