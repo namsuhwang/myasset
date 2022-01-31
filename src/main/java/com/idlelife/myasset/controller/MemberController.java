@@ -1,10 +1,12 @@
 package com.idlelife.myasset.controller;
 
 
+import com.idlelife.myasset.common.auth.AuthProvider;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.form.MemberForm;
 import com.idlelife.myasset.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +22,29 @@ import java.util.List;
 @Slf4j
 @RestController
 @EnableWebMvc
+@RequiredArgsConstructor
 @RequestMapping(value = "/myasset", produces="application/json;charset=UTF-8")
 public class MemberController {
     @Autowired
     MemberService memberService;
+
+    private final AuthProvider authProvider;
+
+    @PostMapping("/auth/loginMember")
+    public ResponseEntity<MemberDto> loginMember(
+            @RequestBody MemberDto dom
+    ){
+        log.info("call : /auth/loginMember");
+        log.info("params : " + dom.toString());
+        MemberDto result = memberService.loginMember(dom);
+
+        String token = authProvider.createToken(dom.getMemberId(), dom.getEmail(), "MEMBER");
+        log.info("token:" + token);
+        return ResponseEntity.ok()
+                .header("accesstoken", token)
+                .body(result);
+    }
+
 
     @PostMapping("/member/reg")
     public ResponseEntity<MemberDto> regMember(

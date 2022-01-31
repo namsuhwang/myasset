@@ -1,27 +1,53 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.form.MemberForm;
-import com.idlelife.myasset.models.member.MemberSearch;
-import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.repository.MemberMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.idlelife.myasset.models.common.ErrorCode.*;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service
 @Transactional
 public class MemberService {
     @Autowired
     MemberMapper memberMapper;
 
+    private final BCryptPasswordEncoder passwordEncoder;
+
+
+    public MemberDto loginMember(MemberDto dom){
+        MemberSearch param = new MemberSearch();
+        param.setEmail(dom.getEmail());
+        MemberDto memberDto = getMemberDto(param);
+
+        if(!passwordEncoder.matches(dom.getPwd(), memberDto.getPwd())){
+            throw new MyassetException(UNMATCHED_AUTH_INFO_EXCEPTION);
+        }
+
+        memberDto.setPwd(null);
+
+        return memberDto;
+    }
 
     public MemberDto getMemberDto(MemberSearch dom){
-        return memberMapper.selectMemberDto(dom);
+        MemberDto memberDto = memberMapper.selectMemberDto(dom);
+        if(memberDto == null){
+            throw new MyassetException(MYASSET_ERROR_1006);
+        }
+        return memberDto;
     }
 
     public MemberEntity getMember(Long memberId){
@@ -29,13 +55,22 @@ public class MemberService {
     }
 
     public MemberDto regMember(MemberForm form){
+        MemberSearch param = new MemberSearch();
+        param.setEmail(form.getEmail());
+        MemberDto memberDto = memberMapper.selectMemberDto(param);
+        if(memberDto != null){
+            throw new MyassetException(MYASSET_ERROR_1007);
+        }
+
         MemberEntity memberEntity = getMemberEntityFromForm(form);
+        memberEntity.setPwd(passwordEncoder.encode(memberDto.getPwd()));
+        log.info("memberEntity : " + memberEntity.toString());
         int cnt = memberMapper.insertMember(memberEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-
-        return memberMapper.selectMemberDto(new MemberSearch(memberEntity.getMemberId()));
+        MemberDto result = getMemberDto(param);
+        return result;
     }
 
     public MemberDto modMember(MemberForm form){

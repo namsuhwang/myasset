@@ -16,3 +16,8 @@ spring:
 log4jdbc:
   drivers: org.mariadb.jdbc.Driver
 
+
+## JWT Custom
+jwt:
+  secret:
+    signature: "idlelife+opr"
