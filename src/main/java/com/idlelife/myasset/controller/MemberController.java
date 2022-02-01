@@ -3,6 +3,7 @@ package com.idlelife.myasset.controller;
 
 import com.idlelife.myasset.common.auth.AuthProvider;
 import com.idlelife.myasset.models.member.MemberSearch;
+import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.form.MemberForm;
 import com.idlelife.myasset.service.MemberService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
+import java.util.Map;
 
 //@Api(tags = "[ 나의 자산 ]")
 @Slf4j
@@ -31,26 +33,26 @@ public class MemberController {
     private final AuthProvider authProvider;
 
     @PostMapping("/auth/loginMember")
-    public ResponseEntity<MemberDto> loginMember(
+    public ResponseEntity<MemberAuthDto> loginMember(
             @RequestBody MemberDto dom
     ){
         log.info("call : /auth/loginMember");
         log.info("params : " + dom.toString());
-        MemberDto result = memberService.loginMember(dom);
+        Map<String, Object> result = memberService.loginMember(dom);
+        String token = String.valueOf(result.get("token"));
+        MemberAuthDto memberAuthDto = (MemberAuthDto)result.get("memberInfo");
 
-        String token = authProvider.createToken(dom.getMemberId(), dom.getEmail(), "MEMBER");
-        log.info("token:" + token);
         return ResponseEntity.ok()
                 .header("accesstoken", token)
-                .body(result);
+                .body(memberAuthDto);
     }
 
 
-    @PostMapping("/member/reg")
+    @PostMapping("/auth/reg")
     public ResponseEntity<MemberDto> regMember(
             @RequestBody MemberForm dom
     ){
-        log.info("call : /member/reg");
+        log.info("call : /auth/reg");
         log.info("params : " + dom.toString());
         MemberDto result = memberService.regMember(dom);
 

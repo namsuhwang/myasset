@@ -19,7 +19,7 @@ public class AuthProvider {
 
     private static final String BEARER_TYPE = "bearer ";
     private static final String AUTHORITIES_KEY = "auth";
-    private static final String ACCESS_USER_ID = "id";
+    private static final String ACCESS_USER_ID = "memberId";
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 12;
 
     @Value("${jwt.secret.signature}")
@@ -69,7 +69,7 @@ public class AuthProvider {
         Claims claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token).getBody();
 
         String username = claims.getSubject();
-        long id = claims.get(ACCESS_USER_ID, Integer.class);
+        long id = claims.get(ACCESS_USER_ID, Long.class);
         String role = claims.get(AUTHORITIES_KEY, String.class);
 
         CustomUserDetails userDetails = new CustomUserDetails(id, username, role);

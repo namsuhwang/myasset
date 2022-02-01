@@ -1,7 +1,9 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.auth.AuthProvider;
 import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.member.MemberSearch;
+import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.form.MemberForm;
@@ -13,7 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.idlelife.myasset.models.common.ErrorCode.*;
 
@@ -27,8 +31,9 @@ public class MemberService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private final AuthProvider authProvider;
 
-    public MemberDto loginMember(MemberDto dom){
+    public Map<String, Object> loginMember(MemberDto dom){
         MemberSearch param = new MemberSearch();
         param.setEmail(dom.getEmail());
         MemberDto memberDto = getMemberDto(param);
@@ -37,9 +42,20 @@ public class MemberService {
             throw new MyassetException(UNMATCHED_AUTH_INFO_EXCEPTION);
         }
 
-        memberDto.setPwd(null);
+        String token = authProvider.createToken(memberDto.getMemberId(), memberDto.getEmail(), "MEMBER");
+        log.info("loginMember token=" + token);
 
-        return memberDto;
+        MemberAuthDto memberAuthDto = new MemberAuthDto();
+        memberAuthDto.setMemberId(memberDto.getMemberId());
+        // memberAuthDto.setToken(token);
+        memberAuthDto.setEmail(memberDto.getEmail());
+        memberAuthDto.setRole("MEMBER");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("memberInfo", memberAuthDto);
+        result.put("token", token);
+
+        return result;
     }
 
     public MemberDto getMemberDto(MemberSearch dom){
@@ -63,7 +79,7 @@ public class MemberService {
         }
 
         MemberEntity memberEntity = getMemberEntityFromForm(form);
-        memberEntity.setPwd(passwordEncoder.encode(memberDto.getPwd()));
+        memberEntity.setPwd(passwordEncoder.encode(form.getPwd()));
         log.info("memberEntity : " + memberEntity.toString());
         int cnt = memberMapper.insertMember(memberEntity);
         if(cnt < 1){

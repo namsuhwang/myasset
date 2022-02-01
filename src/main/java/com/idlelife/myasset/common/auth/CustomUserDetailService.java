@@ -4,7 +4,6 @@ import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.repository.MemberMapper;
-import com.idlelife.myasset.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
