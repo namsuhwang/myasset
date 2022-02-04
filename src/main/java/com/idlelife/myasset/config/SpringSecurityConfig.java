@@ -77,10 +77,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                    .antMatchers("/myasset/common/**").permitAll()			// 회원가입
+                    .antMatchers("/myasset/common/**").permitAll()		// 공통코드
                     .antMatchers("/myasset/auth/**").permitAll() 		// 로그인
-                    .antMatchers("/exception/**").permitAll() 	// 예외처리 포인트
-                    .anyRequest().hasRole("MEMBER")				// 이외 나머지는 USER 권한필요
+                    .antMatchers("/myasset/member/reg/**").permitAll()  // 회원가입
+                    .antMatchers("/exception/**").permitAll() 	        // 예외처리 포인트
+                    .anyRequest().hasRole("MEMBER")				                    // 이외 나머지는 MEMBER 권한필요
                 .and()
             .cors()
                 .and()

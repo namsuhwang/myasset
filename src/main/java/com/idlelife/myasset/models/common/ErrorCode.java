@@ -9,6 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public enum ErrorCode {
 
+    AUTHENTICATION_ENTRY_POINT_EXCEPTION(401,"AuthenticationEntryPointException","AuthenticationEntryPointException"),
+    FORBIDDEN_EXCEPTION(403, "ForbiddenException", "Access Deniend"),
     NOT_FOUND(404,"COMMON-ERR-404","PAGE NOT FOUND"),
     UNAUTHORIZED_EXCEPTION(400,"0001","인증 실패"),
     UNMATCHED_AUTH_INFO_EXCEPTION(400,"0002","이메일 또는 비밀번호 확인 실패"),

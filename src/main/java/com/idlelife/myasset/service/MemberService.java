@@ -6,15 +6,18 @@ import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
+import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
 import com.idlelife.myasset.models.member.form.MemberForm;
 import com.idlelife.myasset.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,44 +34,6 @@ public class MemberService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    private final AuthProvider authProvider;
-
-    public Map<String, Object> loginMember(MemberDto dom){
-        MemberSearch param = new MemberSearch();
-        param.setEmail(dom.getEmail());
-        MemberDto memberDto = getMemberDto(param);
-
-        if(!passwordEncoder.matches(dom.getPwd(), memberDto.getPwd())){
-            throw new MyassetException(UNMATCHED_AUTH_INFO_EXCEPTION);
-        }
-
-        String token = authProvider.createToken(memberDto.getMemberId(), memberDto.getEmail(), "MEMBER");
-        log.info("loginMember token=" + token);
-
-        MemberAuthDto memberAuthDto = new MemberAuthDto();
-        memberAuthDto.setMemberId(memberDto.getMemberId());
-        // memberAuthDto.setToken(token);
-        memberAuthDto.setEmail(memberDto.getEmail());
-        memberAuthDto.setRole("MEMBER");
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("memberInfo", memberAuthDto);
-        result.put("token", token);
-
-        return result;
-    }
-
-    public MemberDto getMemberDto(MemberSearch dom){
-        MemberDto memberDto = memberMapper.selectMemberDto(dom);
-        if(memberDto == null){
-            throw new MyassetException(MYASSET_ERROR_1006);
-        }
-        return memberDto;
-    }
-
-    public MemberEntity getMember(Long memberId){
-        return memberMapper.selectMember(memberId);
-    }
 
     public MemberDto regMember(MemberForm form){
         MemberSearch param = new MemberSearch();
@@ -83,8 +48,18 @@ public class MemberService {
         log.info("memberEntity : " + memberEntity.toString());
         int cnt = memberMapper.insertMember(memberEntity);
         if(cnt < 1){
-            throw new RuntimeException();
+            throw new MyassetException("DB 에러 : Member Insert 에러", MYASSET_ERROR_1000);
         }
+
+        MemberRoleEntity memberRoleEntity = new MemberRoleEntity();
+        memberRoleEntity.setMemberId(memberEntity.getMemberId());
+        memberRoleEntity.setRoleCd("MEMBER");
+        memberRoleEntity.setDeleteYn("N");
+        int cnt1 = memberMapper.insertMemberRole(memberRoleEntity);
+        if(cnt1 < 1){
+            throw new MyassetException("DB 에러 : MemberRole Insert 에러", MYASSET_ERROR_1000);
+        }
+
         MemberDto result = getMemberDto(param);
         return result;
     }
@@ -112,6 +87,17 @@ public class MemberService {
         return list;
     }
 
+    public List<String> getMemberRole(Long memberId){
+        List<String> roleList = new ArrayList<>();
+        MemberSearch memberSearch = new MemberSearch(memberId);
+        memberSearch.setDeleteYn("N");
+        List<MemberRoleEntity> memberRoleEntityList = memberMapper.selectMemberRoleList(memberSearch);
+        for(MemberRoleEntity roleEntity : memberRoleEntityList){
+            roleList.add(roleEntity.getRoleCd());
+        }
+        return roleList;
+    }
+
     public MemberEntity getMemberEntityFromForm(MemberForm form){
         MemberEntity memberEntity = new MemberEntity();
         if(form.getMemberId() == null || form.getMemberId() <= 0){
@@ -132,4 +118,15 @@ public class MemberService {
         return memberEntity;
     }
 
+    public MemberDto getMemberDto(MemberSearch dom){
+        MemberDto memberDto = memberMapper.selectMemberDto(dom);
+        if(memberDto == null){
+            throw new MyassetException(MYASSET_ERROR_1006);
+        }
+        return memberDto;
+    }
+
+    public MemberEntity getMember(Long memberId){
+        return memberMapper.selectMember(memberId);
+    }
 }

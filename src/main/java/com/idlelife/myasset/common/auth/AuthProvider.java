@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Component
@@ -39,7 +40,7 @@ public class AuthProvider {
     public String createToken(
             Long id,
             String username,
-            String role) {
+            List<String> role) {
 
         long now = (new Date()).getTime();
         Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);

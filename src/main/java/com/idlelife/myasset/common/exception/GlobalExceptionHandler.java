@@ -22,7 +22,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex){
         log.error("handleException",ex);
-        ErrorResponse response = new ErrorResponse(ErrorCode.INTER_SERVER_ERROR);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        // ErrorResponse response = new ErrorResponse(ErrorCode.INTER_SERVER_ERROR);
+        // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        MyassetException e = (MyassetException)ex;
+        ErrorResponse response = new ErrorResponse(e.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.resolve(response.getStatus()));
     }
 }

@@ -1,4 +1,4 @@
-package com.idlelife.myasset.models.member;
+package com.idlelife.myasset.models.member.entity;
 
 
 import lombok.AllArgsConstructor;
@@ -6,18 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberSearch {
+public class MemberRoleEntity {
     private Long memberId;
-    private String memberName;
-    private String email;
     private String roleCd;
     private String deleteYn;
-
-    public MemberSearch(Long memberId) {
-        this.memberId = memberId;
-    }
+    private Timestamp regDatetime;
+    private Timestamp lastUpdateDatetime;
 }

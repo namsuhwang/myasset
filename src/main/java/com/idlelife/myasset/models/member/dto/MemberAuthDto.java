@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.List;
+
 
 @Data
 @ToString
@@ -14,5 +16,5 @@ import lombok.ToString;
 public class MemberAuthDto {
     private Long memberId;
     private String email;
-    private String role;
+    private List<String> role;
 }

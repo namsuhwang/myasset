@@ -30,25 +30,7 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
-    private final AuthProvider authProvider;
-
-    @PostMapping("/auth/loginMember")
-    public ResponseEntity<MemberAuthDto> loginMember(
-            @RequestBody MemberDto dom
-    ){
-        log.info("call : /auth/loginMember");
-        log.info("params : " + dom.toString());
-        Map<String, Object> result = memberService.loginMember(dom);
-        String token = String.valueOf(result.get("token"));
-        MemberAuthDto memberAuthDto = (MemberAuthDto)result.get("memberInfo");
-
-        return ResponseEntity.ok()
-                .header("accesstoken", token)
-                .body(memberAuthDto);
-    }
-
-
-    @PostMapping("/auth/reg")
+    @PostMapping("/member/reg")
     public ResponseEntity<MemberDto> regMember(
             @RequestBody MemberForm dom
     ){
@@ -58,7 +40,6 @@ public class MemberController {
 
         return ResponseEntity.ok().body(result);
     }
-
 
     @PostMapping("/member/mod")
     public ResponseEntity<MemberDto> modMember(
