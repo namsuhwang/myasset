@@ -32,6 +32,9 @@ public class MemberService {
     @Autowired
     MemberMapper memberMapper;
 
+    @Autowired
+    AuthService authService;
+
     private final BCryptPasswordEncoder passwordEncoder;
 
 
@@ -91,7 +94,7 @@ public class MemberService {
         List<String> roleList = new ArrayList<>();
         MemberSearch memberSearch = new MemberSearch(memberId);
         memberSearch.setDeleteYn("N");
-        List<MemberRoleEntity> memberRoleEntityList = memberMapper.selectMemberRoleList(memberSearch);
+        List<MemberRoleEntity> memberRoleEntityList = authService.getMemberRoleList(memberSearch);
         for(MemberRoleEntity roleEntity : memberRoleEntityList){
             roleList.add(roleEntity.getRoleCd());
         }

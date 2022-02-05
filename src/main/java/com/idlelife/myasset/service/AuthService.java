@@ -7,6 +7,8 @@ import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
+import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
+import com.idlelife.myasset.repository.AuthMapper;
 import com.idlelife.myasset.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,9 @@ public class AuthService {
 
     @Autowired
     MemberMapper memberMapper;
+
+    @Autowired
+    AuthMapper authMapper;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -64,5 +69,10 @@ public class AuthService {
         result.put("token", token);
 
         return result;
+    }
+
+    public List<MemberRoleEntity> getMemberRoleList(MemberSearch dom){
+        List<MemberRoleEntity>  roleList = authMapper.selectMemberRoleList(dom);
+        return roleList;
     }
 }

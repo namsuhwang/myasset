@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.idlelife.myasset.models.common.ErrorCode.MYASSET_ERROR_1006;
 
 @RequiredArgsConstructor
@@ -30,7 +33,9 @@ public class CustomUserDetailService implements UserDetailsService {
             throw new MyassetException(MYASSET_ERROR_1006);
         }
 
-        UserDetails member = new CustomUserDetails(memberDto.getMemberId(), email, "MEMBER");
+        List<String> roles = new ArrayList<>();
+        roles.add("MEMBER");
+        UserDetails member = new CustomUserDetails(memberDto.getMemberId(), email, roles);
 
         return member;
     }

@@ -3,4 +3,79 @@
 
 <mapper namespace="com.idlelife.myasset.repository.AuthMapper">
 
+
+    <insert id="insertMemberRole" parameterType="MemberRoleEntity">
+        INSERT member_role (
+            member_id
+            ,role_cd
+            ,delete_yn
+            ,reg_datetime
+            ,last_update_datetime
+        ) VALUES
+        (
+        ${memberId}
+        ,#{roleCd}
+        ,#{deleteYn}
+        ,NOW()
+        ,NOW()
+        )
+    </insert>
+
+    <delete id="deleteMemberRole" parameterType="MemberSearch">
+        UPDATE member_role
+        SET
+            delete_yn = 'Y'
+          ,last_update_datetime = NOW()
+            FROM member_role
+        WHERE  member_id = ${memberId}
+          AND  role_cd = #{roleCd}
+    </delete>
+
+    <select id="selectMemberRoleList" parameterType="MemberSearch" resultType="MemberRoleEntity">
+        SELECT
+        r.member_id
+        ,r.role_cd
+        ,r.delete_yn
+        ,r.reg_datetime
+        ,r.last_update_datetime
+        FROM member_role r
+            INNER JOIN member m ON m.member_id = r.member_id
+        WHERE 1 = 1
+        <if test = 'memberId != null and memberId !=""'>
+            AND r.member_id = ${memberId}
+        </if>
+        <if test = 'memberName != null and memberName !=""'>
+            AND m.member_name = #{memberName}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND r.delete_yn = #{deleteYn}
+        </if>
+        <if test = 'email != null and email !=""'>
+            AND m.email = #{email}
+        </if>
+    </select>
+
+    <select id="selectMemberRole" parameterType="MemberSearch" resultType="MemberRoleEntity">
+        SELECT
+        r.member_id
+        ,r.role_cd
+        ,r.delete_yn
+        ,r.reg_datetime
+        ,r.last_update_datetime
+        FROM member_role r
+        INNER JOIN member m ON m.member_id = r.member_id
+        WHERE 1 = 1
+        <if test = 'memberId != null and memberId !=""'>
+            AND r.member_id = ${memberId}
+        </if>
+        <if test = 'memberName != null and memberName !=""'>
+            AND m.member_name = #{memberName}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND r.delete_yn = #{deleteYn}
+        </if>
+        <if test = 'email != null and email !=""'>
+            AND m.email = #{email}
+        </if>
+    </select>
 </mapper>

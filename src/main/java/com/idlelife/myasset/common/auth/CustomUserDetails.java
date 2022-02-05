@@ -1,7 +1,10 @@
 package com.idlelife.myasset.common.auth;
 
+import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
+import com.idlelife.myasset.service.AuthService;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,24 +18,20 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class CustomUserDetails implements UserDetails {
-
     private long id;
     private String username;
     private String password;
-    private List<String> roles = new ArrayList<>();
+    private List<String> roles;
 
     public CustomUserDetails(
             long id,
             String email,
-            String role) {
+            List<String> roles) {
 
         this.id = id;
         this.username = email;
+        this.roles = roles;
 
-        List<String> roleList = new ArrayList<String>();
-        roleList.add("ROLE_" + role);
-
-        this.roles = roleList;
     }
 
     @Override

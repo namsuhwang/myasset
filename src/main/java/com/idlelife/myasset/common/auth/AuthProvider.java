@@ -1,7 +1,11 @@
 package com.idlelife.myasset.common.auth;
 
+import com.idlelife.myasset.models.member.MemberSearch;
+import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
+import com.idlelife.myasset.service.AuthService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class AuthProvider {
+    @Autowired
+    AuthService authService;
 
     private static final String BEARER_TYPE = "bearer ";
     private static final String AUTHORITIES_KEY = "auth";
@@ -71,9 +78,17 @@ public class AuthProvider {
 
         String username = claims.getSubject();
         long id = claims.get(ACCESS_USER_ID, Long.class);
-        String role = claims.get(AUTHORITIES_KEY, String.class);
+//      String roles = claims.get(AUTHORITIES_KEY, String.class);
 
-        CustomUserDetails userDetails = new CustomUserDetails(id, username, role);
+        MemberSearch param = new MemberSearch();
+        param.setMemberId(id);
+        param.setEmail(username);
+        List<String> roles  = new ArrayList<>();
+        List<MemberRoleEntity> roleList = authService.getMemberRoleList(param);
+        for(MemberRoleEntity roleEntity : roleList) {
+            roles.add("ROLE_" + roleEntity.getRoleCd());
+        }
+        CustomUserDetails userDetails = new CustomUserDetails(id, username, roles);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
