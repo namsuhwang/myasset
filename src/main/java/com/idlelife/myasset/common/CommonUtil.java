@@ -16,6 +16,13 @@ import java.util.Base64;
 
 public class CommonUtil {
 
+    @Value("${jwt.secret.signature}")
+    private static String signatureKey;
+
+    public static String getSignatureKey(){
+        return signatureKey;
+    }
+
     public static String parseWebReqParam(String str){
         String result = "";
         if (str.equalsIgnoreCase("undefined") || str.equalsIgnoreCase("null")) {

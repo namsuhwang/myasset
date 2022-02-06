@@ -27,8 +27,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping(value = "/myasset", produces="application/json;charset=UTF-8")
 public class AuthController {
-    @Autowired
-    AuthService authService;
+//    @Autowired
+//    AuthService authService;
 
     @Autowired
     MemberService memberService;
@@ -42,7 +42,7 @@ public class AuthController {
     ){
         log.info("call : /auth/loginMember");
         log.info("params : " + dom.toString());
-        Map<String, Object> result = authService.loginMember(dom);
+        Map<String, Object> result = authProvider.loginMember(dom);
 //        String token = String.valueOf(result.get("token"));
 //        MemberAuthDto memberAuthDto = (MemberAuthDto)result.get("memberInfo");
 
@@ -60,7 +60,7 @@ public class AuthController {
         String refreshToken = CommonUtil.parseWebReqParam(headerData.get("refreshtoken"));
         MemberSearch memberSearch = new MemberSearch();
         memberSearch.setRefreshToken(refreshToken);
-        MemberTokenEntity refreshTokenInfo = authService.getMemberToken(memberSearch);
+        MemberTokenEntity refreshTokenInfo = authProvider.getMemberToken(memberSearch);
         MemberEntity member = memberService.getMember(refreshTokenInfo.getMemberId());
         String newToken = authProvider.createToken(member);
         String newRefreshToken = authProvider.getRefreshTokenByMember(member);

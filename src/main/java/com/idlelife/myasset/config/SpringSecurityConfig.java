@@ -4,8 +4,10 @@ import com.idlelife.myasset.common.auth.AuthProvider;
 import com.idlelife.myasset.common.auth.point.CustomAccessDeniedPoint;
 import com.idlelife.myasset.common.auth.point.CustomAuthenticationEntryPoint;
 import com.idlelife.myasset.config.filter.CustomFilter;
+import com.idlelife.myasset.repository.AuthMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +26,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final AuthProvider authProvider;
+//    private final AuthProvider authProvider;
+
+//    @Autowired
+//    AuthMapper authMapper;
+//
+//    @Value("${jwt.secret.signature}")
+//    private String signatureKey;
+
 
     @Bean
     @Override
@@ -69,7 +78,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+        final CustomFilter customFilter = new CustomFilter();
         http
             .httpBasic().disable()
                 .csrf().disable()
@@ -89,7 +98,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
             .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-            .addFilterBefore(new CustomFilter(authProvider), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
 }

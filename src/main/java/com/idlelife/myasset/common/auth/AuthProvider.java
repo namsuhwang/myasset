@@ -3,9 +3,12 @@ package com.idlelife.myasset.common.auth;
 import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.common.ErrorCode;
 import com.idlelife.myasset.models.member.MemberSearch;
+import com.idlelife.myasset.models.member.dto.MemberAuthDto;
+import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
 import com.idlelife.myasset.models.member.entity.MemberTokenEntity;
+import com.idlelife.myasset.repository.AuthMapper;
 import com.idlelife.myasset.service.AuthService;
 import com.idlelife.myasset.service.MemberService;
 import io.jsonwebtoken.*;
@@ -16,26 +19,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static com.idlelife.myasset.models.common.ErrorCode.MYASSET_ERROR_1000;
+import static com.idlelife.myasset.models.common.ErrorCode.UNMATCHED_AUTH_INFO_EXCEPTION;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
+@Service
+@Transactional
 public class AuthProvider {
-    @Autowired
-    AuthService authService;
+//    @Autowired
+//    AuthService authService;
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    AuthMapper authMapper;
+
+    private final BCryptPasswordEncoder passwordEncoder;
 
 
     private static final String BEARER_TYPE = "bearer ";
@@ -54,11 +66,94 @@ public class AuthProvider {
 
     private final UserDetailsService userDetailsService;
 
+    public Map<String, Object> loginMember(MemberDto dom){
+        MemberSearch param = new MemberSearch();
+        param.setDeleteYn("N");
+        param.setEmail(dom.getEmail());
+        MemberDto memberDto = memberService.getMemberDto(param);
+
+        if(!passwordEncoder.matches(dom.getPwd(), memberDto.getPwd())){
+            throw new MyassetException(UNMATCHED_AUTH_INFO_EXCEPTION);
+        }
+
+        List<String> role = memberService.getMemberRole(memberDto.getMemberId());
+        String accesstoken = createToken(memberDto.getMemberId(), memberDto.getEmail(), role);
+        log.info("loginMember accesstoken=" + accesstoken);
+
+        MemberAuthDto memberAuthDto = new MemberAuthDto();
+        memberAuthDto.setMemberId(memberDto.getMemberId());
+        // memberAuthDto.setToken(token);
+        memberAuthDto.setEmail(memberDto.getEmail());
+        memberAuthDto.setRole(role);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("memberInfo", memberAuthDto);
+        result.put("accesstoken", accesstoken);
+        /*
+        String refreshToken = "";
+        MemberTokenEntity refreshTokenInfo = getMemberToken(param);
+        if(refreshTokenInfo == null){
+            Jws<Claims> claims = authProvider.getClaims(refreshToken);
+        }else{
+            refreshToken = refreshTokenInfo.getRefreshToken();
+        }
+        result.put("refreshtoken", refreshToken);
+         */
+
+        return result;
+    }
+
+
+    public void regMemberRole(MemberRoleEntity dom ){
+        int cnt = authMapper.insertMemberRole(dom);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : MemberRole Insert 에러", MYASSET_ERROR_1000);
+        }
+        return;
+    }
+
+    public List<MemberRoleEntity> getMemberRoleList(MemberSearch dom){
+        List<MemberRoleEntity>  roleList = authMapper.selectMemberRoleList(dom);
+        return roleList;
+    }
+
+    public void regMemberToken(MemberTokenEntity dom ){
+        authMapper.insertMemberToken(dom);
+        return;
+    }
+
+    public void modMemberToken(MemberTokenEntity dom ){
+        authMapper.updateMemberToken(dom);
+        return;
+    }
+
+    public MemberTokenEntity getMemberToken(MemberSearch dom){
+        MemberTokenEntity token = authMapper.selectMemberToken(dom);
+        return token;
+    }
+
+    public String createToken(Long memberId, String email, List<String> role){
+        String token = createAccessToken(memberId, email, role);
+        return token;
+    }
+
+    public String createRefreshToken(Long memberId){
+        String refreshToken = createRefreshToken();
+        MemberTokenEntity tokenEntity = new MemberTokenEntity();
+        tokenEntity.setMemberId(memberId);
+        tokenEntity.setRefreshToken(refreshToken);
+        tokenEntity.setDeleteYn("N");
+        LocalDateTime expireDatetime = LocalDateTime.now().plusDays(365);
+        tokenEntity.setRefreshTokenExpireDatetime(expireDatetime);
+        regMemberToken(tokenEntity);
+        return refreshToken;
+    }
+
     /**
      * @throws Exception
      * @method 설명 : jwt 토큰 발급
      */
-    public String createToken(
+    public String createAccessToken(
             Long id,
             String username,
             List<String> role) {
@@ -108,7 +203,7 @@ public class AuthProvider {
 
     // 토큰에서 회원 정보 추출
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(signatureKey.getBytes()).parseClaimsJws(token).getBody().getSubject();
     }
 
     /**
@@ -119,7 +214,7 @@ public class AuthProvider {
         Claims claims = null;
         // 토큰 기반으로 유저의 정보 파싱
         try{
-            claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(signatureKey.getBytes()).parseClaimsJws(token).getBody();
         }catch(ExpiredJwtException e){
             log.info("getAuthentication 토큰 만료");
             throw new MyassetException(ErrorCode.AUTHENTICATION_ENTRY_POINT_EXCEPTION);
@@ -133,7 +228,7 @@ public class AuthProvider {
         param.setMemberId(id);
         param.setEmail(username);
         List<String> roles  = new ArrayList<>();
-        List<MemberRoleEntity> roleList = authService.getMemberRoleList(param);
+        List<MemberRoleEntity> roleList = getMemberRoleList(param);
         for(MemberRoleEntity roleEntity : roleList) {
             roles.add("ROLE_" + roleEntity.getRoleCd());
         }
@@ -168,7 +263,7 @@ public class AuthProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey.getBytes()).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
@@ -180,7 +275,7 @@ public class AuthProvider {
      */
     public boolean validateRefreshToken(String refreshToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(refreshToken);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey.getBytes()).parseClaimsJws(refreshToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
@@ -188,7 +283,7 @@ public class AuthProvider {
     }
 
     public Jws<Claims> getClaims(String token){
-        Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token);
+        Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey.getBytes()).parseClaimsJws(token);
         return claims;
     }
 
@@ -200,7 +295,7 @@ public class AuthProvider {
         memberSearch.setEmail(member.getEmail());
         memberSearch.setMemberId(member.getMemberId());
         String refreshToken = "";
-        MemberTokenEntity tokenInfo = authService.getMemberToken(memberSearch);
+        MemberTokenEntity tokenInfo = getMemberToken(memberSearch);
         if(tokenInfo == null){
             refreshToken = createRefreshToken();
             tokenInfo = new MemberTokenEntity();
@@ -212,7 +307,7 @@ public class AuthProvider {
                     .atZone(ZoneId.systemDefault()) // Instant -> ZonedDateTime
                     .toLocalDateTime();
             tokenInfo.setRefreshTokenExpireDatetime(refreshTokenExpireDatetime);
-            authService.regMemberToken(tokenInfo);
+            regMemberToken(tokenInfo);
             log.info("리프레쉬 토큰 신규 등록 완료;");
         }else{
             refreshToken = tokenInfo.getRefreshToken();
@@ -226,7 +321,7 @@ public class AuthProvider {
                 tokenInfo.setDeleteYn("N");
                 tokenInfo.setRefreshToken(refreshToken);
                 tokenInfo.setRefreshTokenExpireDatetime(refreshTokenExpireDatetime);
-                authService.modMemberToken(tokenInfo);
+                modMemberToken(tokenInfo);
                 log.info("리프레쉬 토큰 새로 발급하여 연장 등록 완료");
             }else{
                 log.info("리프레쉬 토큰 유지");

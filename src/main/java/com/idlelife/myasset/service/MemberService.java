@@ -35,6 +35,8 @@ public class MemberService {
     @Autowired
     AuthService authService;
 
+    private final AuthProvider authProvider;
+
     private final BCryptPasswordEncoder passwordEncoder;
 
 
@@ -58,14 +60,14 @@ public class MemberService {
         memberRoleEntity.setMemberId(memberEntity.getMemberId());
         memberRoleEntity.setRoleCd("MEMBER");
         memberRoleEntity.setDeleteYn("N");
-        authService.regMemberRole(memberRoleEntity);
+        authProvider.regMemberRole(memberRoleEntity);
 
         // 엑세스토큰과 리프레쉬 토큰을 생성하여 반환
         List<String> role = getMemberRole(memberDto.getMemberId());
-        String accessToken = authService.createToken(memberDto.getMemberId(), memberDto.getEmail(), role);
+        String accessToken = authProvider.createToken(memberDto.getMemberId(), memberDto.getEmail(), role);
         log.info("loginMember accessToken=" + accessToken);
 
-        String refreshToken = authService.createRefreshToken(memberEntity.getMemberId());
+        String refreshToken = authProvider.createRefreshToken(memberEntity.getMemberId());
         Map<String, Object> result = new HashMap<>();
         result.put("member", getMemberDto(param));
         result.put("accesstoken", accessToken);
@@ -100,7 +102,7 @@ public class MemberService {
         List<String> roleList = new ArrayList<>();
         MemberSearch memberSearch = new MemberSearch(memberId);
         memberSearch.setDeleteYn("N");
-        List<MemberRoleEntity> memberRoleEntityList = authService.getMemberRoleList(memberSearch);
+        List<MemberRoleEntity> memberRoleEntityList = authProvider.getMemberRoleList(memberSearch);
         for(MemberRoleEntity roleEntity : memberRoleEntityList){
             roleList.add(roleEntity.getRoleCd());
         }
