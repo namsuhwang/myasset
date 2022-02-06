@@ -16,6 +16,14 @@ import java.util.Base64;
 
 public class CommonUtil {
 
+    public static String parseWebReqParam(String str){
+        String result = "";
+        if (str.equalsIgnoreCase("undefined") || str.equalsIgnoreCase("null")) {
+            return null;
+        }
+        return str;
+    }
+
 
     public static boolean isNullEmpty(String str){
         boolean result;

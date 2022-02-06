@@ -38,7 +38,7 @@ public class MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public MemberDto regMember(MemberForm form){
+    public Map<String, Object> regMember(MemberForm form){
         MemberSearch param = new MemberSearch();
         param.setEmail(form.getEmail());
         MemberDto memberDto = memberMapper.selectMemberDto(param);
@@ -53,17 +53,23 @@ public class MemberService {
         if(cnt < 1){
             throw new MyassetException("DB 에러 : Member Insert 에러", MYASSET_ERROR_1000);
         }
-
+        memberDto = memberMapper.selectMemberDto(param);
         MemberRoleEntity memberRoleEntity = new MemberRoleEntity();
         memberRoleEntity.setMemberId(memberEntity.getMemberId());
         memberRoleEntity.setRoleCd("MEMBER");
         memberRoleEntity.setDeleteYn("N");
-        int cnt1 = memberMapper.insertMemberRole(memberRoleEntity);
-        if(cnt1 < 1){
-            throw new MyassetException("DB 에러 : MemberRole Insert 에러", MYASSET_ERROR_1000);
-        }
+        authService.regMemberRole(memberRoleEntity);
 
-        MemberDto result = getMemberDto(param);
+        // 엑세스토큰과 리프레쉬 토큰을 생성하여 반환
+        List<String> role = getMemberRole(memberDto.getMemberId());
+        String accessToken = authService.createToken(memberDto.getMemberId(), memberDto.getEmail(), role);
+        log.info("loginMember accessToken=" + accessToken);
+
+        String refreshToken = authService.createRefreshToken(memberEntity.getMemberId());
+        Map<String, Object> result = new HashMap<>();
+        result.put("member", getMemberDto(param));
+        result.put("accesstoken", accessToken);
+        result.put("refreshtoken", refreshToken);
         return result;
     }
 

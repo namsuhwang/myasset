@@ -18,7 +18,7 @@ public class CustomAccessDeniedPoint implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException) 
             		throws IOException, ServletException {
-    	
+    	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.sendRedirect("/exception/accessdenied");
     }
 

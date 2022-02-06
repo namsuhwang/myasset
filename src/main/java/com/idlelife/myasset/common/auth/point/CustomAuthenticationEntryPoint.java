@@ -20,7 +20,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             HttpServletResponse response,
             AuthenticationException e) throws IOException, ServletException {
 
-        response.sendRedirect("/exception/accessdenied");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.sendRedirect("/exception/entrypoint");
     }
 
 }

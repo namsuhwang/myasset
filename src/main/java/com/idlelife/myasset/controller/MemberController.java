@@ -10,6 +10,7 @@ import com.idlelife.myasset.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,14 +32,20 @@ public class MemberController {
     MemberService memberService;
 
     @PostMapping("/member/reg")
-    public ResponseEntity<MemberDto> regMember(
+    public ResponseEntity<Map<String, Object>> regMember(
             @RequestBody MemberForm dom
     ){
         log.info("call : /auth/reg");
         log.info("params : " + dom.toString());
-        MemberDto result = memberService.regMember(dom);
+        Map<String, Object> result = memberService.regMember(dom);
 
-        return ResponseEntity.ok().body(result);
+        log.info("member reg result : " + result.toString());
+//        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.set("refreshtoken", result.get("refreshToken").toString());
+
+
+        return ResponseEntity.ok()
+                .body(result);
     }
 
     @PostMapping("/member/mod")

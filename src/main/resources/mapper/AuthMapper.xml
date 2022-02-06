@@ -13,20 +13,19 @@
             ,last_update_datetime
         ) VALUES
         (
-        ${memberId}
-        ,#{roleCd}
-        ,#{deleteYn}
-        ,NOW()
-        ,NOW()
+            ${memberId}
+            ,#{roleCd}
+            ,#{deleteYn}
+            ,NOW()
+            ,NOW()
         )
     </insert>
 
-    <delete id="deleteMemberRole" parameterType="MemberSearch">
+    <delete id="deleteMemberRole" parameterType="MemberTokenEntity">
         UPDATE member_role
         SET
             delete_yn = 'Y'
           ,last_update_datetime = NOW()
-            FROM member_role
         WHERE  member_id = ${memberId}
           AND  role_cd = #{roleCd}
     </delete>
@@ -78,4 +77,75 @@
             AND m.email = #{email}
         </if>
     </select>
+
+
+
+
+    <insert id="insertMemberToken" parameterType="MemberTokenEntity">
+        INSERT member_token (
+            member_id
+            ,refresh_token
+            ,refresh_token_expire_datetime
+            ,delete_yn
+            ,reg_datetime
+            ,last_update_datetime
+        ) VALUES
+        (
+            ${memberId}
+            ,#{refreshToken}
+            ,#{refreshTokenExpireDatetime}
+            ,#{deleteYn}
+            ,NOW()
+            ,NOW()
+        )
+    </insert>
+
+
+    <update id="updateMemberToken" parameterType="MemberTokenEntity">
+        UPDATE member_token
+        SET
+            refresh_token = #{refreshToken}
+          ,refresh_token_expire_datetime = #{refreshTokenExpireDatetime}
+          ,delete_yn = #{deleteYn}
+          ,last_update_datetime = NOW()
+        WHERE  member_id = ${memberId}
+    </update>
+
+    <delete id="deleteMemberToken" parameterType="MemberTokenEntity">
+        UPDATE member_token
+        SET
+           delete_yn = #{deleteYn}
+          ,last_update_datetime = NOW()
+        WHERE  member_id = ${memberId}
+    </delete>
+
+    <select id="selectMemberToken" parameterType="MemberSearch" resultType="MemberTokenEntity">
+        SELECT
+        t.member_id
+        ,t.refresh_token
+        ,t.refresh_token_expire_datetime
+        ,TIMESTAMPDIFF(SECOND, NOW(), t.refresh_token_expire_datetime) AS remaining_refresh_token_seconds
+        ,t.delete_yn
+        ,t.reg_datetime
+        ,t.last_update_datetime
+        FROM member_token t
+        INNER JOIN member m ON m.member_id = t.member_id
+        WHERE 1 = 1
+        <if test = 'memberId != null and memberId !=""'>
+            AND m.member_id = ${memberId}
+        </if>
+        <if test = 'memberName != null and memberName !=""'>
+            AND m.member_name = #{memberName}
+        </if>
+        <if test = 'refreshToken != null and refreshToken !=""'>
+            AND t.refresh_token = #{refreshToken}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND t.delete_yn = #{deleteYn}
+        </if>
+        <if test = 'email != null and email !=""'>
+            AND m.email = #{email}
+        </if>
+    </select>
+
 </mapper>

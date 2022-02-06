@@ -16,6 +16,7 @@ public class MemberSearch {
     private String email;
     private String roleCd;
     private String deleteYn;
+    private String refreshToken;
 
     public MemberSearch(Long memberId) {
         this.memberId = memberId;
