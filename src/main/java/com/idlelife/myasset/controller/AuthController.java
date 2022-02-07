@@ -2,13 +2,11 @@ package com.idlelife.myasset.controller;
 
 
 import com.idlelife.myasset.common.CommonUtil;
-import com.idlelife.myasset.common.auth.AuthProvider;
+import com.idlelife.myasset.common.auth.JwtTokenProvider;
 import com.idlelife.myasset.models.member.MemberSearch;
-import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.entity.MemberTokenEntity;
-import com.idlelife.myasset.service.AuthService;
 import com.idlelife.myasset.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +31,7 @@ public class AuthController {
     @Autowired
     MemberService memberService;
 
-    private final AuthProvider authProvider;
-
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/auth/loginMember")
     public ResponseEntity<Map<String, Object>> loginMember(
@@ -42,7 +39,7 @@ public class AuthController {
     ){
         log.info("call : /auth/loginMember");
         log.info("params : " + dom.toString());
-        Map<String, Object> result = authProvider.loginMember(dom);
+        Map<String, Object> result = memberService.loginMember(dom);
 //        String token = String.valueOf(result.get("token"));
 //        MemberAuthDto memberAuthDto = (MemberAuthDto)result.get("memberInfo");
 
@@ -60,10 +57,10 @@ public class AuthController {
         String refreshToken = CommonUtil.parseWebReqParam(headerData.get("refreshtoken"));
         MemberSearch memberSearch = new MemberSearch();
         memberSearch.setRefreshToken(refreshToken);
-        MemberTokenEntity refreshTokenInfo = authProvider.getMemberToken(memberSearch);
+        MemberTokenEntity refreshTokenInfo = memberService.getMemberToken(memberSearch);
         MemberEntity member = memberService.getMember(refreshTokenInfo.getMemberId());
-        String newToken = authProvider.createToken(member);
-        String newRefreshToken = authProvider.getRefreshTokenByMember(member);
+        String newToken = jwtTokenProvider.createAccessToken(member.getEmail());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("accesstoken", newToken);
         resultMap.put("refreshtoken", newRefreshToken);

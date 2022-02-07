@@ -4,6 +4,7 @@ import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
+import com.idlelife.myasset.models.member.entity.MemberTokenEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -36,4 +37,12 @@ public interface MemberMapper {
 
     MemberRoleEntity selectMemberRole(MemberSearch dom);
 
+
+    int insertMemberToken(MemberTokenEntity dom);
+
+    int updateMemberToken(MemberTokenEntity dom);
+
+    int deleteMemberToken(MemberTokenEntity dom);
+
+    MemberTokenEntity selectMemberToken(MemberSearch dom);
 }

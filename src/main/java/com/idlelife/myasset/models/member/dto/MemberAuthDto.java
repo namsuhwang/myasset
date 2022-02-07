@@ -16,5 +16,5 @@ import java.util.List;
 public class MemberAuthDto {
     private Long memberId;
     private String email;
-    private List<String> role;
+    private List<String> roles;
 }

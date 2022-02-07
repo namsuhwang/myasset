@@ -1,18 +1,18 @@
 package com.idlelife.myasset.service;
 
-import com.idlelife.myasset.common.auth.AuthProvider;
+import com.idlelife.myasset.common.auth.JwtTokenProvider;
 import com.idlelife.myasset.common.exception.MyassetException;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
 import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
+import com.idlelife.myasset.models.member.entity.MemberTokenEntity;
 import com.idlelife.myasset.models.member.form.MemberForm;
 import com.idlelife.myasset.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,10 +35,41 @@ public class MemberService {
     @Autowired
     AuthService authService;
 
-    private final AuthProvider authProvider;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
+
+    public Map<String, Object> loginMember(MemberDto dom){
+        // 비밀번호 체크
+        if(!passwordEncoder.matches(dom.getPwd(), getPwd(dom.getEmail()))){
+            throw new MyassetException(UNMATCHED_AUTH_INFO_EXCEPTION);
+        }
+
+        // 엑세스 토큰 발급. 로그인할 때마다 발급함.
+        String accesstoken = jwtTokenProvider.createAccessToken(dom.getEmail());
+        log.info("loginMember accesstoken=" + accesstoken);
+
+        // 회원정보 조회
+        MemberAuthDto memberAuthDto = authService.getMemberAuth(dom.getEmail());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("memberInfo", memberAuthDto);
+        result.put("accesstoken", accesstoken);
+        /*
+        String refreshToken = "";
+        MemberTokenEntity refreshTokenInfo = getMemberToken(param);
+        if(refreshTokenInfo == null){
+            Jws<Claims> claims = authProvider.getClaims(refreshToken);
+        }else{
+            refreshToken = refreshTokenInfo.getRefreshToken();
+        }
+        result.put("refreshtoken", refreshToken);
+         */
+
+        return result;
+    }
 
     public Map<String, Object> regMember(MemberForm form){
         MemberSearch param = new MemberSearch();
@@ -60,18 +91,23 @@ public class MemberService {
         memberRoleEntity.setMemberId(memberEntity.getMemberId());
         memberRoleEntity.setRoleCd("MEMBER");
         memberRoleEntity.setDeleteYn("N");
-        authProvider.regMemberRole(memberRoleEntity);
+        regMemberRole(memberRoleEntity);
+
+        MemberAuthDto memberInfo = new MemberAuthDto();
+        memberInfo.setMemberId(memberDto.getMemberId());
+        memberInfo.setEmail(memberDto.getEmail());
+        memberInfo.setRoles(getMemberRoles(memberDto.getMemberId()));
 
         // 엑세스토큰과 리프레쉬 토큰을 생성하여 반환
-        List<String> role = getMemberRole(memberDto.getMemberId());
-        String accessToken = authProvider.createToken(memberDto.getMemberId(), memberDto.getEmail(), role);
-        log.info("loginMember accessToken=" + accessToken);
+        List<String> role = getMemberRoles(memberDto.getMemberId());
+        String accessToken = jwtTokenProvider.createAccessToken(memberDto.getEmail());
 
-        String refreshToken = authProvider.createRefreshToken(memberEntity.getMemberId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberEntity.getEmail());
         Map<String, Object> result = new HashMap<>();
-        result.put("member", getMemberDto(param));
+        result.put("memberInfo", memberInfo);
         result.put("accesstoken", accessToken);
         result.put("refreshtoken", refreshToken);
+        log.info("regMember 결과 =" + result.toString());
         return result;
     }
 
@@ -93,20 +129,41 @@ public class MemberService {
         return memberMapper.selectMemberDto(new MemberSearch(memberId));
     }
 
+    public void regMemberRole(MemberRoleEntity dom ){
+        int cnt = memberMapper.insertMemberRole(dom);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : MemberRole Insert 에러", MYASSET_ERROR_1000);
+        }
+        return;
+    }
+
     public List<MemberDto> getMemberDtoList(MemberSearch dom){
         List<MemberDto> list = memberMapper.selectMemberDtoList(dom);
         return list;
     }
 
-    public List<String> getMemberRole(Long memberId){
+    public List<String> getMemberRoles(Long memberId){
         List<String> roleList = new ArrayList<>();
         MemberSearch memberSearch = new MemberSearch(memberId);
         memberSearch.setDeleteYn("N");
-        List<MemberRoleEntity> memberRoleEntityList = authProvider.getMemberRoleList(memberSearch);
+        List<MemberRoleEntity> memberRoleEntityList = getMemberRoleList(memberSearch);
         for(MemberRoleEntity roleEntity : memberRoleEntityList){
             roleList.add(roleEntity.getRoleCd());
         }
         return roleList;
+    }
+
+    private List<MemberRoleEntity> getMemberRoleList(MemberSearch dom){
+        List<MemberRoleEntity>  roleList = memberMapper.selectMemberRoleList(dom);
+        return roleList;
+    }
+
+    private String getPwd(String email){
+        MemberSearch param = new MemberSearch();
+        param.setDeleteYn("N");
+        param.setEmail(email);
+        MemberDto memberDto = getMemberDto(param);
+        return memberDto.getPwd();
     }
 
     public MemberEntity getMemberEntityFromForm(MemberForm form){
@@ -139,5 +196,22 @@ public class MemberService {
 
     public MemberEntity getMember(Long memberId){
         return memberMapper.selectMember(memberId);
+    }
+
+
+
+    public void regMemberToken(MemberTokenEntity dom ){
+        memberMapper.insertMemberToken(dom);
+        return;
+    }
+
+    public void modMemberToken(MemberTokenEntity dom ){
+        memberMapper.updateMemberToken(dom);
+        return;
+    }
+
+    public MemberTokenEntity getMemberToken(MemberSearch dom){
+        MemberTokenEntity token = memberMapper.selectMemberToken(dom);
+        return token;
     }
 }

@@ -1,13 +1,11 @@
 package com.idlelife.myasset.config;
 
-import com.idlelife.myasset.common.auth.AuthProvider;
+import com.idlelife.myasset.common.auth.JwtTokenProvider;
 import com.idlelife.myasset.common.auth.point.CustomAccessDeniedPoint;
 import com.idlelife.myasset.common.auth.point.CustomAuthenticationEntryPoint;
 import com.idlelife.myasset.config.filter.CustomFilter;
-import com.idlelife.myasset.repository.AuthMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,14 +24,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    private final AuthProvider authProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-//    @Autowired
-//    AuthMapper authMapper;
-//
-//    @Value("${jwt.secret.signature}")
-//    private String signatureKey;
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    @Autowired
+    private CustomAccessDeniedPoint customAccessDeniedPoint;
 
     @Bean
     @Override
@@ -56,7 +53,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedHeader("*");
         configuration.setMaxAge((long) 3600);
         configuration.setAllowCredentials(false);
-        configuration.addExposedHeader("accessToken");
+        configuration.addExposedHeader("accesstoken");
         configuration.addExposedHeader("content-disposition");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -78,27 +75,27 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        final CustomFilter customFilter = new CustomFilter();
         http
             .httpBasic().disable()
-                .csrf().disable()
+            .csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedPoint)
+            .and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+            .and()
             .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                     .antMatchers("/myasset/common/**").permitAll()		// 공통코드
                     .antMatchers("/myasset/auth/**").permitAll() 		// 로그인
                     .antMatchers("/myasset/member/reg/**").permitAll()  // 회원가입
                     .antMatchers("/exception/**").permitAll() 	        // 예외처리 포인트
-                    .anyRequest().hasRole("MEMBER")				                    // 이외 나머지는 MEMBER 권한필요
+                    .anyRequest()
+                        .authenticated()
                 .and()
             .cors()
-                .and()
-            .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedPoint())
-                .and()
-            .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .and()
-            .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+            .and()
+            .addFilterBefore(new CustomFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
 
 }
