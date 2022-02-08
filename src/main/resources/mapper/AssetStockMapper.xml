@@ -474,4 +474,93 @@
         </if>
         ORDER BY trade_datetime, reg_datetime desc
     </select>
+
+
+
+    <select id="selectStockInterestDtoList" parameterType="Long" resultType="StockInterestDto">
+        SELECT
+              si.order_no
+             ,si.stock_interest_id
+             ,si.stock_kind_cd
+             ,si.stock_kind_name
+        FROM stock_interest si
+        WHERE  si.member_id = ${memberId}
+        ORDER BY si.order_no
+    </select>
+
+
+    <select id="selectStockInterestDto" parameterType="Long" resultType="StockInterestDto">
+        SELECT
+            si.order_no
+             ,si.stock_interest_id
+             ,si.stock_kind_cd
+             ,si.stock_kind_name
+        FROM stock_interest si
+        WHERE  si.stock_interest_id = ${stockInterestId}
+    </select>
+
+    <select id="createStockInterestId" resultType="Long">
+        SELECT IFNULL(MAX(stock_interest_id), 0) + 1 AS stock_interest_id
+        FROM stock_interest
+    </select>
+
+    <select id="createStockInterestOrderNo" resultType="Long">
+        SELECT IFNULL(MAX(order_no), 0) + 1 AS order_no
+        FROM stock_interest
+        WHERE member_id = ${memberId}
+    </select>
+
+    <insert id="insertStockInterest" parameterType="StockInterestEntity">
+        INSERT INTO stock_interest (
+            stock_interest_id
+           ,member_id
+           ,stock_kind_cd
+           ,stock_kind_name
+           ,order_no
+           ,reg_datetime
+           ,last_update_datetime
+        ) VALUES
+        (
+             ${stockInterestId}
+            ,${memberId}
+            ,#{stockKindCd}
+            ,#{stockKindName}
+            ,${orderNo}
+            ,NOW()
+            ,NOW()
+        )
+    </insert>
+
+
+    <update id="updateStockInterest" parameterType="StockInterestEntity">
+        UPDATE stock_interest
+        SET
+           stock_kind_cd     = #{stockKindCd}
+          ,stock_kind_name   = #{stockKindName}
+          ,order_no          = ${orderNo}
+          ,last_update_datetime = NOW()
+        WHERE stock_interest_id = ${stockInterestId}
+    </update>
+
+    <delete id="deleteStockInterest" parameterType="Long">
+        DELETE stock_interest
+        WHERE stock_interest_id = ${stockInterestId}
+    </delete>
+
+    <update id="updateStockInterestOrder" parameterType="StockInterestEntity">
+        UPDATE stock_interest
+        SET
+          ,order_no          = ${orderNo}
+          ,last_update_datetime = NOW()
+        WHERE stock_interest_id = ${stockInterestId}
+    </update>
+
+    <update id="updateStockInterestBatchOrder" parameterType="StockInterestEntity">
+        UPDATE stock_interest
+        SET
+                ,order_no          = order_no + 1
+                ,last_update_datetime = NOW()
+        WHERE stock_interest_id = ${stockInterestId}
+          AND order_no >= ${orderNo}
+    </update>
 </mapper>

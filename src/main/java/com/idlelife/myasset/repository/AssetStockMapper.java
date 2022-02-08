@@ -1,11 +1,9 @@
 package com.idlelife.myasset.repository;
 
 import com.idlelife.myasset.models.stock.StockSearch;
-import com.idlelife.myasset.models.stock.dto.AssetStockDto;
+import com.idlelife.myasset.models.stock.dto.*;
+import com.idlelife.myasset.models.stock.entity.StockInterestEntity;
 import com.idlelife.myasset.models.stock.form.StockKindForm;
-import com.idlelife.myasset.models.stock.dto.StockKindCodeDto;
-import com.idlelife.myasset.models.stock.dto.StockKindDto;
-import com.idlelife.myasset.models.stock.dto.StockTradeDto;
 import com.idlelife.myasset.models.stock.entity.AssetStockEntity;
 import com.idlelife.myasset.models.stock.entity.StockKindEntity;
 import com.idlelife.myasset.models.stock.entity.StockTradeEntity;
@@ -65,4 +63,24 @@ public interface AssetStockMapper {
     StockTradeEntity selectLastStockTrade(long stockKindId);
 
     StockTradeDto selectStockTradeDto(long stockTradeId);
+
+
+    long createStockInterestId();
+
+    long createStockInterestOrderNo(long memberId);
+
+    List<StockInterestDto> selectStockInterestDtoList(long memberId);
+
+    StockInterestDto selectStockInterestDto(long stockInterestId);
+
+    int insertStockInterest(StockInterestEntity dom);
+
+    int updateStockInterest(StockInterestEntity dom);
+
+    int deleteStockInterest(long stockInterestId);
+
+    int updateStockInterestOrder(StockInterestEntity dom);
+
+    int updateStockInterestBatchOrder(StockInterestEntity dom);
+
 }

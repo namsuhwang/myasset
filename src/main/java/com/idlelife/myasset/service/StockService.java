@@ -8,9 +8,11 @@ import com.idlelife.myasset.models.asset.form.AssetForm;
 import com.idlelife.myasset.models.stock.StockSearch;
 import com.idlelife.myasset.models.stock.dto.*;
 import com.idlelife.myasset.models.stock.entity.AssetStockEntity;
+import com.idlelife.myasset.models.stock.entity.StockInterestEntity;
 import com.idlelife.myasset.models.stock.entity.StockKindEntity;
 import com.idlelife.myasset.models.stock.entity.StockTradeEntity;
 import com.idlelife.myasset.models.stock.form.AssetStockForm;
+import com.idlelife.myasset.models.stock.form.StockInterestForm;
 import com.idlelife.myasset.models.stock.form.StockKindForm;
 import com.idlelife.myasset.models.stock.form.StockTradeForm;
 import com.idlelife.myasset.repository.AssetStockMapper;
@@ -529,6 +531,67 @@ public class StockService {
             stockKindCodeDto.setKindName(kindName);
             commonService.updateStockKindCode(stockKindCodeDto);
         }
+    }
+
+
+    // 관심종목 실시간 조회
+    public StockInterestListDto getStockInterestListDto(Long memberId){
+        log.info("getStockInterestListDto 시작 memberId : " + memberId);
+        StockInterestListDto result = new StockInterestListDto();
+
+        String baseTime = "";
+        List<StockInterestDto> stockInterestDtoList = assetStockMapper.selectStockInterestDtoList(memberId);
+
+        for(StockInterestDto siDto : stockInterestDtoList){
+            ScrapStockKindDto stockInfo = scrapStockService.getScrapStockKind(siDto.getStockKindCd());
+            siDto.setDayRange(stockInfo.getDayRange());
+            siDto.setDiffAmount(stockInfo.getDiffAmount());
+            siDto.setHighPrice(stockInfo.getHighPrice());
+            siDto.setLowPrice(stockInfo.getLowPrice());
+            siDto.setCurUnitPrice(stockInfo.getPrice());
+            baseTime = stockInfo.getBaseTime().replaceAll("코스피", "").replaceAll("코스닥", "");
+        }
+
+        result.setBaseTime(baseTime);
+
+        log.info("getStockInterestListDto result : " + result.toString());
+        return result;
+    }
+
+
+    public StockInterestDto regStockInterest(StockInterestForm form){
+        log.info("관심주식 (regStockInterest) 등록");
+
+        StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
+        int cnt = assetStockMapper.insertStockInterest(stockInterestEntity);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : 관심주식 등록 실패", MYASSET_ERROR_1000);
+        }
+        StockInterestDto stockInterestDto = assetStockMapper.selectStockInterestDto(stockInterestEntity.getStockInterestId());
+        return stockInterestDto;
+    }
+
+    public StockInterestDto modStockInterest(StockInterestForm form){
+        log.info("관심주식 (regStockInterest) 수정");
+
+        StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
+        int cnt = assetStockMapper.updateStockInterest(stockInterestEntity);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : 관심주식 수정 실패", MYASSET_ERROR_1000);
+        }
+        StockInterestDto stockInterestDto = assetStockMapper.selectStockInterestDto(stockInterestEntity.getStockInterestId());
+        return stockInterestDto;
+    }
+
+    private StockInterestEntity getStockInterestEntityFromForm(StockInterestForm form){
+        long orderNo = assetStockMapper.createStockInterestOrderNo(form.getMemberId());
+        StockInterestEntity stockInterestEntity = new StockInterestEntity();
+        stockInterestEntity.setStockInterestId(form.getStockInterestId() == null ? assetStockMapper.createStockInterestId() : form.getStockInterestId());
+        stockInterestEntity.setMemberId(form.getMemberId());
+        stockInterestEntity.setStockKindCd(form.getStockKindCd());
+        stockInterestEntity.setStockKindName(form.getStockKindName());
+        stockInterestEntity.setOrderNo(orderNo);
+        return stockInterestEntity;
     }
 
 }
