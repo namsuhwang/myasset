@@ -73,14 +73,20 @@ public interface AssetStockMapper {
 
     StockInterestDto selectStockInterestDto(long stockInterestId);
 
+    StockInterestEntity selectStockInterest(long stockInterestId);
+
     int insertStockInterest(StockInterestEntity dom);
 
     int updateStockInterest(StockInterestEntity dom);
 
     int deleteStockInterest(long stockInterestId);
 
-    int updateStockInterestOrder(StockInterestEntity dom);
+    int updateStockInterestOrder(StockSearch dom);
 
-    int updateStockInterestBatchOrder(StockInterestEntity dom);
+    int chgStockInterestOrderNoPlus(StockSearch dom);
+
+    int chgStockInterestOrderNoMinus(StockSearch dom);
+
+    int chgStockInterestOrderNoDel(StockSearch dom);
 
 }

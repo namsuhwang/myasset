@@ -19,4 +19,7 @@ public class StockSearch {
     private String deleteYn;
     private Long stockTradeId;
     private Long stockKindId;
+    private Long orderNo;
+    private Long startOrderNo;
+    private Long endOrderNo;
 }

@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.idlelife.myasset.models.common.ErrorCode.*;
 
@@ -559,7 +561,7 @@ public class StockService {
     }
 
 
-    public StockInterestDto regStockInterest(StockInterestForm form){
+    public StockInterestListDto regStockInterest(StockInterestForm form){
         log.info("관심주식 (regStockInterest) 등록");
 
         StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
@@ -567,11 +569,11 @@ public class StockService {
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 등록 실패", MYASSET_ERROR_1000);
         }
-        StockInterestDto stockInterestDto = assetStockMapper.selectStockInterestDto(stockInterestEntity.getStockInterestId());
-        return stockInterestDto;
+        StockInterestListDto result = getStockInterestListDto(stockInterestEntity.getMemberId());
+        return result;
     }
 
-    public StockInterestDto modStockInterest(StockInterestForm form){
+    public StockInterestListDto modStockInterest(StockInterestForm form){
         log.info("관심주식 (regStockInterest) 수정");
 
         StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
@@ -579,8 +581,78 @@ public class StockService {
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 수정 실패", MYASSET_ERROR_1000);
         }
-        StockInterestDto stockInterestDto = assetStockMapper.selectStockInterestDto(stockInterestEntity.getStockInterestId());
-        return stockInterestDto;
+        StockInterestListDto result = getStockInterestListDto(stockInterestEntity.getMemberId());
+        return result;
+    }
+
+    public StockInterestListDto delStockInterest(long stockInterestId){
+        log.info("관심주식 (delStockInterest) 삭제");
+        Map<String, String> resultMap = new HashMap<>();
+        StockInterestEntity ety = getStockInterest(stockInterestId);
+
+        int cnt = assetStockMapper.deleteStockInterest(stockInterestId);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : 관심주식 삭제 실패", MYASSET_ERROR_1000);
+        }
+
+        StockSearch sqlParam = new StockSearch();
+        sqlParam.setMemberId(ety.getMemberId());
+        sqlParam.setOrderNo(ety.getOrderNo());
+        cnt = assetStockMapper.chgStockInterestOrderNoDel(sqlParam);
+
+        StockInterestListDto result = getStockInterestListDto(ety.getMemberId());
+        return result;
+    }
+
+
+    public StockInterestListDto chgOrderNoStockInterest(StockInterestForm dom){
+        log.info("관심주식 순서 변경");
+        Map<String, String> resultMap = new HashMap<>();
+        StockInterestEntity ety = getStockInterest(dom.getStockInterestId());
+        long befOrderNo = ety.getOrderNo();
+        long aftOrderNo = dom.getOrderNo();
+
+        StockSearch sqlParam = new StockSearch();
+        sqlParam.setMemberId(dom.getMemberId());
+        if(aftOrderNo > befOrderNo){
+            sqlParam.setStartOrderNo(befOrderNo + 1);
+            sqlParam.setEndOrderNo(aftOrderNo);
+            assetStockMapper.chgStockInterestOrderNoMinus(sqlParam);
+        }else{
+            sqlParam.setStartOrderNo(aftOrderNo);
+            sqlParam.setEndOrderNo(befOrderNo - 1);
+            assetStockMapper.chgStockInterestOrderNoPlus(sqlParam);
+        }
+
+        StockSearch orderParam = new StockSearch();
+        orderParam.setMemberId(dom.getMemberId());
+        orderParam.setOrderNo(dom.getOrderNo());
+        int cnt = assetStockMapper.updateStockInterestOrder(orderParam);
+        if(cnt < 1){
+            throw new MyassetException("DB 에러 : 관심주식 정렬 수정 실패", MYASSET_ERROR_1000);
+        }
+        StockInterestListDto result = getStockInterestListDto(dom.getMemberId());
+        return result;
+    }
+
+    public StockInterestDto getStockInterestDto(long stockInterestId){
+        log.info("관심주식 (regStockInterest) 조회");
+
+        StockInterestDto dto = assetStockMapper.selectStockInterestDto(stockInterestId);
+        if(dto == null){
+            throw new MyassetException("DB 에러 : 관심주식 조회 실패", MYASSET_ERROR_1000);
+        }
+        return dto;
+    }
+
+    public StockInterestEntity getStockInterest(long stockInterestId){
+        log.info("관심주식 (regStockInterest) 조회");
+
+        StockInterestEntity ety = assetStockMapper.selectStockInterest(stockInterestId);
+        if(ety == null){
+            throw new MyassetException("DB 에러 : 관심주식 조회 실패", MYASSET_ERROR_1000);
+        }
+        return ety;
     }
 
     private StockInterestEntity getStockInterestEntityFromForm(StockInterestForm form){

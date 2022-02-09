@@ -499,12 +499,26 @@
         WHERE  si.stock_interest_id = ${stockInterestId}
     </select>
 
+
+    <select id="selectStockInterest" parameterType="Long" resultType="StockInterestEntity">
+        SELECT
+            si.order_no
+             ,si.stock_interest_id
+             ,si.stock_kind_cd
+             ,si.stock_kind_name
+             ,si.order_no
+             ,si.reg_datetime
+             ,si.last_update_datetime
+        FROM stock_interest si
+        WHERE  si.stock_interest_id = ${stockInterestId}
+    </select>
+
     <select id="createStockInterestId" resultType="Long">
         SELECT IFNULL(MAX(stock_interest_id), 0) + 1 AS stock_interest_id
         FROM stock_interest
     </select>
 
-    <select id="createStockInterestOrderNo" resultType="Long">
+    <select id="createStockInterestOrderNo" parameterType="Long">
         SELECT IFNULL(MAX(order_no), 0) + 1 AS order_no
         FROM stock_interest
         WHERE member_id = ${memberId}
@@ -555,12 +569,30 @@
         WHERE stock_interest_id = ${stockInterestId}
     </update>
 
-    <update id="updateStockInterestBatchOrder" parameterType="StockInterestEntity">
+    <update id="chgStockInterestOrderNoDel" parameterType="StockSearch">
         UPDATE stock_interest
         SET
-                ,order_no          = order_no + 1
+                order_no  = order_no - 1
                 ,last_update_datetime = NOW()
         WHERE stock_interest_id = ${stockInterestId}
-          AND order_no >= ${orderNo}
+          AND order_no > ${orderNo}
     </update>
+
+    <select id="chgStockInterestOrderNoMinus" parameterType="StockSearch">
+        UPDATE stock_interest
+           SET order_no = order_no - 1
+             ,last_update_datetime = NOW()
+        WHERE member_id = ${memberId}
+          AND order_no BETWEEN ${startOrderNo} AND ${endOrderNo}
+    </select>
+
+
+    <select id="chgStockInterestOrderNoPlus" parameterType="StockSearch">
+        UPDATE stock_interest
+        SET order_no = order_no + 1
+          ,last_update_datetime = NOW()
+        WHERE member_id = ${memberId}
+          AND order_no BETWEEN ${startOrderNo} AND ${endOrderNo}
+    </select>
+
 </mapper>

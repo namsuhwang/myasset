@@ -4,6 +4,7 @@ package com.idlelife.myasset.controller;
 import com.idlelife.myasset.models.stock.StockSearch;
 import com.idlelife.myasset.models.stock.dto.*;
 import com.idlelife.myasset.models.stock.form.AssetStockForm;
+import com.idlelife.myasset.models.stock.form.StockInterestForm;
 import com.idlelife.myasset.models.stock.form.StockKindForm;
 import com.idlelife.myasset.models.stock.form.StockTradeForm;
 import com.idlelife.myasset.service.StockService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
+import java.util.Map;
 
 //@Api(tags = "[ 나의 자산 ]")
 @Slf4j
@@ -190,6 +192,65 @@ public class StockController {
         log.info("call : /stock/trade/list");
         log.info("params : " + dom.toString());
         StockTradeHistoryDto result = stockService.getStockTradeHistory(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+
+
+    @PostMapping("/stock/interest/reg")
+    public ResponseEntity<StockInterestListDto> regStockInterest(
+            @RequestBody StockInterestForm dom
+    ){
+        log.info("call : /stock/interest/reg");
+        log.info("params : " + dom.toString());
+        StockInterestListDto result = stockService.regStockInterest(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+
+    @PostMapping("/stock/interest/mod")
+    public ResponseEntity<StockInterestListDto> modStockInterest(
+            @RequestBody StockInterestForm dom
+    ){
+        log.info("call : /stock/interest/mod");
+        log.info("params : " + dom.toString());
+        StockInterestListDto result = stockService.modStockInterest(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/stock/interest/del")
+    public ResponseEntity<StockInterestListDto> delStockInterest(
+            @RequestBody StockInterestForm dom
+    ){
+        log.info("call : /stock/interest/del");
+        log.info("params : " + dom.getStockInterestId());
+        StockInterestListDto result = stockService.delStockInterest(dom.getStockInterestId());
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/stock/interest/list")
+    public ResponseEntity<StockInterestListDto> getStockInterestList(
+            @RequestBody StockSearch dom
+    ){
+        log.info("call : /stock/interest/list");
+        log.info("params : " + dom.toString());
+        StockInterestListDto result = stockService.getStockInterestListDto(dom.getMemberId());
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/stock/interest/order")
+    public ResponseEntity<StockInterestListDto> chgOrderNoStockInterest(
+            @RequestBody StockInterestForm dom
+    ){
+        log.info("call : /stock/interest/order");
+        log.info("params : " + dom.toString());
+        StockInterestListDto result = stockService.chgOrderNoStockInterest(dom);
 
         return ResponseEntity.ok().body(result);
     }
