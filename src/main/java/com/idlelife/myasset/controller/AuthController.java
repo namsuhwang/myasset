@@ -3,6 +3,8 @@ package com.idlelife.myasset.controller;
 
 import com.idlelife.myasset.common.CommonUtil;
 import com.idlelife.myasset.common.auth.JwtTokenProvider;
+import com.idlelife.myasset.common.exception.MyassetException;
+import com.idlelife.myasset.models.common.ErrorCode;
 import com.idlelife.myasset.models.member.MemberSearch;
 import com.idlelife.myasset.models.member.dto.MemberDto;
 import com.idlelife.myasset.models.member.entity.MemberEntity;
@@ -55,9 +57,18 @@ public class AuthController {
         log.info("call : /auth/getToken");
         log.info("call : refreshToken = " + headerData.get("refreshtoken"));
         String refreshToken = CommonUtil.parseWebReqParam(headerData.get("refreshtoken"));
+        if(CommonUtil.isNullEmpty(refreshToken)){
+            log.error("리프레쉬 토큰 미입력");
+            throw new MyassetException(ErrorCode.NULL_RF_TOKEN);
+        }
         MemberSearch memberSearch = new MemberSearch();
         memberSearch.setRefreshToken(refreshToken);
         MemberTokenEntity refreshTokenInfo = memberService.getMemberToken(memberSearch);
+        if(refreshTokenInfo == null){
+            log.error("존재하지 않는 리프레쉬 토큰");
+            throw new MyassetException(ErrorCode.NOT_EXIST_RF_TOKEN);
+        }
+
         MemberEntity member = memberService.getMember(refreshTokenInfo.getMemberId());
         String newToken = jwtTokenProvider.createAccessToken(member.getEmail());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());

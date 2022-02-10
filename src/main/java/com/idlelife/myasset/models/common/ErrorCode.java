@@ -16,6 +16,8 @@ public enum ErrorCode {
     UNMATCHED_AUTH_INFO_EXCEPTION(400,"0002","이메일 또는 비밀번호 확인 실패"),
     INTER_SERVER_ERROR(500,"COMMON-ERR-500","INTER SERVER ERROR"),
     EMAIL_DUPLICATION(400,"MEMBER-ERR-400","EMAIL DUPLICATED"),
+    NULL_RF_TOKEN(400,"0002","리프레쉬 토큰이 입력되지 않았습니다."),
+    NOT_EXIST_RF_TOKEN(400,"0003","일치하는 리프레쉬 토큰이 없습니다."),
 
 
     MYASSET_ERROR_1000(400,"1000","DB 에러"),
