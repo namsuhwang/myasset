@@ -1,6 +1,8 @@
 package com.idlelife.myasset.controller;
 
 
+import com.idlelife.myasset.common.CommonUtil;
+import com.idlelife.myasset.common.auth.CustomUserDetails;
 import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import com.idlelife.myasset.models.stock.StockSearch;
 import com.idlelife.myasset.models.stock.dto.*;
@@ -33,13 +35,11 @@ public class StockController {
 
     @PostMapping("/stock/total")
     public ResponseEntity<TotalStockAssetDto> getTotalStockAsset(
-            @RequestBody StockSearch dom
+            // @RequestBody StockSearch dom
     ){
         log.info("call : /stock/total");
-        log.info("params : " + dom.toString());
-        MemberAuthDto auth = (MemberAuthDto)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("memberId=" + auth.getMemberId());
-        TotalStockAssetDto result = stockService.getTotalStockAssetDto(dom.getMemberId());
+        log.info("memberId=" + CommonUtil.getAuthInfo().getMemberId());
+        TotalStockAssetDto result = stockService.getTotalStockAssetDto(CommonUtil.getAuthInfo().getMemberId());
         log.info("result : " + result.toString());
 
         return ResponseEntity.ok().body(result);

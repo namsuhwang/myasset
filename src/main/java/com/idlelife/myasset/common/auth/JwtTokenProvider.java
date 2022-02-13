@@ -37,23 +37,6 @@ public class JwtTokenProvider {
         signatureKey = Base64.getEncoder().encodeToString(signatureKey.getBytes());
     }
 
-//    private final UserDetailsService userDetailsService;
-
-
-//    public void regMemberToken(MemberTokenEntity dom ){
-//        authMapper.insertMemberToken(dom);
-//        return;
-//    }
-//
-//    public void modMemberToken(MemberTokenEntity dom ){
-//        authMapper.updateMemberToken(dom);
-//        return;
-//    }
-//
-//    public MemberTokenEntity getMemberToken(MemberSearch dom){
-//        MemberTokenEntity token = authMapper.selectMemberToken(dom);
-//        return token;
-//    }
 
     public String createAccessToken(String userPk){
         long now = (new Date()).getTime();
@@ -87,7 +70,7 @@ public class JwtTokenProvider {
 
     // 토큰에서 회원 정보 추출(userPk(email))
     public String getUserPk(String token) {
-        String userPk = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token).getBody().getSubject();
+        String userPk = getClaims(token).getBody().getSubject();
         log.info("getUserPk : " + userPk);
         return userPk;
     }
@@ -132,7 +115,7 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token);
+            Jws<Claims> claims = getClaims(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
@@ -144,16 +127,11 @@ public class JwtTokenProvider {
      */
     public boolean validateRefreshToken(String refreshToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(refreshToken);
+            Jws<Claims> claims = getClaims(refreshToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public Jws<Claims> getClaims(String token){
-        Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token);
-        return claims;
     }
 
     // 토큰 만료 일시 조회
@@ -163,6 +141,12 @@ public class JwtTokenProvider {
                 .atZone(ZoneId.systemDefault()) // Instant -> ZonedDateTime
                 .toLocalDateTime();
         return tokenExpireDatetime;
+    }
+
+    public Jws<Claims> getClaims(String token){
+        String netToken = token.startsWith("bearer ") ? token.replace("bearer ", "") : token;
+        Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(netToken);
+        return claims;
     }
 //
 //    public String getRefreshTokenByMember(MemberEntity member){

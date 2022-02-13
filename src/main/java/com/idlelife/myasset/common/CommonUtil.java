@@ -1,9 +1,13 @@
 package com.idlelife.myasset.common;
 
+import com.idlelife.myasset.common.auth.CustomUserDetails;
+import com.idlelife.myasset.models.member.dto.MemberAuthDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -40,6 +44,11 @@ public class CommonUtil {
             result = false;
         }
         return result;
+    }
+
+    public static MemberAuthDto getAuthInfo(){
+        MemberAuthDto auth = new MemberAuthDto((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return auth;
     }
 
     public static RSAPublicKey getRsaPublicKey(String rsaPublicKey) {
