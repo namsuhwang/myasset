@@ -8,7 +8,7 @@ import com.idlelife.myasset.models.bank.form.AssetBankForm;
 import com.idlelife.myasset.models.asset.form.AssetForm;
 import com.idlelife.myasset.models.bank.entity.AssetBankEntity;
 import com.idlelife.myasset.models.asset.entity.AssetEntity;
-import com.idlelife.myasset.repository.AssetBankMapper;
+import com.idlelife.myasset.repository.BankMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,17 +23,17 @@ import static com.idlelife.myasset.models.common.ErrorCode.MYASSET_ERROR_1000;
 @Transactional
 public class BankService {
     @Autowired
-    AssetBankMapper assetBankMapper;
+    BankMapper bankMapper;
 
     @Autowired
     AssetService assetService;
  
     public AssetBankDto getAssetBankDto(Long assetId){
-        return assetBankMapper.selectAssetBankDto(assetId);
+        return bankMapper.selectAssetBankDto(assetId);
     }
 
     public AssetBankEntity getAssetBank(Long assetId){
-        return assetBankMapper.selectAssetBank(assetId);
+        return bankMapper.selectAssetBank(assetId);
     }
 
     public AssetBankDto regAssetBank(AssetBankForm form){
@@ -63,12 +63,12 @@ public class BankService {
         log.info("AssetBank 등록");
         form.setAssetId(assetDto.getAssetId());
         AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
-        int cnt = assetBankMapper.insertAssetBank(assetBankEntity);
+        int cnt = bankMapper.insertAssetBank(assetBankEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 은행 자산 등록 실패", MYASSET_ERROR_1000);
         }
 
-        AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        AssetBankDto assetBankDto = bankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
         return assetBankDto;
     }
 
@@ -95,12 +95,12 @@ public class BankService {
 
         log.info("AssetBank 수정");
         AssetBankEntity assetBankEntity = getAssetBankEntityFromForm(form);
-        int cnt = assetBankMapper.updateAssetBank(assetBankEntity);
+        int cnt = bankMapper.updateAssetBank(assetBankEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 은행 자산 수정 실패", MYASSET_ERROR_1000);
         }
 
-        AssetBankDto assetBankDto = assetBankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
+        AssetBankDto assetBankDto = bankMapper.selectAssetBankDto(assetBankEntity.getAssetId());
         return assetBankDto;
     }
 
@@ -109,15 +109,15 @@ public class BankService {
         assetService.delAsset(assetId);
 
         log.info("AssetBank 삭제");
-        int cnt = assetBankMapper.deleteAssetBank(assetId);
+        int cnt = bankMapper.deleteAssetBank(assetId);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetBankMapper.selectAssetBankDto(assetId);
+        return bankMapper.selectAssetBankDto(assetId);
     }
 
     public List<AssetBankDto> getAssetBankDtoList(StockSearch dom){
-        List<AssetBankDto> list = assetBankMapper.selectAssetBankDtoList(dom);
+        List<AssetBankDto> list = bankMapper.selectAssetBankDtoList(dom);
         return list;
     }
 

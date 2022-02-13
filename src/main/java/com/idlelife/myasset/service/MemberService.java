@@ -10,6 +10,8 @@ import com.idlelife.myasset.models.member.entity.MemberRoleEntity;
 import com.idlelife.myasset.models.member.entity.MemberTokenEntity;
 import com.idlelife.myasset.models.member.form.MemberForm;
 import com.idlelife.myasset.repository.MemberMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,16 +61,6 @@ public class MemberService {
         Map<String, Object> result = new HashMap<>();
         result.put("memberInfo", memberAuthDto);
         result.put("accesstoken", accesstoken);
-        /*
-        String refreshToken = "";
-        MemberTokenEntity refreshTokenInfo = getMemberToken(param);
-        if(refreshTokenInfo == null){
-            Jws<Claims> claims = authProvider.getClaims(refreshToken);
-        }else{
-            refreshToken = refreshTokenInfo.getRefreshToken();
-        }
-        result.put("refreshtoken", refreshToken);
-         */
 
         return result;
     }
@@ -103,6 +97,13 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(memberDto.getEmail());
 
         String refreshToken = jwtTokenProvider.createRefreshToken(memberEntity.getEmail());
+        MemberTokenEntity tokenEntity = new MemberTokenEntity();
+        tokenEntity.setMemberId(memberDto.getMemberId());
+        tokenEntity.setRefreshToken(refreshToken);
+        tokenEntity.setDeleteYn("N");
+        tokenEntity.setRefreshTokenExpireDatetime(jwtTokenProvider.getTokenExpireDatetime(refreshToken));
+        regMemberToken(tokenEntity);
+        log.info("리프레쉬 토큰 신규 등록 완료;");
         Map<String, Object> result = new HashMap<>();
         result.put("memberInfo", memberInfo);
         result.put("accesstoken", accessToken);

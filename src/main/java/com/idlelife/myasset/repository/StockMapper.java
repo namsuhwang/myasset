@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface AssetStockMapper {
+public interface StockMapper {
 
     int insertAssetStock(AssetStockEntity dom);
 

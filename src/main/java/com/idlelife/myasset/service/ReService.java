@@ -7,7 +7,7 @@ import com.idlelife.myasset.models.re.form.AssetReForm;
 import com.idlelife.myasset.models.re.form.AssetReRentForm;
 import com.idlelife.myasset.models.re.entity.AssetReEntity;
 import com.idlelife.myasset.models.re.entity.AssetReRentEntity;
-import com.idlelife.myasset.repository.AssetReMapper;
+import com.idlelife.myasset.repository.ReMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,46 +18,46 @@ import java.util.List;
 @Transactional
 public class ReService {
     @Autowired
-    AssetReMapper assetReMapper;
+    ReMapper reMapper;
 
  
     public AssetReDto getAssetReDto(Long assetId){
-        return assetReMapper.selectAssetReDto(assetId);
+        return reMapper.selectAssetReDto(assetId);
     }
 
     public AssetReEntity getAssetRe(Long assetId){
-        return assetReMapper.selectAssetRe(assetId);
+        return reMapper.selectAssetRe(assetId);
     }
 
     public AssetReDto regAssetRe(AssetReForm form){
         AssetReEntity assetReEntity = getAssetReEntityFromForm(form);
 
-        int cnt = assetReMapper.insertAssetRe(assetReEntity);
+        int cnt = reMapper.insertAssetRe(assetReEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReDto(assetReEntity.getAssetId());
+        return reMapper.selectAssetReDto(assetReEntity.getAssetId());
     }
 
     public AssetReDto modAssetRe(AssetReForm form){
         AssetReEntity assetReEntity = getAssetReEntityFromForm(form);
 
-        int cnt = assetReMapper.updateAssetRe(assetReEntity);
+        int cnt = reMapper.updateAssetRe(assetReEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReDto(assetReEntity.getAssetId());
+        return reMapper.selectAssetReDto(assetReEntity.getAssetId());
     }
     public AssetReDto delAssetRe(Long assetId){
-        int cnt = assetReMapper.deleteAssetRe(assetId);
+        int cnt = reMapper.deleteAssetRe(assetId);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReDto(assetId);
+        return reMapper.selectAssetReDto(assetId);
     }
 
     public List<AssetReDto> getAssetReDtoList(StockSearch dom){
-        List<AssetReDto> list = assetReMapper.selectAssetReDtoList(dom);
+        List<AssetReDto> list = reMapper.selectAssetReDtoList(dom);
         return list;
     }
 
@@ -85,42 +85,42 @@ public class ReService {
 
 
     public AssetReRentDto getAssetReRentDto(Long reRentId){
-        return assetReMapper.selectAssetReRentDto(reRentId);
+        return reMapper.selectAssetReRentDto(reRentId);
     }
 
     public AssetReRentEntity getAssetReRent(Long assetId){
-        return assetReMapper.selectAssetReRent(assetId);
+        return reMapper.selectAssetReRent(assetId);
     }
 
     public AssetReRentDto regAssetReRent(AssetReRentForm form){
         AssetReRentEntity assetReRentEntity = getAssetReRentEntityFromForm(form);
 
-        int cnt = assetReMapper.insertAssetReRent(assetReRentEntity);
+        int cnt = reMapper.insertAssetReRent(assetReRentEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReRentDto(assetReRentEntity.getReRentId());
+        return reMapper.selectAssetReRentDto(assetReRentEntity.getReRentId());
     }
 
     public AssetReRentDto modAssetReRent(AssetReRentForm form){
         AssetReRentEntity assetReRentEntity = getAssetReRentEntityFromForm(form);
 
-        int cnt = assetReMapper.updateAssetReRent(assetReRentEntity);
+        int cnt = reMapper.updateAssetReRent(assetReRentEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReRentDto(assetReRentEntity.getReRentId());
+        return reMapper.selectAssetReRentDto(assetReRentEntity.getReRentId());
     }
     public AssetReRentDto delAssetReRent(Long reRentId){
-        int cnt = assetReMapper.deleteAssetReRent(reRentId);
+        int cnt = reMapper.deleteAssetReRent(reRentId);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetReMapper.selectAssetReRentDto(reRentId);
+        return reMapper.selectAssetReRentDto(reRentId);
     }
 
     public List<AssetReRentDto> getAssetReRentDtoList(StockSearch dom){
-        List<AssetReRentDto> list = assetReMapper.selectAssetReRentDtoList(dom);
+        List<AssetReRentDto> list = reMapper.selectAssetReRentDtoList(dom);
         return list;
     }
 

@@ -15,7 +15,7 @@ import com.idlelife.myasset.models.stock.form.AssetStockForm;
 import com.idlelife.myasset.models.stock.form.StockInterestForm;
 import com.idlelife.myasset.models.stock.form.StockKindForm;
 import com.idlelife.myasset.models.stock.form.StockTradeForm;
-import com.idlelife.myasset.repository.AssetStockMapper;
+import com.idlelife.myasset.repository.StockMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ import static com.idlelife.myasset.models.common.ErrorCode.*;
 @Transactional
 public class StockService {
     @Autowired
-    AssetStockMapper assetStockMapper;
+    StockMapper stockMapper;
 
     @Autowired
     AssetService assetService;
@@ -46,11 +46,11 @@ public class StockService {
     CommonService commonService;
 
     public AssetStockDto getAssetStockDto(Long assetId){
-        return assetStockMapper.selectAssetStockDto(assetId);
+        return stockMapper.selectAssetStockDto(assetId);
     }
 
     public AssetStockEntity getAssetStock(Long assetId){
-        return assetStockMapper.selectAssetStock(assetId);
+        return stockMapper.selectAssetStock(assetId);
     }
 
     public TotalStockAssetDto getTotalStockAssetDto(Long memberId){
@@ -59,7 +59,7 @@ public class StockService {
         StockSearch param = new StockSearch();
         param.setMemberId(memberId);
         param.setDeleteYn("N");
-        List<StockKindDto> stockKindDtoList = assetStockMapper.selectStockKindDtoList(param);
+        List<StockKindDto> stockKindDtoList = stockMapper.selectStockKindDtoList(param);
 
         Long totBuyPrice = 0L;
         Long totCurPrice = 0L;
@@ -103,11 +103,11 @@ public class StockService {
         log.info("AssetStock 등록");
         form.setAssetId(assetDto.getAssetId());
         AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
-        int cnt = assetStockMapper.insertAssetStock(assetStockEntity);
+        int cnt = stockMapper.insertAssetStock(assetStockEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 증권사 등록 실패", MYASSET_ERROR_1000);
         }
-        AssetStockDto assetStockDto = assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+        AssetStockDto assetStockDto = stockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
         return assetStockDto;
     }
 
@@ -122,25 +122,25 @@ public class StockService {
         }
 
         AssetStockEntity assetStockEntity = getAssetStockEntityFromForm(form);
-        int cnt = assetStockMapper.updateAssetStock(assetStockEntity);
+        int cnt = stockMapper.updateAssetStock(assetStockEntity);
         if(cnt < 1){
             throw new RuntimeException();
         }
 
-        AssetStockDto assetStockDto = assetStockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
+        AssetStockDto assetStockDto = stockMapper.selectAssetStockDto(assetStockEntity.getAssetId());
         return assetStockDto;
     }
 
     public AssetStockDto delAssetStock(Long assetId){
-        int cnt = assetStockMapper.deleteAssetStock(assetId);
+        int cnt = stockMapper.deleteAssetStock(assetId);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 증권사 삭제 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectAssetStockDto(assetId);
+        return stockMapper.selectAssetStockDto(assetId);
     }
 
     public List<AssetStockDto> getAssetStockDtoList(StockSearch dom){
-        List<AssetStockDto> list = assetStockMapper.selectAssetStockDtoList(dom);
+        List<AssetStockDto> list = stockMapper.selectAssetStockDtoList(dom);
         return list;
     }
 
@@ -164,11 +164,11 @@ public class StockService {
 
 
     public StockKindDto getStockKindDto(Long stockKindId){
-        return assetStockMapper.selectStockKindDto(stockKindId);
+        return stockMapper.selectStockKindDto(stockKindId);
     }
 
     public StockKindEntity getStockKind(Long stockKindId){
-        return assetStockMapper.selectStockKind(stockKindId);
+        return stockMapper.selectStockKind(stockKindId);
     }
 
     public StockKindDto regStockKind(StockKindForm form){
@@ -178,7 +178,7 @@ public class StockService {
             throw new MyassetException(MYASSET_ERROR_1001);
         }
 
-        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        AssetStockEntity assetStockEntity = stockMapper.selectAssetStock(form.getAssetId());
         if(assetStockEntity == null){
             log.error("증권사(AssetStock) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1002);
@@ -197,11 +197,11 @@ public class StockService {
         double pnlRate = Math.round((double)pnlAmt / (double)stockKindEntity.getBuyTotPrice() * 10000.0) / 100.0;
         stockKindEntity.setPnlAmt(pnlAmt);
         stockKindEntity.setPnlRate(pnlRate);
-        int cnt = assetStockMapper.insertStockKind(stockKindEntity);
+        int cnt = stockMapper.insertStockKind(stockKindEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 종목 등록 실패", MYASSET_ERROR_1000);
         }
-        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        StockKindDto stockKindDto = stockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
         return stockKindDto;
     }
 
@@ -280,7 +280,7 @@ public class StockService {
         }
 
         // 증권사(AssetStock) 는 예수금, 대출잔액관 관리하므로 종목(StockKind) 관리에서는 업데이트 하지 않음
-        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        AssetStockEntity assetStockEntity = stockMapper.selectAssetStock(form.getAssetId());
         if(assetStockEntity == null){
             log.error("증권사(AssetStock) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1002);
@@ -292,30 +292,30 @@ public class StockService {
         log.info("주식 종목(StockKind) 수정");
         StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
 
-        int cnt = assetStockMapper.updateStockKind(stockKindEntity);
+        int cnt = stockMapper.updateStockKind(stockKindEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : modStockKind 주식 종목 수정 실패", MYASSET_ERROR_1000);
         }
 
-        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        StockKindDto stockKindDto = stockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
         return stockKindDto;
     }
 
     public StockKindDto delStockKind(Long stockKindId){
-        int cnt = assetStockMapper.deleteStockKind(stockKindId);
+        int cnt = stockMapper.deleteStockKind(stockKindId);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 종목 삭제 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectStockKindDto(stockKindId);
+        return stockMapper.selectStockKindDto(stockKindId);
     }
 
     public List<StockKindDto> getStockKindDtoList(StockSearch dom){
-        List<StockKindDto> list = assetStockMapper.selectStockKindDtoList(dom);
+        List<StockKindDto> list = stockMapper.selectStockKindDtoList(dom);
         return list;
     }
 
     public List<StockKindCodeDto> getStockKindCodeDtoList(StockKindForm dom){
-        List<StockKindCodeDto> list = assetStockMapper.selectStockKindCodeDtoList(dom);
+        List<StockKindCodeDto> list = stockMapper.selectStockKindCodeDtoList(dom);
         return list;
     }
 
@@ -327,7 +327,7 @@ public class StockService {
         }
 
         // 증권사(AssetStock) 는 예수금, 대출잔액관 관리하므로 종목(StockKind) 관리에서는 업데이트 하지 않음
-        AssetStockEntity assetStockEntity = assetStockMapper.selectAssetStock(form.getAssetId());
+        AssetStockEntity assetStockEntity = stockMapper.selectAssetStock(form.getAssetId());
         if(assetStockEntity == null){
             log.error("증권사(AssetStock) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1002);
@@ -336,12 +336,12 @@ public class StockService {
         log.info("주식 종목(StockKind) 수정");
         StockKindEntity stockKindEntity = getStockKindEntityFromForm(form);
 
-        int cnt = assetStockMapper.updateStockKind(stockKindEntity);
+        int cnt = stockMapper.updateStockKind(stockKindEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 종목 수정 실패", MYASSET_ERROR_1000);
         }
 
-        StockKindDto stockKindDto = assetStockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
+        StockKindDto stockKindDto = stockMapper.selectStockKindDto(stockKindEntity.getStockKindId());
         return stockKindDto;
     }
 
@@ -350,7 +350,7 @@ public class StockService {
 
     private StockKindEntity getStockKindEntityFromForm(StockKindForm form){
         StockKindEntity stockKindEntity = new StockKindEntity();
-        stockKindEntity.setStockKindId(form.getStockKindId() == null ? assetStockMapper.createStockKindId() : form.getStockKindId());
+        stockKindEntity.setStockKindId(form.getStockKindId() == null ? stockMapper.createStockKindId() : form.getStockKindId());
         stockKindEntity.setAssetId(form.getAssetId());
         stockKindEntity.setMemberId(form.getMemberId());
         stockKindEntity.setStockKindCd(form.getStockKindCd());
@@ -376,11 +376,11 @@ public class StockService {
 
 
     public StockTradeDto getStockTradeDto(Long stockTradeId){
-        return assetStockMapper.selectStockTradeDto(stockTradeId);
+        return stockMapper.selectStockTradeDto(stockTradeId);
     }
 
     public StockTradeEntity getStockTrade(Long stockTradeId){
-        return assetStockMapper.selectStockTrade(stockTradeId);
+        return stockMapper.selectStockTrade(stockTradeId);
     }
 
     public StockTradeDto regStockTrade(StockTradeForm form){
@@ -389,7 +389,7 @@ public class StockService {
         long buyTotPrice = 0;
         long avgPrice = 0;
 
-        StockKindEntity stockKindEntity = assetStockMapper.selectStockKind(form.getStockKindId());
+        StockKindEntity stockKindEntity = stockMapper.selectStockKind(form.getStockKindId());
         if(stockKindEntity == null){
             log.error("주식 종목(StockKind) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1003);
@@ -436,7 +436,7 @@ public class StockService {
         avgPrice = buyTotPrice / stockKindEntity.getQuantity();
         stockKindEntity.setBuyTotPrice(buyTotPrice);
         stockKindEntity.setBuyAvgPrice(avgPrice);
-        if(assetStockMapper.updateStockKind(stockKindEntity) < 1){
+        if(stockMapper.updateStockKind(stockKindEntity) < 1){
             throw new MyassetException("DB 에러 : 주식 종목 정보 업데이트 실패", MYASSET_ERROR_1000);
         }
 
@@ -445,36 +445,36 @@ public class StockService {
         stockTradeEntity.setAftBuyAvgPrice(stockKindEntity.getBuyAvgPrice());
         stockTradeEntity.setAftBuyTotPrice(stockKindEntity.getBuyTotPrice());
 
-        int cnt = assetStockMapper.insertStockTrade(stockTradeEntity);
+        int cnt = stockMapper.insertStockTrade(stockTradeEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 거래 내역 등록 실패", MYASSET_ERROR_1000);
         }
 
-        StockTradeDto resultDto = assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
+        StockTradeDto resultDto = stockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
         return resultDto;
     }
 
     public StockTradeDto modStockTrade(StockTradeForm form){
         StockTradeEntity stockTradeEntity = getStockTradeEntityFromForm(form);
 
-        int cnt = assetStockMapper.updateStockTrade(stockTradeEntity);
+        int cnt = stockMapper.updateStockTrade(stockTradeEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 주식 거래 내역 조회 실패", MYASSET_ERROR_1000);
         }
-        return assetStockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
+        return stockMapper.selectStockTradeDto(stockTradeEntity.getStockTradeId());
     }
     public StockTradeDto delStockTrade(Long stockTradeId){
-        int cnt = assetStockMapper.deleteStockTrade(stockTradeId);
+        int cnt = stockMapper.deleteStockTrade(stockTradeId);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetStockMapper.selectStockTradeDto(stockTradeId);
+        return stockMapper.selectStockTradeDto(stockTradeId);
     }
 
     public StockTradeHistoryDto getStockTradeHistory(StockSearch dom){
         Long totalBuyAmt = 0L;
         Long totalSaleAmt = 0L;
-        List<StockTradeDto> list = assetStockMapper.selectStockTradeDtoList(dom);
+        List<StockTradeDto> list = stockMapper.selectStockTradeDtoList(dom);
 
         for(StockTradeDto dto : list){
             if(dto.getTradeType().equalsIgnoreCase("SALE")){
@@ -504,7 +504,7 @@ public class StockService {
         }
         Long trAmt = form.getQuantity() * form.getUnitPrice();
         StockTradeEntity stockTradeEntity = new StockTradeEntity();
-        stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? assetStockMapper.createStockTradeId() : form.getStockTradeId());
+        stockTradeEntity.setStockTradeId(form.getStockTradeId() == null ? stockMapper.createStockTradeId() : form.getStockTradeId());
         stockTradeEntity.setTradeType(form.getTrType());
         stockTradeEntity.setStockKindId(form.getStockKindId());
         LocalDateTime tradeDate = LocalDateTime.parse(form.getTrDate().replaceAll("-", "") + form.getTrTime().replaceAll(":", "") + "00", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -542,7 +542,7 @@ public class StockService {
         StockInterestListDto result = new StockInterestListDto();
 
         String baseTime = "";
-        List<StockInterestDto> stockInterestDtoList = assetStockMapper.selectStockInterestDtoList(memberId);
+        List<StockInterestDto> stockInterestDtoList = stockMapper.selectStockInterestDtoList(memberId);
 
         for(StockInterestDto siDto : stockInterestDtoList){
             ScrapStockKindDto stockInfo = scrapStockService.getScrapStockKind(siDto.getStockKindCd());
@@ -565,7 +565,7 @@ public class StockService {
         log.info("관심주식 (regStockInterest) 등록");
 
         StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
-        int cnt = assetStockMapper.insertStockInterest(stockInterestEntity);
+        int cnt = stockMapper.insertStockInterest(stockInterestEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 등록 실패", MYASSET_ERROR_1000);
         }
@@ -577,7 +577,7 @@ public class StockService {
         log.info("관심주식 (regStockInterest) 수정");
 
         StockInterestEntity stockInterestEntity = getStockInterestEntityFromForm(form);
-        int cnt = assetStockMapper.updateStockInterest(stockInterestEntity);
+        int cnt = stockMapper.updateStockInterest(stockInterestEntity);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 수정 실패", MYASSET_ERROR_1000);
         }
@@ -590,7 +590,7 @@ public class StockService {
         Map<String, String> resultMap = new HashMap<>();
         StockInterestEntity ety = getStockInterest(stockInterestId);
 
-        int cnt = assetStockMapper.deleteStockInterest(stockInterestId);
+        int cnt = stockMapper.deleteStockInterest(stockInterestId);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 삭제 실패", MYASSET_ERROR_1000);
         }
@@ -598,7 +598,7 @@ public class StockService {
         StockSearch sqlParam = new StockSearch();
         sqlParam.setMemberId(ety.getMemberId());
         sqlParam.setOrderNo(ety.getOrderNo());
-        cnt = assetStockMapper.chgStockInterestOrderNoDel(sqlParam);
+        cnt = stockMapper.chgStockInterestOrderNoDel(sqlParam);
 
         StockInterestListDto result = getStockInterestListDto(ety.getMemberId());
         return result;
@@ -617,17 +617,17 @@ public class StockService {
         if(aftOrderNo > befOrderNo){
             sqlParam.setStartOrderNo(befOrderNo + 1);
             sqlParam.setEndOrderNo(aftOrderNo);
-            assetStockMapper.chgStockInterestOrderNoMinus(sqlParam);
+            stockMapper.chgStockInterestOrderNoMinus(sqlParam);
         }else{
             sqlParam.setStartOrderNo(aftOrderNo);
             sqlParam.setEndOrderNo(befOrderNo - 1);
-            assetStockMapper.chgStockInterestOrderNoPlus(sqlParam);
+            stockMapper.chgStockInterestOrderNoPlus(sqlParam);
         }
 
         StockSearch orderParam = new StockSearch();
         orderParam.setMemberId(dom.getMemberId());
         orderParam.setOrderNo(dom.getOrderNo());
-        int cnt = assetStockMapper.updateStockInterestOrder(orderParam);
+        int cnt = stockMapper.updateStockInterestOrder(orderParam);
         if(cnt < 1){
             throw new MyassetException("DB 에러 : 관심주식 정렬 수정 실패", MYASSET_ERROR_1000);
         }
@@ -638,7 +638,7 @@ public class StockService {
     public StockInterestDto getStockInterestDto(long stockInterestId){
         log.info("관심주식 (regStockInterest) 조회");
 
-        StockInterestDto dto = assetStockMapper.selectStockInterestDto(stockInterestId);
+        StockInterestDto dto = stockMapper.selectStockInterestDto(stockInterestId);
         if(dto == null){
             throw new MyassetException("DB 에러 : 관심주식 조회 실패", MYASSET_ERROR_1000);
         }
@@ -648,7 +648,7 @@ public class StockService {
     public StockInterestEntity getStockInterest(long stockInterestId){
         log.info("관심주식 (regStockInterest) 조회");
 
-        StockInterestEntity ety = assetStockMapper.selectStockInterest(stockInterestId);
+        StockInterestEntity ety = stockMapper.selectStockInterest(stockInterestId);
         if(ety == null){
             throw new MyassetException("DB 에러 : 관심주식 조회 실패", MYASSET_ERROR_1000);
         }
@@ -656,9 +656,9 @@ public class StockService {
     }
 
     private StockInterestEntity getStockInterestEntityFromForm(StockInterestForm form){
-        long orderNo = assetStockMapper.createStockInterestOrderNo(form.getMemberId());
+        long orderNo = stockMapper.createStockInterestOrderNo(form.getMemberId());
         StockInterestEntity stockInterestEntity = new StockInterestEntity();
-        stockInterestEntity.setStockInterestId(form.getStockInterestId() == null ? assetStockMapper.createStockInterestId() : form.getStockInterestId());
+        stockInterestEntity.setStockInterestId(form.getStockInterestId() == null ? stockMapper.createStockInterestId() : form.getStockInterestId());
         stockInterestEntity.setMemberId(form.getMemberId());
         stockInterestEntity.setStockKindCd(form.getStockKindCd());
         stockInterestEntity.setStockKindName(form.getStockKindName());

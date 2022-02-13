@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Slf4j
@@ -152,6 +154,15 @@ public class JwtTokenProvider {
     public Jws<Claims> getClaims(String token){
         Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(token);
         return claims;
+    }
+
+    // 토큰 만료 일시 조회
+    public LocalDateTime getTokenExpireDatetime(String token){
+        Jws<Claims> claims = getClaims(token);
+        LocalDateTime tokenExpireDatetime = claims.getBody().getExpiration().toInstant() // Date -> Instant
+                .atZone(ZoneId.systemDefault()) // Instant -> ZonedDateTime
+                .toLocalDateTime();
+        return tokenExpireDatetime;
     }
 //
 //    public String getRefreshTokenByMember(MemberEntity member){
