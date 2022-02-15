@@ -117,6 +117,9 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = getClaims(token);
             return !claims.getBody().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e){
+            log.error("validateToken 토큰 만료");
+            return false;
         } catch (Exception e) {
             return false;
         }
