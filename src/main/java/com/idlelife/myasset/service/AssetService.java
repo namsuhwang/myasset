@@ -1,5 +1,6 @@
 package com.idlelife.myasset.service;
 
+import com.idlelife.myasset.common.CommonUtil;
 import com.idlelife.myasset.models.asset.AssetSearch;
 import com.idlelife.myasset.models.asset.dto.AssetDto;
 import com.idlelife.myasset.models.asset.dto.TotalAssetDto;
@@ -66,8 +67,10 @@ public class AssetService {
         return assetMapper.selectAssetDto(assetId);
     }
 
-    public List<AssetDto> getAssetDtoList(AssetSearch dom){
-        List<AssetDto> list = assetMapper.selectAssetDtoList(dom);
+    public List<AssetDto> getAssetDtoList(){
+        AssetSearch assetSearch = new AssetSearch();
+        assetSearch.setMemberId(CommonUtil.getAuthInfo().getMemberId());
+        List<AssetDto> list = assetMapper.selectAssetDtoList(assetSearch);
         return list;
     }
 
@@ -79,7 +82,7 @@ public class AssetService {
         }else{
             assetEntity.setAssetId(form.getAssetId());
         }
-        assetEntity.setMemberId(form.getMemberId());
+        assetEntity.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         assetEntity.setAssetType(form.getAssetType());
         assetEntity.setAssetName(form.getAssetName());
         assetEntity.setDeleteYn("N");

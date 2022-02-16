@@ -1,6 +1,7 @@
 package com.idlelife.myasset.controller;
 
 
+import com.idlelife.myasset.common.CommonUtil;
 import com.idlelife.myasset.models.asset.AssetSearch;
 import com.idlelife.myasset.models.asset.dto.AssetDto;
 import com.idlelife.myasset.models.asset.dto.TotalAssetDto;
@@ -67,7 +68,7 @@ public class AssetController {
     ){
         log.info("call : /asset/list");
         log.info("params : " + dom.toString());
-        List<AssetDto> result = assetService.getAssetDtoList(dom);
+        List<AssetDto> result = assetService.getAssetDtoList();
         log.info("result : " + result.toString());
 
         return ResponseEntity.ok().body(result);
@@ -78,11 +79,11 @@ public class AssetController {
 
     @PostMapping("/asset/total/summary")
     public ResponseEntity<TotalAssetSummaryDto> getTotalAssetSummary(
-            @RequestBody AssetForm dom
+            // @RequestBody AssetForm dom
     ){
         log.info("call 종합현황 요약 : /asset/total/summary ");
-        log.info("params : " + dom.toString());
-        TotalAssetSummaryDto result = assetService.getTotalAssetSummary(dom.getMemberId());
+        // log.info("params : " + dom.toString());
+        TotalAssetSummaryDto result = assetService.getTotalAssetSummary(CommonUtil.getAuthInfo().getMemberId());
 
         log.info("result : " + result.toString());
         return ResponseEntity.ok().body(result);
@@ -90,11 +91,11 @@ public class AssetController {
 
     @PostMapping("/asset/total/list")
     public ResponseEntity<List<AssetDto>> getTotalAssetList(
-            @RequestBody AssetSearch dom
+            // @RequestBody AssetSearch dom
     ){
         log.info("call 종합현황 자산 목록 : /asset/total/list ");
-        log.info("params : " + dom.toString());
-        List<AssetDto> result = assetService.getAssetDtoList(dom);
+        // log.info("params : " + dom.toString());
+        List<AssetDto> result = assetService.getAssetDtoList();
 
         log.info("result : " + result.toString());
         return ResponseEntity.ok().body(result);

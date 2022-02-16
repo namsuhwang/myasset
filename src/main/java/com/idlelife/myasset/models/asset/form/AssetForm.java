@@ -12,7 +12,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class AssetForm {
     private Long assetId;
-    private Long memberId;
+//    private Long memberId;
     private String AssetType;
     private String AssetName;
 }
