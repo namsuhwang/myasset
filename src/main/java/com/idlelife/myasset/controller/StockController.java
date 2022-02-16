@@ -36,8 +36,7 @@ public class StockController {
     @PostMapping("/stock/total")
     public ResponseEntity<TotalStockAssetDto> getTotalStockAsset(){
         log.info("call : /stock/total");
-        log.info("memberId=" + CommonUtil.getAuthInfo().getMemberId());
-        TotalStockAssetDto result = stockService.getTotalStockAssetDto(CommonUtil.getAuthInfo().getMemberId());
+        TotalStockAssetDto result = stockService.getTotalStockAssetDto();
         log.info("result : " + result.toString());
 
         return ResponseEntity.ok().body(result);
@@ -217,7 +216,6 @@ public class StockController {
             @RequestBody StockInterestForm dom
     ){
         log.info("call : /stock/interest/reg");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         StockInterestListDto result = stockService.regStockInterest(dom);
 

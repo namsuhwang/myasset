@@ -53,11 +53,11 @@ public class StockService {
         return stockMapper.selectAssetStock(assetId);
     }
 
-    public TotalStockAssetDto getTotalStockAssetDto(Long memberId){
-        log.info("TotalStockAssetDto 시작 memberId : " + memberId);
+    public TotalStockAssetDto getTotalStockAssetDto(){
+        log.info("TotalStockAssetDto 시작");
         TotalStockAssetDto result = new TotalStockAssetDto();
         StockSearch param = new StockSearch();
-        param.setMemberId(memberId);
+        param.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         param.setDeleteYn("N");
         List<StockKindDto> stockKindDtoList = stockMapper.selectStockKindDtoList(param);
 
@@ -93,7 +93,7 @@ public class StockService {
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
-        assetForm.setMemberId(form.getMemberId());
+        assetForm.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
@@ -147,7 +147,7 @@ public class StockService {
     private AssetStockEntity getAssetStockEntityFromForm(AssetStockForm form){
         AssetStockEntity assetStockEntity = new AssetStockEntity();
         assetStockEntity.setAssetId(form.getAssetId());
-        assetStockEntity.setMemberId(form.getMemberId());
+        assetStockEntity.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         assetStockEntity.setOrgCd(form.getOrgCd());
         assetStockEntity.setOrgName(form.getOrgName());
         assetStockEntity.setStockAcno(form.getStockAcno());
@@ -182,10 +182,6 @@ public class StockService {
         if(assetStockEntity == null){
             log.error("증권사(AssetStock) 먼저 등록");
             throw new MyassetException(MYASSET_ERROR_1002);
-        }
-
-        if(form.getMemberId() == null){
-            form.setMemberId(assetStockEntity.getMemberId());
         }
 
         log.info("주식 종목 코드 등록/수정(StockKindCode)");
@@ -352,7 +348,7 @@ public class StockService {
         StockKindEntity stockKindEntity = new StockKindEntity();
         stockKindEntity.setStockKindId(form.getStockKindId() == null ? stockMapper.createStockKindId() : form.getStockKindId());
         stockKindEntity.setAssetId(form.getAssetId());
-        stockKindEntity.setMemberId(form.getMemberId());
+        stockKindEntity.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         stockKindEntity.setStockKindCd(form.getStockKindCd());
         stockKindEntity.setStockKindName(form.getStockKindName());
         stockKindEntity.setQuantity(form.getQuantity());

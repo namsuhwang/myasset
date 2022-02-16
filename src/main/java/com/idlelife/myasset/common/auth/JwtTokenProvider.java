@@ -118,7 +118,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = getClaims(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (ExpiredJwtException e){
-            log.error("validateToken 토큰 만료");
+            log.error("validateToken 토큰 만료 : " + token);
             return false;
         } catch (Exception e) {
             return false;
@@ -132,6 +132,9 @@ public class JwtTokenProvider {
         try {
             Jws<Claims> claims = getClaims(refreshToken);
             return !claims.getBody().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e){
+            log.error("validateRefreshToken 리프레쉬 토큰 만료 : " + refreshToken);
+            return false;
         } catch (Exception e) {
             return false;
         }
@@ -147,7 +150,7 @@ public class JwtTokenProvider {
     }
 
     public Jws<Claims> getClaims(String token){
-        String netToken = token.startsWith("bearer ") ? token.replace("bearer ", "") : token;
+        String netToken = token.startsWith(BEARER_TYPE) ? token.replace(BEARER_TYPE, "") : token;
         Jws<Claims> claims = Jwts.parser().setSigningKey(signatureKey).parseClaimsJws(netToken);
         return claims;
     }
