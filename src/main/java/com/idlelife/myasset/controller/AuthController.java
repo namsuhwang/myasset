@@ -72,6 +72,12 @@ public class AuthController {
         MemberEntity member = memberService.getMember(refreshTokenInfo.getMemberId());
         String newToken = jwtTokenProvider.createAccessToken(member.getEmail());
         String newRefreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
+        MemberTokenEntity tokenEntity = new MemberTokenEntity();
+        tokenEntity.setMemberId(member.getMemberId());
+        tokenEntity.setRefreshToken(newRefreshToken);
+        tokenEntity.setRefreshTokenExpireDatetime(jwtTokenProvider.getTokenExpireDatetime(newRefreshToken));
+        tokenEntity.setDeleteYn("N");
+        memberService.modMemberToken(tokenEntity);
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("accesstoken", newToken);
         resultMap.put("refreshtoken", newRefreshToken);

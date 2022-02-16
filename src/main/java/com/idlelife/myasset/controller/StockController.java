@@ -47,7 +47,6 @@ public class StockController {
             @RequestBody AssetStockForm dom
     ){
         log.info("call : /stock/acno/reg");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         AssetStockDto result = stockService.regAssetStock(dom);
         log.info("result : " + result.toString());
@@ -61,7 +60,6 @@ public class StockController {
             @RequestBody AssetStockForm dom
     ){
         log.info("call : /stock/acno/mod");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         AssetStockDto result = stockService.modAssetStock(dom);
 
@@ -73,7 +71,6 @@ public class StockController {
             @RequestBody AssetStockForm dom
     ){
         log.info("call : /stock/acno/del");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.getAssetId());
         AssetStockDto result = stockService.delAssetStock(dom.getAssetId());
 
@@ -101,7 +98,6 @@ public class StockController {
             @RequestBody StockKindForm dom
     ){
         log.info("call : /stock/kind/reg");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         StockKindDto result = stockService.regStockKind(dom);
 
@@ -114,7 +110,6 @@ public class StockController {
             @RequestBody StockKindForm dom
     ){
         log.info("call : /stock/kind/mod");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         StockKindDto result = stockService.modStockKind(dom);
 
@@ -126,7 +121,6 @@ public class StockController {
             @RequestBody StockKindForm dom
     ){
         log.info("call : /stock/kind/del");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.getStockKindId());
         StockKindDto result = stockService.delStockKind(dom.getStockKindId());
 
@@ -150,7 +144,6 @@ public class StockController {
             @RequestBody StockKindForm dom
     ){
         log.info("call : /stock/kind/code/search");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         log.info("params : " + dom.toString());
         List<StockKindCodeDto> result = stockService.getStockKindCodeDtoList(dom);
 
