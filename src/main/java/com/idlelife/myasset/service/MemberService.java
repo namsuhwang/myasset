@@ -58,9 +58,18 @@ public class MemberService {
         // 회원정보 조회
         MemberAuthDto memberAuthDto = authService.getMemberAuth(dom.getEmail());
 
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberAuthDto.getEmail());
+        MemberTokenEntity tokenEntity = new MemberTokenEntity();
+        tokenEntity.setMemberId(memberAuthDto.getMemberId());
+        tokenEntity.setRefreshToken(refreshToken);
+        tokenEntity.setDeleteYn("N");
+        tokenEntity.setRefreshTokenExpireDatetime(jwtTokenProvider.getTokenExpireDatetime(refreshToken));
+        modMemberToken(tokenEntity);
+        log.info("리프레쉬 토큰 업데이트 완료 : " + refreshToken);
         Map<String, Object> result = new HashMap<>();
         result.put("memberInfo", memberAuthDto);
         result.put("accesstoken", accesstoken);
+        result.put("refreshtoken", refreshToken);
 
         return result;
     }
