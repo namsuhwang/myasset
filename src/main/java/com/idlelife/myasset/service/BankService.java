@@ -41,7 +41,6 @@ public class BankService {
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("BANK");
-        assetForm.setMemberId(form.getMemberId());
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         /*
         long evalAmt = 0;

@@ -93,7 +93,6 @@ public class StockService {
         AssetForm assetForm = new AssetForm();
         assetForm.setAssetName(form.getAssetName());
         assetForm.setAssetType("STOCK");
-        assetForm.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         AssetEntity assetEntity = assetService.getAssetEntityFromForm(assetForm);
         AssetDto assetDto = assetService.regAsset(assetEntity);
         if(assetDto == null){
