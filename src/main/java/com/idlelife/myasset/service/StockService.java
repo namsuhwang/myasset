@@ -67,9 +67,9 @@ public class StockService {
 
         for(StockKindDto kindDto : stockKindDtoList){
             kindDto = getCurStockKind(kindDto);
-            totBuyPrice =+ kindDto.getBuyTotPrice();
-            totCurPrice =+ kindDto.getCurTotPrice();
-            totPnlAmt =+ kindDto.getPnlAmt();
+            totBuyPrice = totBuyPrice + kindDto.getBuyTotPrice();
+            totCurPrice = totCurPrice + kindDto.getCurTotPrice();
+            totPnlAmt = totPnlAmt + kindDto.getPnlAmt();
         }
 
         if(stockKindDtoList != null && stockKindDtoList.size() > 0){
