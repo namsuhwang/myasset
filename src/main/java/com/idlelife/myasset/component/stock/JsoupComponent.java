@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +46,13 @@ public class JsoupComponent {
                 if(pStr.contains("종목명")) {
                     kindDto.setStockName(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
                 }else if(pStr.contains("년") && pStr.contains("월") && pStr.contains("일")) {
-                    String basetime = pStr.substring(0, 4) + "-" + pStr.substring(6, 8) + "-" + pStr.substring(10, 12) + " "
-                            + pStr.substring(14, 16) + ":" + pStr.substring(18, 20);
-                    if(pStr.contains("장마감"))
-                        basetime = basetime + " 장마감";
+                    // String basetime = pStr.substring(0, 4) + "-" + pStr.substring(6, 8) + "-" + pStr.substring(10, 12) + " " + pStr.substring(14, 16) + ":" + pStr.substring(18, 20);
+                    String basetime = "";
+                    if(pStr.contains("장마감")) {
+                        basetime = pStr.substring(0, 4) + "-" + pStr.substring(6, 8) + "-" + pStr.substring(10, 12) + " " + pStr.substring(14, 16) + ":" + pStr.substring(18, 20) + " 장마감";
+                    }else{
+                        basetime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    }
                     kindDto.setBaseTime(basetime);
                 }else if(pStr.contains("종목코드")) {
                     kindDto.setKindCode(pStr.substring(pStr.indexOf(" ") + 1, pStr.indexOf(" ") + 7));
