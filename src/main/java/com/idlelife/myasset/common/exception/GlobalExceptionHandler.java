@@ -3,6 +3,7 @@ package com.idlelife.myasset.common.exception;
 import com.idlelife.myasset.common.ErrorResponse;
 import com.idlelife.myasset.models.common.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,9 +20,18 @@ public class GlobalExceptionHandler {
 //        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
 //    }
 
+//    @ExceptionHandler(ClientAbortException.class)
+//    public ResponseEntity<Response> handleClientAbortException(ClientAbortException ex){
+//        return ClientAbortException;
+//    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex){
-        log.error("handleException",ex);
+
+        if(!ex.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+            log.error("handleException",ex);
+        }
         // ErrorResponse response = new ErrorResponse(ErrorCode.INTER_SERVER_ERROR);
         // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         MyassetException e = (MyassetException)ex;
