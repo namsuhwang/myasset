@@ -63,9 +63,9 @@ public class JsoupComponent {
                     String[] tmp = pStr.split(" ");
                     kindDto.setPrice(tmp[1]);
                     if(tmp[3].equals("하락")){
-                        kindDto.setDiffAmount("▼" + tmp[4]);
+                        kindDto.setDiffAmount("-" + tmp[4]);
                     }else{
-                        kindDto.setDiffAmount("▲" + tmp[4]);
+                        kindDto.setDiffAmount("+" + tmp[4]);
                     }
 
                     if(tmp[5].equals("마이너스")){
