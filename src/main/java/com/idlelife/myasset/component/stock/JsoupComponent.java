@@ -65,13 +65,13 @@ public class JsoupComponent {
                     if(tmp[3].equals("하락")){
                         kindDto.setDiffAmount("-" + tmp[4]);
                     }else{
-                        kindDto.setDiffAmount("+" + tmp[4]);
+                        kindDto.setDiffAmount("" + tmp[4]);
                     }
 
                     if(tmp[5].equals("마이너스")){
                         kindDto.setDayRange("-" + tmp[6]);
                     }else{
-                        kindDto.setDayRange("+" + tmp[6]);
+                        kindDto.setDayRange("" + tmp[6]);
                     }
                 }else if(pStr.contains("고가")) {
                     kindDto.setHighPrice(pStr.substring(pStr.lastIndexOf(" ") + 1, pStr.length()));
