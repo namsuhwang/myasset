@@ -35,12 +35,12 @@ public class AssetService {
     ReService reService;
 
 
-    public AssetDto getAssetDto(Long assetId){
-        return assetMapper.selectAssetDto(assetId);
+    public AssetDto getAssetDto(AssetSearch dom){
+        return assetMapper.selectAssetDto(dom);
     }
 
-    public AssetEntity getAsset(Long assetId){
-        return assetMapper.selectAsset(assetId);
+    public AssetEntity getAsset(AssetSearch dom){
+        return assetMapper.selectAsset(dom);
     }
 
     public AssetDto regAsset(AssetEntity assetEntity){
@@ -48,7 +48,10 @@ public class AssetService {
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetMapper.selectAssetDto(assetEntity.getAssetId());
+
+        AssetSearch assetSearch = new AssetSearch();
+        assetSearch.setAssetId(assetEntity.getAssetId());
+        return getAssetDto(assetSearch);
     }
 
     public AssetDto modAsset(AssetEntity assetEntity){
@@ -57,14 +60,20 @@ public class AssetService {
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetMapper.selectAssetDto(assetEntity.getAssetId());
+
+        AssetSearch assetSearch = new AssetSearch();
+        assetSearch.setAssetId(assetEntity.getAssetId());
+        return getAssetDto(assetSearch);
     }
     public AssetDto delAsset(Long assetId){
         int cnt = assetMapper.deleteAsset(assetId);
         if(cnt < 1){
             throw new RuntimeException();
         }
-        return assetMapper.selectAssetDto(assetId);
+
+        AssetSearch assetSearch = new AssetSearch();
+        assetSearch.setAssetId(assetId);
+        return getAssetDto(assetSearch);
     }
 
     public List<AssetDto> getAssetDtoList(){

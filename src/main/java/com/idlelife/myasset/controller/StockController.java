@@ -42,6 +42,18 @@ public class StockController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/stock/acno/save")
+    public ResponseEntity<AssetStockDto> saveAssetStock(
+            @RequestBody AssetStockForm dom
+    ){
+        log.info("call : /stock/acno/save");
+        log.info("params : " + dom.toString());
+        AssetStockDto result = stockService.saveAssetStock(dom);
+        log.info("result : " + result.toString());
+
+        return ResponseEntity.ok().body(result);
+    }
+
     @PostMapping("/stock/acno/reg")
     public ResponseEntity<AssetStockDto> regAssetStock(
             @RequestBody AssetStockForm dom
@@ -92,6 +104,17 @@ public class StockController {
 
 
 
+
+    @PostMapping("/stock/kind/save")
+    public ResponseEntity<StockKindDto> saveStockKind(
+            @RequestBody StockKindForm dom
+    ){
+        log.info("call : /stock/kind/save");
+        log.info("params : " + dom.toString());
+        StockKindDto result = stockService.saveStockKind(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
 
     @PostMapping("/stock/kind/reg")
     public ResponseEntity<StockKindDto> regStockKind(
@@ -145,7 +168,11 @@ public class StockController {
     ){
         log.info("call : /stock/kind/code/search");
         log.info("params : " + dom.toString());
-        List<StockKindCodeDto> result = stockService.getStockKindCodeDtoList(dom);
+        StockSearch stockSearch = new StockSearch();
+        stockSearch.setStockKindCd(dom.getStockKindCd());
+        stockSearch.setStockKindName(dom.getStockKindName());
+        stockSearch.setSearchWord(dom.getSearchWord());
+        List<StockKindCodeDto> result = stockService.getStockKindCodeDtoList(stockSearch);
 
         return ResponseEntity.ok().body(result);
     }

@@ -1,6 +1,7 @@
 package com.idlelife.myasset.service;
 
 import com.idlelife.myasset.common.exception.MyassetException;
+import com.idlelife.myasset.models.asset.AssetSearch;
 import com.idlelife.myasset.models.bank.dto.AssetBankDto;
 import com.idlelife.myasset.models.asset.dto.AssetDto;
 import com.idlelife.myasset.models.stock.StockSearch;
@@ -74,7 +75,9 @@ public class BankService {
     public AssetBankDto modAssetBank(AssetBankForm form){
         log.info("Asset 수정");
         log.info("기존 Asset 조회");
-        AssetEntity assetEntity = assetService.getAsset(form.getAssetId());
+        AssetSearch assetSearch = new AssetSearch();
+        assetSearch.setAssetId(form.getAssetId());
+        AssetEntity assetEntity = assetService.getAsset(assetSearch);
         assetEntity.setAssetName(form.getAssetName());
         /*
         long evalAmt = 0;

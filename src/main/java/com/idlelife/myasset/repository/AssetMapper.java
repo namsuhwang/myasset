@@ -22,9 +22,9 @@ public interface AssetMapper {
 
     List<AssetDto> selectAssetDtoList(AssetSearch dom);
 
-    AssetEntity selectAsset(long assetId);
+    AssetEntity selectAsset(AssetSearch dom);
 
-    AssetDto selectAssetDto(long assetId);
+    AssetDto selectAssetDto(AssetSearch dom);
 
     // 종합현황 요약
     //TotalAssetSummaryDto selectTotalAssetSummary(Long memberId);

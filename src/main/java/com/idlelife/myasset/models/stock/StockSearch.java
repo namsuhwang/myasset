@@ -11,11 +11,15 @@ import lombok.ToString;
 @AllArgsConstructor
 public class StockSearch {
     private Long assetId;
+    private String orgCd;
+    private String stockAcno;
     private Long memberId;
     private String stockKindCd;
+    private String stockKindName;
     private String stockTradeType;
     private String searchStartDate;
     private String searchEndDate;
+    private String searchWord;
     private String deleteYn;
     private Long stockTradeId;
     private Long stockKindId;

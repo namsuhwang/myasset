@@ -53,7 +53,7 @@
             WHERE asset_id = ${assetId}
     </delete>
 
-    <select id="selectAsset" parameterType="Long" resultType="AssetEntity">
+    <select id="selectAsset" parameterType="AssetSearch" resultType="AssetEntity">
             SELECT
                 asset_id
                  ,member_id
@@ -63,10 +63,22 @@
                  ,reg_datetime
                  ,last_update_datetime
             FROM asset ia
-            WHERE ia.asset_id = ${assetId}
+            WHERE 1 = 1
+            <if test = 'assetId != null and assetId !=""'>
+                AND ia.asset_id = ${assetId}
+            </if>
+            <if test = 'memberId != null and memberId !=""'>
+                AND ia.member_id = ${memberId}
+            </if>
+            <if test = 'assetType != null and assetType !=""'>
+                AND ia.asset_type = ${assetType}
+            </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND ia.delete_yn = ${deleteYn}
+            </if>
     </select>
 
-    <select id="selectAssetDto" parameterType="Long" resultType="AssetDto">
+    <select id="selectAssetDto" parameterType="AssetSearch" resultType="AssetDto">
             SELECT
                 asset_id
                  ,member_id
@@ -78,7 +90,19 @@
                  ,last_update_datetime
             FROM asset ia
                  LEFT OUTER JOIN common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
-            WHERE ia.asset_id = ${assetId}
+            WHERE 1 = 1
+            <if test = 'assetId != null and assetId !=""'>
+                AND ia.asset_id = ${assetId}
+            </if>
+            <if test = 'memberId != null and memberId !=""'>
+                AND ia.member_id = ${memberId}
+            </if>
+            <if test = 'assetType != null and assetType !=""'>
+                AND ia.asset_type = ${assetType}
+            </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND ia.delete_yn = ${deleteYn}
+            </if>
     </select>
 
     <select id="selectAssetDtoList" parameterType="AssetSearch" resultType="AssetDto">
@@ -93,7 +117,7 @@
                  ,last_update_datetime
             FROM asset ia
                 LEFT OUTER JOIN common_code cc ON cc.div_code = 'ASSET_TYPE' AND cc.code = ia.asset_type
-            WHERE 1 = 1
+            WHERE ia.delete_yn = 'N'
               <if test = 'assetId != null and assetId !=""'>
                     AND ia.asset_id = ${assetId}
               </if>

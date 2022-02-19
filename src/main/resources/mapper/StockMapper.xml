@@ -54,7 +54,7 @@
             WHERE asset_id = ${assetId}
     </delete>
 
-    <select id="selectAssetStock" parameterType="Long" resultType="AssetStockEntity">
+    <select id="selectAssetStock" parameterType="StockSearch" resultType="AssetStockEntity">
             SELECT
                 asset_id
                  ,member_id
@@ -68,10 +68,25 @@
                  ,reg_datetime
                  ,last_update_datetime
             FROM asset_stock stock
-            WHERE stock.asset_id = ${assetId}
+            WHERE  1 = 1
+            <if test = 'assetId != null and assetId !=""'>
+                stock.asset_id = ${assetId}
+            </if>
+            <if test = 'memberId != null and memberId !=""'>
+                AND stock.member_id = ${memberId}
+            </if>
+            <if test = 'orgCd != null and orgCd !=""'>
+                AND stock.org_cd = ${orgCd}
+            </if>
+            <if test = 'stockAcno != null and stockAcno !=""'>
+                AND stock.stock_acno = ${stockAcno}
+            </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND sk.delete_yn = #{deleteYn}
+            </if>
     </select>
 
-    <select id="selectAssetStockDto" parameterType="Long" resultType="AssetStockDto">
+    <select id="selectAssetStockDto" parameterType="StockSearch" resultType="AssetStockDto">
             SELECT
                 asset_id
                  ,member_id
@@ -85,7 +100,22 @@
                  ,reg_datetime
                  ,last_update_datetime
             FROM asset_stock stock
-            WHERE stock.asset_id = ${assetId}
+            WHERE  1 = 1
+            <if test = 'assetId != null and assetId !=""'>
+                stock.asset_id = ${assetId}
+            </if>
+            <if test = 'memberId != null and memberId !=""'>
+                AND stock.member_id = ${memberId}
+            </if>
+            <if test = 'orgCd != null and orgCd !=""'>
+                AND stock.org_cd = ${orgCd}
+            </if>
+            <if test = 'stockAcno != null and stockAcno !=""'>
+                AND stock.stock_acno = ${stockAcno}
+            </if>
+            <if test = 'deleteYn != null and deleteYn !=""'>
+                AND sk.delete_yn = #{deleteYn}
+            </if>
     </select>
 
     <select id="selectAssetStockDtoList" parameterType="StockSearch" resultType="AssetStockDto">
@@ -170,14 +200,11 @@
     </update>
 
     <delete id="deleteStockKind" parameterType="Long">
-        UPDATE stock_kind
-        SET
-            delete_yn = 'Y'
-           ,last_update_datetime = NOW()
+        DELETE FROM stock_kind
         WHERE stock_kind_id = ${stockKindId}
     </delete>
 
-    <select id="selectStockKind" parameterType="Long" resultType="StockKindEntity">
+    <select id="selectStockKind" parameterType="StockSearch" resultType="StockKindEntity">
         SELECT
               stock_kind_id
              ,asset_id
@@ -191,10 +218,22 @@
              ,reg_datetime
              ,last_update_datetime
         FROM stock_kind sk
-        WHERE stock_kind_id = ${stockKindId}
+        WHERE  1 = 1
+        <if test = 'memberId != null and memberId !=""'>
+            AND stock.member_id = ${memberId}
+        </if>
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND stock.stock_kind_cd = ${stockKindCd}
+        </if>
+        <if test = 'stockKindId != null and stockKindId !=""'>
+            stock_kind_id = ${stockKindId}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND sk.delete_yn = #{deleteYn}
+        </if>
     </select>
 
-    <select id="selectStockKindDto" parameterType="Long" resultType="StockKindDto">
+    <select id="selectStockKindDto" parameterType="StockSearch" resultType="StockKindDto">
         SELECT
             stock_kind_id
              ,asset_id
@@ -208,7 +247,19 @@
              ,reg_datetime
              ,last_update_datetime
         FROM stock_kind sk
-        WHERE stock_kind_id = ${stockKindId}
+        WHERE  1 = 1
+        <if test = 'memberId != null and memberId !=""'>
+            AND stock.member_id = ${memberId}
+        </if>
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND stock.stock_kind_cd = ${stockKindCd}
+        </if>
+        <if test = 'stockKindId != null and stockKindId !=""'>
+            AND stock_kind_id = ${stockKindId}
+        </if>
+        <if test = 'deleteYn != null and deleteYn !=""'>
+            AND sk.delete_yn = #{deleteYn}
+        </if>
     </select>
 
     <select id="selectStockKindDtoList" parameterType="StockSearch" resultType="StockKindDto">
@@ -225,21 +276,18 @@
             ,reg_datetime
             ,last_update_datetime
         FROM stock_kind sk
-        WHERE 1 = 1
+        WHERE sk.delete_yn = #{deleteYn}
         <if test = 'stockKindId != null and stockKindId !=""'>
             AND sk.stock_kind_id = ${stockKindId}
         </if>
         <if test = 'memberId != null and memberId !=""'>
             AND sk.member_id = ${memberId}
         </if>
-        <if test = 'deleteYn != null and deleteYn !=""'>
-            AND sk.delete_yn = #{deleteYn}
-        </if>
         ORDER BY stock_kind_name
     </select>
 
 
-    <select id="selectStockKindCodeDtoList" parameterType="StockKindForm" resultType="StockKindCodeDto">
+    <select id="selectStockKindCodeDtoList" parameterType="StockSearch" resultType="StockKindCodeDto">
         SELECT
             skc.code, skc.kind_name, skc.exchange
         FROM stock_kind_code skc
@@ -249,6 +297,10 @@
         </if>
         <if test = 'stockKindName != null and stockKindName !=""'>
             AND skc.kind_name LIKE CONCAT('%', #{stockKindName}, '%')
+        </if>
+        <if test = 'searchWord != null and searchWord !=""'>
+            AND (skc.code LIKE CONCAT('%', #{searchWord}, '%')
+                 OR skc.kind_name LIKE CONCAT('%', #{searchWord}, '%'))
         </if>
         ORDER BY skc.code, skc.kind_name
     </select>

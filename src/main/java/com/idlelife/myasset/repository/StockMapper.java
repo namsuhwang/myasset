@@ -23,9 +23,9 @@ public interface StockMapper {
     List<AssetStockDto> selectAssetStockDtoList(StockSearch dom);
 
 
-    AssetStockEntity selectAssetStock(long assetId);
+    AssetStockEntity selectAssetStock(StockSearch dom);
 
-    AssetStockDto selectAssetStockDto(long assetId);
+    AssetStockDto selectAssetStockDto(StockSearch dom);
 
 
     long createStockKindId();
@@ -38,11 +38,11 @@ public interface StockMapper {
 
     List<StockKindDto> selectStockKindDtoList(StockSearch dom);
 
-    List<StockKindCodeDto> selectStockKindCodeDtoList(StockKindForm dom);
+    List<StockKindCodeDto> selectStockKindCodeDtoList(StockSearch dom);
 
-    StockKindEntity selectStockKind(long stockKindId);
+    StockKindEntity selectStockKind(StockSearch dom);
 
-    StockKindDto selectStockKindDto(long stockKindId);
+    StockKindDto selectStockKindDto(StockSearch dom);
 
     int updateStockKindCurrentStatus(StockKindEntity dom);
 

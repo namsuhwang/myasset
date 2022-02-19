@@ -15,6 +15,7 @@ public class StockKindForm {
   private Long assetId;
   private String stockKindCd;
   private String stockKindName;
+  private String searchWord;
   private Long quantity;
   private Long buyAvgPrice;
   private Long buyTotPrice;
