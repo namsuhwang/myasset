@@ -28,6 +28,7 @@ public enum ErrorCode {
     MYASSET_ERROR_1005(400,"1005","매도수량이 보유수량보다 많습니다."),
     MYASSET_ERROR_1006(400,"1006","이메일주소 확인이 필요합니다. 회원 미가입이면 신규가입 바랍니다."),
     MYASSET_ERROR_1007(400,"1007","다른 사람이 사용중인 이메일주소입니다."),
+    MYASSET_ERROR_1008(400,"1008","이미 등록되어 있는 관심 종목입니다."),
     ;
 
     private int status;

@@ -71,9 +71,9 @@ public interface StockMapper {
 
     List<StockInterestDto> selectStockInterestDtoList(long memberId);
 
-    StockInterestDto selectStockInterestDto(long stockInterestId);
+    StockInterestDto selectStockInterestDto(StockSearch dom);
 
-    StockInterestEntity selectStockInterest(long stockInterestId);
+    StockInterestEntity selectStockInterest(StockSearch dom);
 
     int insertStockInterest(StockInterestEntity dom);
 

@@ -26,4 +26,5 @@ public class StockSearch {
     private Long orderNo;
     private Long startOrderNo;
     private Long endOrderNo;
+    private Long stockInterestId;
 }

@@ -230,6 +230,17 @@ public class StockController {
 
 
 
+    @PostMapping("/stock/interest/save")
+    public ResponseEntity<StockInterestListDto> saveStockInterest(
+            @RequestBody StockInterestForm dom
+    ){
+        log.info("call : /stock/interest/save");
+        log.info("params : " + dom.toString());
+        StockInterestListDto result = stockService.saveStockInterest(dom);
+
+        return ResponseEntity.ok().body(result);
+    }
+
 
     @PostMapping("/stock/interest/reg")
     public ResponseEntity<StockInterestListDto> regStockInterest(
@@ -268,13 +279,9 @@ public class StockController {
     }
 
     @PostMapping("/stock/interest/list")
-    public ResponseEntity<StockInterestListDto> getStockInterestList(
-            @RequestBody StockSearch dom
-    ){
+    public ResponseEntity<StockInterestListDto> getStockInterestList(){
         log.info("call : /stock/interest/list");
-        dom.setMemberId(CommonUtil.getAuthInfo().getMemberId());
-        log.info("params : " + dom.toString());
-        StockInterestListDto result = stockService.getStockInterestListDto(dom.getMemberId());
+        StockInterestListDto result = stockService.getStockInterestListDto();
 
         return ResponseEntity.ok().body(result);
     }

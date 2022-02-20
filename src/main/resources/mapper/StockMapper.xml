@@ -535,24 +535,36 @@
              ,si.stock_interest_id
              ,si.stock_kind_cd
              ,si.stock_kind_name
+             ,sk.asset_id
+             ,sk.stock_kind_id
         FROM stock_interest si
+            LEFT OUTER JOIN stock_kind sk ON sk.member_id = si.member_id AND sk.stock_kind_cd = si.stock_kind_cd
         WHERE  si.member_id = ${memberId}
         ORDER BY si.order_no
     </select>
 
 
-    <select id="selectStockInterestDto" parameterType="Long" resultType="StockInterestDto">
+    <select id="selectStockInterestDto" parameterType="StockSearch" resultType="StockInterestDto">
         SELECT
             si.order_no
              ,si.stock_interest_id
              ,si.stock_kind_cd
              ,si.stock_kind_name
         FROM stock_interest si
-        WHERE  si.stock_interest_id = ${stockInterestId}
+        WHERE 1 = 1
+        <if test = 'stockInterestId != null and stockInterestId !=""'>
+            AND si.stock_interest_id = ${stockInterestId}
+        </if>
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND si.stock_kind_cd = ${stockKindCd}
+        </if>
+        <if test = 'memberId != null and memberId !=""'>
+            AND si.member_id = ${memberId}
+        </if>
     </select>
 
 
-    <select id="selectStockInterest" parameterType="Long" resultType="StockInterestEntity">
+    <select id="selectStockInterest" parameterType="StockSearch" resultType="StockInterestEntity">
         SELECT
             si.order_no
              ,si.stock_interest_id
@@ -562,7 +574,16 @@
              ,si.reg_datetime
              ,si.last_update_datetime
         FROM stock_interest si
-        WHERE  si.stock_interest_id = ${stockInterestId}
+        WHERE 1 = 1
+        <if test = 'stockInterestId != null and stockInterestId !=""'>
+            AND si.stock_interest_id = ${stockInterestId}
+        </if>
+        <if test = 'stockKindCd != null and stockKindCd !=""'>
+            AND si.stock_kind_cd = ${stockKindCd}
+        </if>
+        <if test = 'memberId != null and memberId !=""'>
+            AND si.member_id = ${memberId}
+        </if>
     </select>
 
     <select id="createStockInterestId" resultType="Long">
@@ -570,8 +591,8 @@
         FROM stock_interest
     </select>
 
-    <select id="createStockInterestOrderNo" parameterType="Long">
-        SELECT IFNULL(MAX(order_no), 0) + 1 AS order_no
+    <select id="createStockInterestOrderNo" resultType="Long">
+        SELECT IFNULL(MAX(order_no), 0) + 1 AS resultType
         FROM stock_interest
         WHERE member_id = ${memberId}
     </select>

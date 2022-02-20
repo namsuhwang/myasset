@@ -22,4 +22,6 @@ public class StockInterestDto {
   private String dayRange;             // 등락률(전일대비 등락율)
   private String highPrice;            // 당일 고가
   private String lowPrice;             // 당일 저가
+  private String stockKindId;
+  private Long assetId;
 }
