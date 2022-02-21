@@ -70,7 +70,7 @@
             FROM asset_stock stock
             WHERE  1 = 1
             <if test = 'assetId != null and assetId !=""'>
-                stock.asset_id = ${assetId}
+                AND stock.asset_id = ${assetId}
             </if>
             <if test = 'memberId != null and memberId !=""'>
                 AND stock.member_id = ${memberId}
@@ -102,7 +102,7 @@
             FROM asset_stock stock
             WHERE  1 = 1
             <if test = 'assetId != null and assetId !=""'>
-                stock.asset_id = ${assetId}
+                AND stock.asset_id = ${assetId}
             </if>
             <if test = 'memberId != null and memberId !=""'>
                 AND stock.member_id = ${memberId}
@@ -114,7 +114,7 @@
                 AND stock.stock_acno = ${stockAcno}
             </if>
             <if test = 'deleteYn != null and deleteYn !=""'>
-                AND sk.delete_yn = #{deleteYn}
+                AND stock.delete_yn = #{deleteYn}
             </if>
     </select>
 
@@ -139,9 +139,9 @@
               <if test = 'memberId != null and memberId !=""'>
                     AND stock.member_id = ${memberId}
               </if>
-            <if test = 'deleteYn != null and deleteYn !=""'>
-                AND stock.delete_yn = #{deleteYn}
-            </if>
+              <if test = 'deleteYn != null and deleteYn !=""'>
+                    AND stock.delete_yn = #{deleteYn}
+              </if>
     </select>
 
 
@@ -220,18 +220,19 @@
         FROM stock_kind sk
         WHERE  1 = 1
         <if test = 'memberId != null and memberId !=""'>
-            AND stock.member_id = ${memberId}
+            AND sk.member_id = ${memberId}
         </if>
         <if test = 'stockKindCd != null and stockKindCd !=""'>
-            AND stock.stock_kind_cd = ${stockKindCd}
+            AND sk.stock_kind_cd = ${stockKindCd}
         </if>
         <if test = 'stockKindId != null and stockKindId !=""'>
-            stock_kind_id = ${stockKindId}
+            AND sk.stock_kind_id = ${stockKindId}
         </if>
         <if test = 'deleteYn != null and deleteYn !=""'>
             AND sk.delete_yn = #{deleteYn}
         </if>
     </select>
+
 
     <select id="selectStockKindDto" parameterType="StockSearch" resultType="StockKindDto">
         SELECT
@@ -249,13 +250,13 @@
         FROM stock_kind sk
         WHERE  1 = 1
         <if test = 'memberId != null and memberId !=""'>
-            AND stock.member_id = ${memberId}
+            AND sk.member_id = ${memberId}
         </if>
         <if test = 'stockKindCd != null and stockKindCd !=""'>
-            AND stock.stock_kind_cd = ${stockKindCd}
+            AND sk.stock_kind_cd = ${stockKindCd}
         </if>
         <if test = 'stockKindId != null and stockKindId !=""'>
-            AND stock_kind_id = ${stockKindId}
+            AND sk.stock_kind_id = ${stockKindId}
         </if>
         <if test = 'deleteYn != null and deleteYn !=""'>
             AND sk.delete_yn = #{deleteYn}
@@ -286,6 +287,19 @@
         ORDER BY stock_kind_name
     </select>
 
+    <select id="selectStockKindTotalList" parameterType="StockSearch" resultType="StockKindTotalDto">
+        SELECT
+            stock_kind_cd
+            ,stock_kind_name
+            ,sum(quantity) as quantity
+            ,sum(buy_tot_price) / sum(quantity) AS buy_avg_price
+            ,sum(buy_tot_price) AS buy_tot_price
+        FROM stock_kind sk
+        WHERE delete_yn = 'N'
+          AND member_id = ${memberId}
+        GROUP BY stock_kind_cd, stock_kind_name
+        ORDER BY stock_kind_name
+    </select>
 
     <select id="selectStockKindCodeDtoList" parameterType="StockSearch" resultType="StockKindCodeDto">
         SELECT

@@ -68,7 +68,9 @@ public class JsoupComponent {
                         kindDto.setDiffAmount("" + tmp[4]);
                     }
 
-                    if(tmp[5].equals("마이너스")){
+                    if(Long.valueOf(kindDto.getDiffAmount().replaceAll(",", "")) == 0) {
+                        kindDto.setDayRange("0");
+                    }else if(tmp[5].equals("마이너스")){
                         kindDto.setDayRange("-" + tmp[6]);
                     }else{
                         kindDto.setDayRange("" + tmp[6]);

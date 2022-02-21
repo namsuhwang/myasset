@@ -22,7 +22,6 @@ public interface StockMapper {
 
     List<AssetStockDto> selectAssetStockDtoList(StockSearch dom);
 
-
     AssetStockEntity selectAssetStock(StockSearch dom);
 
     AssetStockDto selectAssetStockDto(StockSearch dom);
@@ -37,6 +36,9 @@ public interface StockMapper {
     int deleteStockKind(long stockKindId);
 
     List<StockKindDto> selectStockKindDtoList(StockSearch dom);
+
+
+    List<StockKindTotalDto> selectStockKindTotalList(StockSearch dom);
 
     List<StockKindCodeDto> selectStockKindCodeDtoList(StockSearch dom);
 

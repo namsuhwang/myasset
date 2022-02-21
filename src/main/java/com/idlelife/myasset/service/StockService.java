@@ -60,13 +60,13 @@ public class StockService {
         StockSearch param = new StockSearch();
         param.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         param.setDeleteYn("N");
-        List<StockKindDto> stockKindDtoList = stockMapper.selectStockKindDtoList(param);
+        List<StockKindTotalDto> stockKindDtoList = stockMapper.selectStockKindTotalList(param);
 
         Long totBuyPrice = 0L;
         Long totCurPrice = 0L;
         Long totPnlAmt = 0L;
 
-        for(StockKindDto kindDto : stockKindDtoList){
+        for(StockKindTotalDto kindDto : stockKindDtoList){
             kindDto = getCurStockKind(kindDto);
             totBuyPrice = totBuyPrice + kindDto.getBuyTotPrice();
             totCurPrice = totCurPrice + kindDto.getCurTotPrice();
@@ -200,14 +200,13 @@ public class StockService {
     }
 
     public StockKindDto saveStockKind(StockKindForm form){
-        StockKindDto result = new StockKindDto();
+        StockKindDto result = null;
         StockSearch stockSearch = new StockSearch();
         stockSearch.setMemberId(CommonUtil.getAuthInfo().getMemberId());
         stockSearch.setStockKindCd(form.getStockKindCd());
         stockSearch.setDeleteYn("N");
         StockKindEntity stockKindEntity = stockMapper.selectStockKind(stockSearch);
         if(stockKindEntity == null){
-            // 인서트
             result = regStockKind(form);
         }else{
             result = modStockKind(form);
@@ -317,8 +316,10 @@ public class StockService {
         StockKindDto stockKindDto = stockMapper.selectStockKindDto(stockKindSearch);
         return stockKindDto;
     }
+
+
     // 현재 주가 정보 조회 및 반영
-    private StockKindDto getCurStockKind(StockKindDto kindDto){
+    private StockKindTotalDto getCurStockKind(StockKindTotalDto kindDto){
         ScrapStockKindDto curStockInfo = scrapStockService.getScrapStockKind(kindDto.getStockKindCd());
         long curPrice = Long.valueOf(curStockInfo.getPrice().replaceAll(",", ""));
         long curTotPrice = curPrice * kindDto.getQuantity();
@@ -326,7 +327,7 @@ public class StockService {
         double pnlRate = Math.round((double)pnlAmt / (double)kindDto.getBuyTotPrice() * 10000.0) / 100.0;
 
         StockKindEntity stockKindEntity = new StockKindEntity();
-        stockKindEntity.setStockKindId(kindDto.getStockKindId());
+//        stockKindEntity.setStockKindId(kindDto.getStockKindId());
         stockKindEntity.setCurUnitPrice(curPrice);
         stockKindEntity.setCurTotPrice(curTotPrice);
         stockKindEntity.setPnlAmt(pnlAmt);
@@ -349,6 +350,7 @@ public class StockService {
         kindDto.setLowPrice(curStockInfo.getLowPrice());
         return kindDto;
     }
+
 
 
     public StockKindDto delStockKind(Long stockKindId){

@@ -20,5 +20,5 @@ public class TotalStockAssetDto {
   private Double totPnlRate;    // 총수익률
   private Long totPnlAmt;       // 총손익금액
 
-  List<StockKindDto> list;
+  List<StockKindTotalDto> list;
 }
